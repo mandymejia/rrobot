@@ -4,20 +4,12 @@
 \alias{emprule_rob}
 \title{Robust empirical rule}
 \usage{
-emprule_rob(
-  x,
-  thr = 4,
-  symmetric = TRUE,
-  use_huber = FALSE,
-  upper_only = FALSE
-)
+emprule_rob(x, thr = 4, use_huber = FALSE, upper_only = FALSE)
 }
 \arguments{
 \item{x}{The data}
 
 \item{thr}{MAD threshold}
-
-\item{symmetric}{Single scale for the entire data? Default: \code{TRUE}.}
 
 \item{use_huber}{Use the Huber estimates for center and scale? Default:
 \code{FALSE}.}
