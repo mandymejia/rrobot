@@ -1,0 +1,12 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^\.github$
+^README\.Rmd$
+^LICENSE\.md$
+^deprecated$
+^codecov\.yml$
+^cran-comments\.md
+^CRAN-RELEASE$
+^CRAN-SUBMISSION$
+^doc$
+^Meta$

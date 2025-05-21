@@ -1,0 +1,26 @@
+---
+title: "Robust outlier detection with `rrobot`"
+author: "Saranjeet Singh Saluja"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+  toc: true
+  keep_md: true
+vignette: >
+  %\VignetteIndexEntry{Robust outlier detection with `rrobot`}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(autodep = TRUE, cache = FALSE)
+```
+
+Describe ``robot` here.
+
+```{r}
+library(rrobot)
+```
+
+# Outlier detection
