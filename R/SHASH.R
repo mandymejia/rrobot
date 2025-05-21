@@ -13,6 +13,7 @@
 #' @importFrom MASS huber
 #' @importFrom stats median mad
 #' @keywords internal
+#' @export
 emprule_rob <- function(x, thr = 4, use_huber = FALSE, upper_only = FALSE) {
 
   # Validate inputs
