@@ -22,7 +22,7 @@ Authors@R: c(
            role = c("ctb"))
            )
 Maintainer: Amanda Mejia <mandy.mejia@gmail.com>
-Description: Robust outlier detection.
+Description: Robust outlier detection techniques for dealing with Non-Gaussian Data.
 License: GPL-3
 URL: https://github.com/mandymejia/rrobot
 BugReports: https://github.com/mandymejia/rrobot/issues
