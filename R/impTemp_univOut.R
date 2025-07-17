@@ -26,8 +26,8 @@
 #' @export
 impTemp_univOut <- function(hk_data, lk_data, cutoff) {
   # Identify univariate outliers
-  univ_hk_out <- fMRIscrub::RD_univOut(data = hk_data, cutoff = cutoff, trans = "robust-YJ")
-  univ_lk_out <- fMRIscrub::RD_univOut(data = lk_data, cutoff = cutoff, trans = "robust-YJ")
+  univ_hk_out <- RD_univOut(data = hk_data, cutoff = cutoff, trans = "robust-YJ")
+  univ_lk_out <- RD_univOut(data = lk_data, cutoff = cutoff, trans = "robust-YJ")
 
   # Replace TRUE flags with NA
   univ_hk_out[univ_hk_out == TRUE] <- NA
