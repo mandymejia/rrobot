@@ -24,6 +24,9 @@
 #'
 #' @importFrom stats pchisq qchisq qf
 #' @export
+#' @importFrom stats pchisq qchisq qf
+#' @importFrom fMRIscrub FUNCTION1 FUNCTION2
+#' @importFrom oro.nifti FUNCTION3
 Fit_F <- function(Q, n, h, quantile) {
   # Step 1: consistency correction factor
   c <- pchisq(q = qchisq(p = h / n, df = Q), df = Q + 2) / (h / n)
