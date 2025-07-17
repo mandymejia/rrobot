@@ -18,7 +18,7 @@ Authors@R: c(
            role = c("ctb")),
     person(given = "Fatma",
            family = "Parlak",
-           email = "fparlak@iu.edu",
+           email = "fparlakstat@gmail.com",
            role = c("ctb"))
            )
 Maintainer: Amanda Mejia <mandy.mejia@gmail.com>
