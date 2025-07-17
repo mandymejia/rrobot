@@ -20,7 +20,7 @@ Authors@R: c(
            family = "Parlak",
            email = "fparlakstat@gmail.com",
            role = c("ctb"))
-           )
+)
 Maintainer: Amanda Mejia <mandy.mejia@gmail.com>
 Description: Robust outlier detection techniques for dealing with Non-Gaussian Data.
 License: GPL-3
