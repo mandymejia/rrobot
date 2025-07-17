@@ -2,9 +2,11 @@
 
 export(Fit_F)
 export(ICA_extract_kurt)
+export(RD_univOut)
 export(emprule_rob)
 export(impTemp_univOut)
 importFrom(MASS,huber)
+importFrom(cellWise,transfo)
 importFrom(fMRIscrub,pscrub)
 importFrom(imputeTS,na_interpolation)
 importFrom(oro.nifti,readNIfTI)
