@@ -17,6 +17,7 @@
 #' }
 #'
 #' @importFrom fMRIscrub pscrub
+#' @importFrom oro.nifti readNIfTI
 #' @export
 #'
 #' @examples
