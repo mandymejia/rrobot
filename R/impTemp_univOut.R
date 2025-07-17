@@ -20,13 +20,14 @@
 #'   \item{\code{NA_locs}}{Matrix of (row, col) indices for hk outliers.}
 #' }
 #'
+#' @importFrom fMRIscrub RD_univOut
 #' @importFrom imputeTS na_interpolation
 #' @importFrom tibble as_tibble
 #' @export
 impTemp_univOut <- function(hk_data, lk_data, cutoff) {
   # Identify univariate outliers
-  univ_hk_out <- fMRIscrub:::RD_univOut(data = hk_data, cutoff = cutoff, trans = "robust-YJ")
-  univ_lk_out <- fMRIscrub:::RD_univOut(data = lk_data, cutoff = cutoff, trans = "robust-YJ")
+  univ_hk_out <- fMRIscrub::RD_univOut(data = hk_data, cutoff = cutoff, trans = "robust-YJ")
+  univ_lk_out <- fMRIscrub::RD_univOut(data = lk_data, cutoff = cutoff, trans = "robust-YJ")
 
   # Replace TRUE flags with NA
   univ_hk_out[univ_hk_out == TRUE] <- NA
