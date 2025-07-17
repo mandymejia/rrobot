@@ -33,7 +33,10 @@ Imports:
     cellWise,
     imputeTS,
     oro.nifti,
-    tibble
+    tibble,
+    fMRIscrub
+Remotes:
+    mandymejia/fMRIscrub
 Suggests:
     knitr,
     rmarkdown,
