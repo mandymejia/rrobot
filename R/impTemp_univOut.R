@@ -20,7 +20,6 @@
 #'   \item{\code{NA_locs}}{Matrix of (row, col) indices for hk outliers.}
 #' }
 #'
-#' @importFrom fMRIscrub RD_univOut
 #' @importFrom imputeTS na_interpolation
 #' @importFrom tibble as_tibble
 #' @export
