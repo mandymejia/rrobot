@@ -22,19 +22,18 @@
 #'   \item{RD}{Squared robust distances for all observations (length T), or NULL if dist = FALSE.}
 #' }
 #'
-#' @importFrom stats colMeans
 #' @importFrom expm sqrtm
 #' @importFrom robustbase covMcd
 #' @export
-comp_RD <- function(data_matrix, mode = c("auto", "manual"), 
+comp_RD <- function(data_matrix, mode = c("auto", "manual"),
                     cov_mcd = NULL, ind_incld = NULL, dist = TRUE) {
   mode <- match.arg(mode)
   data_matrix <- as.matrix(data_matrix)
   stopifnot(is.numeric(data_matrix))
-  
+
   t <- nrow(data_matrix)
   Q <- ncol(data_matrix)
-  
+
   if (mode == "auto") {
     cov_obj <- robustbase::covMcd(data_matrix)
     ind_incld <- cov_obj$best
@@ -47,25 +46,25 @@ comp_RD <- function(data_matrix, mode = c("auto", "manual"),
     stopifnot(all(ind_incld %in% seq_len(t)))
     data_incld <- data_matrix[ind_incld, , drop = FALSE]
   }
-  
+
   h <- length(ind_incld)
   ind_excld <- setdiff(seq_len(t), ind_incld)
-  
+
   if (is.null(dim(data_incld)) || ncol(data_incld) == 1) {
     data_incld <- matrix(data_incld, ncol = 1)
   }
-  
+
   # Compute robust mean
   xbar_star <- colMeans(data_incld)
-  
+
   # Defensive check for invertibility
   if (qr(cov_mcd)$rank < ncol(cov_mcd)) {
     warning("Covariance matrix may be rank-deficient; inverse may be unstable.")
   }
-  
+
   invcov <- solve(cov_mcd)
   invcov_sqrt <- expm::sqrtm(invcov)
-  
+
   # Compute robust distances if requested
   if (dist) {
     xbar_star_mat <- matrix(xbar_star, nrow = t, ncol = Q, byrow = TRUE)
@@ -74,7 +73,7 @@ comp_RD <- function(data_matrix, mode = c("auto", "manual"),
   } else {
     RD <- NULL
   }
-  
+
   return(list(
     ind_incld = ind_incld,
     ind_excld = ind_excld,

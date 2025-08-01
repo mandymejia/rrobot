@@ -31,10 +31,8 @@ Imports:
     MASS,
     stats,
     cellWise,
-    imputeTS,
-    oro.nifti,
-    tibble,
-    fMRIscrub
+    expm,
+    robustbase
 Remotes: mandymejia/fMRIscrub
 Suggests: knitr, rmarkdown, testthat (>= 3.0.0)
 VignetteBuilder: knitr

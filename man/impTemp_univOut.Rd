@@ -2,32 +2,25 @@
 % Please edit documentation in R/impTemp_univOut.R
 \name{impTemp_univOut}
 \alias{impTemp_univOut}
-\title{Temporally impute outliers for High- and Low-Kurtosis Components}
+\title{Temporally impute univariate outliers from external detection}
 \usage{
-impTemp_univOut(hk_data, lk_data, cutoff)
+impTemp_univOut(x, outlier_mask)
 }
 \arguments{
-\item{hk_data}{Numeric matrix of hk components (T × K).}
+\item{x}{A numeric matrix of dimension n_time × n_var (n_time time points, n_var variables).}
 
-\item{lk_data}{Numeric matrix of lk components (T × L).}
-
-\item{cutoff}{Numeric threshold for outlier detection
-(passed to \code{fMRIscrub:::RD_univOut()}).}
+\item{outlier_mask}{A logical matrix (same dimensions as x) with TRUE at outlier positions.}
 }
 \value{
-A list with:
+A list with elements:
 \describe{
-\item{\code{hk_df}}{Original hk data as tibble, columns prefixed \code{hk_}.}
-\item{\code{NA_data}}{hk matrix with outliers replaced by NA.}
-\item{\code{imp_data}}{Imputed hk matrix after interpolation.}
-\item{\code{comb_data}}{Combined imputed hk & lk tibble, columns \code{hk_}/\code{lk_}.}
-\item{\code{NA_locs}}{Matrix of (row, col) indices for hk outliers.}
+\item{x_df}{Original matrix with outliers replaced as NA (as tibble).}
+\item{NA_data}{Matrix version of x with NAs at outlier positions.}
+\item{imp_data}{Imputed matrix after temporal interpolation.}
+\item{NA_locs}{Row-column indices of outliers (now NA).}
 }
 }
 \description{
-Detects univariate outliers in high-kurtosis (hk) and low-kurtosis (lk)
-components using the robust Yeo–Johnson transformation and a user-specified
-cutoff, replaces them with NA, then performs temporal interpolation to
-impute the missing values. Returns both original and imputed data, plus
-metadata for downstream modeling.
+Takes a high-kurtosis data matrix and a precomputed outlier mask,
+replaces the outliers with NA, and applies temporal interpolation using \code{imputeTS::na_interpolation}.
 }

@@ -4,16 +4,10 @@
 \alias{ICA_extract_kurt}
 \title{Extract high and low kurtosis ICA components using fMRIscrub}
 \usage{
-ICA_extract_kurt(data_matrix, mask_path, save_prefix = NULL, save_dir = NULL)
+ICA_extract_kurt(time_series)
 }
 \arguments{
-\item{data_matrix}{A numeric matrix of dimension T × V (time × voxels), with one time series per voxel.}
-
-\item{mask_path}{File path to a binary brain mask in NIfTI format (.nii or .nii.gz).}
-
-\item{save_prefix}{(Optional) Prefix for the saved \code{.RData} files (e.g., "abide1"). Required if \code{save_dir} is specified.}
-
-\item{save_dir}{(Optional) Directory to save \code{hk_*.RData} and \code{lk_*.RData} matrices. If not specified, nothing is saved.}
+\item{time_series}{A numeric matrix of dimension T × V (time × variables), where each column is a univariate time series.}
 }
 \value{
 A list with elements:
@@ -24,17 +18,12 @@ A list with elements:
 }
 }
 \description{
-This function performs ICA projection on a masked fMRI dataset using \code{pscrub()} from the
+This function performs ICA projection on a multivariate time series matrix using \code{pscrub()} from the
 fMRIscrub package and separates high- and low-kurtosis components based on the
-\code{highkurt} indicator returned by the method.
+\code{highkurt} indicator.
 }
 \examples{
 \dontrun{
-result <- ICA_extract_kurt(
-  data_matrix = fMRIscrub::Dat1,
-  mask_path = system.file("extdata", "Dat1_mask.nii.gz", package = "fMRIscrub"),
-  save_prefix = "abide1",
-  save_dir = "data"
-)
+result <- ICA_extract_kurt(time_series = fMRIscrub::Dat1)
 }
 }
