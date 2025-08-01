@@ -24,6 +24,7 @@
 #'
 #' @importFrom expm sqrtm
 #' @importFrom robustbase covMcd
+#' @importFrom stats cov
 #' @export
 comp_RD <- function(data_matrix, mode = c("auto", "manual"),
                     cov_mcd = NULL, ind_incld = NULL, dist = TRUE) {

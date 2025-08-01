@@ -57,6 +57,9 @@ normal_to_SHASH <- function(x, mu, sigma, nu, tau){
 #' @param maxit Max iterations.
 #' @param weight_init Optional logical vector of initial weights.
 #'
+#' @importFrom isotree isolation.forest
+#' @importFrom stats predict
+#' @importFrom gamlss gamlssML coefAll
 #' @return A list of class "SHASH_out".
 #' @export
 SHASH_out <- function(x,

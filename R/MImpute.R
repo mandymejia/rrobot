@@ -31,6 +31,7 @@
 #'
 #' @importFrom MASS mvrnorm
 #' @importFrom robustbase lmrob
+#' @importFrom stats coef vcov
 #' @export
 MImpute <- function(x, w, outlier_matrix, M = 5, k = 10, seed = NULL) {
   if (!is.null(seed)) set.seed(seed)

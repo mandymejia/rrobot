@@ -32,7 +32,15 @@ Imports:
     stats,
     cellWise,
     expm,
-    robustbase
+    robustbase,
+    fMRIscrub,
+    gamlss,
+    imputeTS,
+    fMRIscrub,
+    gamlss,
+    imputeTS,
+    isotree,
+    tidyr
 Remotes: mandymejia/fMRIscrub
 Suggests: knitr, rmarkdown, testthat (>= 3.0.0)
 VignetteBuilder: knitr

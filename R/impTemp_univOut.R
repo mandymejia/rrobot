@@ -14,6 +14,8 @@
 #'   \item{NA_locs}{Row-column indices of outliers (now NA).}
 #' }
 #'
+#' @importFrom tidyr as_tibble
+#' @importFrom imputeTS na_interpolation
 #' @export
 impTemp_univOut <- function(x, outlier_mask) {
   stopifnot(is.matrix(x), is.logical(outlier_mask), all(dim(x) == dim(outlier_mask)))
