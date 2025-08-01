@@ -1,36 +1,70 @@
 #' Apply All Outlier Detection Threshold Methods on One Dataset
 #'
-#' @param name String. A label for the dataset (e.g., "abide1")
-#' @param x High-kurtosis matrix (T × K)
-#' @param w Low-kurtosis matrix (T × L)
-#' @param Q Integer. Number of variables in x (usually ncol(x))
-#' @param alpha Numeric. Quantile for threshold (default 0.01)
+#' Performs ICA-based kurtosis split, univariate outlier detection and imputation,
+#' then applies 5 outlier thresholding methods: HR, SI, SI_boot, MI, MI_boot.
 #'
-#' @return A list containing thresholds for each method
-all_OutDet <- function(name, x, w, Q, alpha = 0.01) {
-  message("Processing: ", name)
+#' @param name Optional label for logging.
+#' @param data_matrix T × V fMRI time series matrix.
+#' @param alpha Quantile level for thresholding (default = 0.01).
+#' @param B Number of bootstrap samples (default = 1000).
+#' @param M Number of multiply imputed datasets (default = 50).
+#' @param k Number of perturbation cycles per imputation (default = 100).
+#'
+#' @return A list of threshold values and intermediate diagnostics.
+#' @export
+all_OutDet <- function(name = NULL, data_matrix, alpha = 0.01, B = 1000, M = 50, k = 100) {
+  if (!is.null(name)) message("Processing: ", name)
   
-  # Step 1: Compute RD for original data (needed for HR)
+  # STEP 0: ICA-based Kurtosis Split
+  kurt_data <- ICA_extract_kurt(time_series = data_matrix)
+  x <- kurt_data$hk
+  w <- kurt_data$lk
+  Q <- ncol(x)
+  
+  # STEP 1: Univariate Temporal Outlier Detection
+  out_result <- univOut(hk_data = x, cutoff = 3, trans = "SHASH")
+  
+  # STEP 2: Univariate Temporal Imputation
+  imp_result <- impTemp_univOut(x = x, outlier_mask = out_result$outliers)
+  x_imp <- imp_result$imp_data
+  
+  # STEP 3: Robust Distance on Original Data
   RD_org_obj <- comp_RD(data_matrix = x, mode = "auto")
   
-  # Step 2: HR threshold
+  # STEP 4: Hard Rejection (HR) Threshold via F-approximation
   n <- length(RD_org_obj$RD)
   h <- length(RD_org_obj$ind_incld)
   fitF_obj <- Fit_F(Q = Q, n = n, h = h, quantile = alpha)
   q_HR <- fitF_obj$threshold * fitF_obj$scale
   
-  # Step 3: Run all other imputation-based thresholds
-  SI_result      <- SI(x = x, w = w, cutoff = 4, trans = "SHASH")
-  SI_boot_result <- SI_boot(x = x, w = w, cutoff = 4, trans = "SHASH")
-  MI_result      <- MI(x = x, w = w, M = 5, k = 10, cutoff = 4, trans = "SHASH")
-  MI_boot_result <- MI_boot(x = x, w = w, B = 10, M = 5, k = 10, cutoff = 4, trans = "SHASH")
-  
-  list(
-    HR       = q_HR,
-    SI       = SI_result$threshold,
-    SI_boot  = SI_boot_result$threshold,
-    MI       = MI_result$thresholds,
-    MI_vote  = MI_result$voted_cutoff_description,
-    MI_boot  = MI_boot_result$threshold
+  # STEP 5: Multiple Imputation
+  multiple_imp <- MImpute(
+    x = x_imp,
+    w = w,
+    outlier_matrix = out_result$outliers,
+    M = M,
+    k = k,
+    seed = 2025
   )
+  
+  # STEP 6: Apply 4 Robust Detection Methods
+  SI_result      <- SI(RD_org_obj = RD_org_obj, imp_data = x_imp, alpha = alpha)
+  SI_boot_result <- SI_boot(RD_org_obj = RD_org_obj, imp_data = x_imp, 
+                            B = B, alpha = alpha, boot_quant = 0.95)
+  MI_result      <- MI(RD_org_obj = RD_org_obj, imp_datasets = multiple_imp$imp_datasets, 
+                       alpha = alpha)
+  MI_boot_result <- MI_boot(RD_org_obj = RD_org_obj, imp_datasets = multiple_imp$imp_datasets, 
+                            B = B, alpha = alpha, boot_quant = 0.95)
+  
+  # STEP 7: Return Summary
+  return(list(
+    HR        = q_HR,
+    SI        = SI_result,
+    SI_boot   = SI_boot_result,
+    MI        = MI_result,
+    MI_vote   = MI_result$voted_outliers,
+    MI_boot   = MI_boot_result,
+    name      = name,
+    RD_org    = RD_org_obj
+  ))
 }

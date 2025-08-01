@@ -1,46 +1,30 @@
 #' Multiple Imputation for High-Kurtosis ICA Components
 #'
 #' Performs multiple imputation using perturbed robust regression models.
-#' For each variable (column) with flagged univariate outliers, performs M imputations
-#' using robust linear regression with low-kurtosis components and other high-kurtosis
-#' variables as predictors. Adds Gaussian noise to regression coefficients to introduce
-#' variation across imputations.
 #'
-#' @param x A numeric matrix (n_time × Q) of high-kurtosis components to be imputed.
-#' @param w A numeric matrix (n_time × L) of low-kurtosis components used as predictors.
-#' @param outlier_matrix A logical matrix of the same dimension as \code{x}, indicating
-#'   the location of univariate outliers to be imputed.
-#' @param M Integer; number of multiple imputations (default = 5).
-#' @param k Integer; number of MCMC-like perturbation cycles per imputation (default = 10).
-#' @param seed Optional integer seed for reproducibility.
+#' @param x A numeric matrix (n_time × Q) of high-kurtosis ICA components to be imputed.
+#' @param w A numeric matrix (n_time × L) of low-kurtosis ICA components used as predictors.
+#' @param outlier_matrix A logical matrix (same dim as x) indicating univariate outliers to be imputed.
+#' @param M Number of multiply imputed datasets (default = 5).
+#' @param k Number of perturbation cycles per imputation (default = 10).
+#' @param seed Optional integer for reproducibility.
 #'
 #' @return A list with:
 #' \describe{
-#'   \item{\code{imp_datasets}}{A list of \code{M} numeric matrices (each of dimension \code{n_time × Q}) representing multiply imputed versions of \code{x}. In each matrix, previously flagged outliers have been replaced by robust regression-based imputations.}
-#'   \item{\code{outlier_matrix}}{A logical matrix (same dimension as \code{x}) indicating the positions of univariate outliers that were imputed. This is the same as the input \code{outlier_matrix}, returned for reference.}
+#'   \item{\code{imp_datasets}}{List of M imputed versions of x}
+#'   \item{\code{outlier_matrix}}{Logical matrix of imputed outlier positions}
 #' }
-#'
-#' @details
-#' For each variable \code{x[, j]} with outliers, the function:
-#' \enumerate{
-#'   \item Replaces outliers with NA in \code{x[, j]}.
-#'   \item Uses the remaining variables (\code{w} followed by \code{x[, -j]}) as predictors in a robust regression.
-#'   \item Fits a linear model and perturbs the coefficients with Gaussian noise for \code{M × k} cycles.
-#'   \item Averages imputed values over \code{k} iterations to stabilize each imputation.
-#' }
-#'
+#' 
 #' @importFrom MASS mvrnorm
 #' @importFrom robustbase lmrob
 #' @export
-MImpute <- function(x, w, outlier_matrix, M = 5, k = 10, seed = NULL) {
+MImpute <- function(x, w, outlier_matrix, M = 50, k = 100, seed = NULL) {
   if (!is.null(seed)) set.seed(seed)
-  
   stopifnot(is.matrix(x), is.matrix(w), is.logical(outlier_matrix))
   stopifnot(all(dim(x) == dim(outlier_matrix)))
   
   n_time <- nrow(x)
   Q <- ncol(x)
-  
   imp_datasets <- vector("list", M)
   
   for (m in seq_len(M)) {
@@ -50,23 +34,39 @@ MImpute <- function(x, w, outlier_matrix, M = 5, k = 10, seed = NULL) {
       outlier_idx <- which(outlier_matrix[, j])
       if (length(outlier_idx) == 0) next
       
-      x_na <- x[, j]
-      x_na[outlier_idx] <- NA
+      x_j <- x[, j]
+      x_j[outlier_idx] <- NA
+      observed <- !is.na(x_j)
       
-      predictors <- cbind(w, x[, -j, drop = FALSE])  # Ensure w is prioritized
-      predictors <- scale(predictors)
-      observed <- !is.na(x_na)
+      if (sum(observed) < 10) next  # Skip if insufficient data
       
-      # Fit robust regression model
+      # Combine predictors: w + other high-kurtosis variables (excluding j)
+      if (Q > 1) {
+        other_x <- x[, -j, drop = FALSE]
+        colnames(other_x) <- paste0("X", setdiff(seq_len(Q), j))
+        predictors_all <- cbind(w, other_x)
+      } else {
+        predictors_all <- w
+      }
+      colnames(predictors_all) <- paste0("V", seq_len(ncol(predictors_all)))
+      
+      # ICA output is already standardized, so no need to rescale again
+      predictors_scaled <- predictors_all
+      
+      # Use only observed rows for fitting
+      df_fit <- data.frame(y = x_j[observed], predictors_scaled[observed, , drop = FALSE])
+      
       fit <- tryCatch(
-        robustbase::lmrob(x_na ~ predictors, max.it = 100),
+        robustbase::lmrob(y ~ ., data = df_fit, max.it = 100),
         error = function(e) NULL
       )
       if (is.null(fit)) next
       
       beta_hat <- coef(fit)
-      beta_cov <- vcov(fit)
+      beta_cov <- tryCatch(vcov(fit), error = function(e) diag(length(beta_hat)) * 1e-4)
       
+      # Create design matrix for outlier rows
+      new_X <- cbind(1, predictors_scaled[outlier_idx, , drop = FALSE])
       preds_mat <- matrix(NA, nrow = length(outlier_idx), ncol = k)
       
       for (iter in seq_len(k)) {
@@ -74,7 +74,6 @@ MImpute <- function(x, w, outlier_matrix, M = 5, k = 10, seed = NULL) {
           MASS::mvrnorm(1, mu = beta_hat, Sigma = beta_cov),
           error = function(e) beta_hat
         )
-        new_X <- cbind(1, predictors[outlier_idx, , drop = FALSE])
         preds_mat[, iter] <- new_X %*% beta_perturbed
       }
       
