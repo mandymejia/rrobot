@@ -31,10 +31,16 @@ Imports:
     MASS,
     stats,
     cellWise,
+    expm,
+    robustbase,
+    fMRIscrub,
+    gamlss,
     imputeTS,
-    oro.nifti,
-    tibble,
-    fMRIscrub
+    fMRIscrub,
+    gamlss,
+    imputeTS,
+    isotree,
+    tidyr
 Remotes: mandymejia/fMRIscrub
 Suggests: knitr, rmarkdown, testthat (>= 3.0.0)
 VignetteBuilder: knitr

@@ -13,6 +13,7 @@
 #'   \item{highkurt}{Logical vector indicating which components are high-kurtosis}
 #' }
 #'
+#' @importFrom fMRIscrub pscrub
 #' @export
 #'
 #' @examples

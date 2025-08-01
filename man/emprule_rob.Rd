@@ -2,25 +2,31 @@
 % Please edit documentation in R/SHASH.R
 \name{emprule_rob}
 \alias{emprule_rob}
-\title{Robust empirical rule}
+\title{Robust Empirical Rule Outlier Detection}
 \usage{
-emprule_rob(x, thr = 4, use_huber = FALSE, upper_only = FALSE)
+emprule_rob(
+  x,
+  thr = 4,
+  symmetric = TRUE,
+  use_huber = FALSE,
+  upper_only = FALSE
+)
 }
 \arguments{
-\item{x}{The data}
+\item{x}{Numeric vector.}
 
-\item{thr}{MAD threshold}
+\item{thr}{Threshold multiplier (default = 4).}
 
-\item{use_huber}{Use the Huber estimates for center and scale? Default:
-\code{FALSE}.}
+\item{symmetric}{Logical. If FALSE, use only upper tail.}
 
-\item{upper_only}{Only consider upper threshold? Default: \code{FALSE}.}
+\item{use_huber}{Logical. If TRUE, apply Huber-like soft rejection.}
+
+\item{upper_only}{Logical. If TRUE, use right-tail only.}
 }
 \value{
-Logical vector indicating whether each element in \code{x} is an
-outlier (\code{TRUE} if an outlier).
+Logical vector: TRUE = outlier, FALSE = inlier.
 }
 \description{
-Robust empirical rule outlier detection applicable to approximately Normal data
+Detects outliers using the median ± threshold × MAD rule.
 }
 \keyword{internal}
