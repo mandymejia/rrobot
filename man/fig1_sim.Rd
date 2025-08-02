@@ -4,7 +4,7 @@
 \alias{fig1_sim}
 \title{Simulate robust distances and F-fit thresholding}
 \usage{
-fig1_sim(data, ind_incld = NULL, alpha)
+fig1_sim(data, alpha)
 }
 \arguments{
 \item{data}{A numeric matrix or data frame of dimensions \code{T x Q}.}
