@@ -4,7 +4,7 @@
 \alias{MImpute}
 \title{Multiple Imputation for High-Kurtosis ICA Components}
 \usage{
-MImpute(x, w, outlier_matrix, M = 50, k = 100, seed = NULL)
+MImpute(x, w, outlier_matrix, M = 50, k = 100)
 }
 \arguments{
 \item{x}{A numeric matrix (n_time × Q) of high-kurtosis ICA components to be imputed.}
@@ -16,8 +16,6 @@ MImpute(x, w, outlier_matrix, M = 50, k = 100, seed = NULL)
 \item{M}{Number of multiply imputed datasets (default = 5).}
 
 \item{k}{Number of perturbation cycles per imputation (default = 10).}
-
-\item{seed}{Optional integer for reproducibility.}
 }
 \value{
 A list with:

@@ -65,6 +65,7 @@ comp_RD <- function(data_matrix, mode = c("auto", "manual"),
 
   invcov <- solve(cov_mcd)
   invcov_sqrt <- expm::sqrtm(invcov)
+  if (is.null(invcov_sqrt)) stop("Covariance inversion failed")
 
   # Compute robust distances if requested
   if (dist) {

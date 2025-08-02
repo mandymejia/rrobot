@@ -27,41 +27,43 @@ MI_boot <- function(RD_org_obj, imp_datasets, B = 1000, alpha = 0.01, boot_quant
   n_time <- length(RD_org_obj$RD)
   Q <- ncol(imp_datasets[[1]])
   thresholds_all <- numeric(M * B)
-  
+
   cov_mcd <- RD_org_obj$S_star
   ind_incld <- RD_org_obj$ind_incld
   RD_orig <- RD_org_obj$RD
   cutoff_q <- 1 - alpha
-  
-  invcov_sqrt <- tryCatch(expm::sqrtm(solve(cov_mcd)), error = function(e) NULL)
-  if (is.null(invcov_sqrt)) stop("Covariance inversion failed")
-  
+
+  invcov_sqrt <- RD_org_obj$invcov_sqrt
+
   idx <- 1
   for (m in seq_len(M)) {
     imp_data <- imp_datasets[[m]]
     stopifnot(nrow(imp_data) == n_time, ncol(imp_data) == Q)
-    
+
     for (b in seq_len(B)) {
       boot_indices <- sample(ind_incld, size = length(ind_incld), replace = TRUE)
-      
+
       mu_boot <- colMeans(imp_data[boot_indices, , drop = FALSE])
       mu_mat <- matrix(mu_boot, nrow = n_time, ncol = Q, byrow = TRUE)
-      
+
       RD_boot <- rowSums(((imp_data - mu_mat) %*% invcov_sqrt)^2)
       thresholds_all[idx] <- quantile(RD_boot, cutoff_q, na.rm = TRUE)
       idx <- idx + 1
-      
+
       if (verbose && b %% 100 == 0) message(sprintf("MI %d, Bootstrap %d", m, b))
     }
     if (verbose) message(sprintf("Completed MI %d of %d", m, M))
   }
-  
+
   lb_ci <- quantile(thresholds_all, probs = 1 - boot_quant, na.rm = TRUE)
   flagged_outliers <- RD_orig > lb_ci
-  
-  return(list(
+
+  result <- list(
     thresholds_all = thresholds_all,
     final_threshold = unname(lb_ci),
     flagged_outliers = flagged_outliers
-  ))
+  )
+
+  class(result) <- "MI_boot_result"
+  return(result)
 }
