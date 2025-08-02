@@ -12,6 +12,9 @@ library(fastICA)
 
 devtools::load_all()
 source(here::here("dev", "ICA_extract_kurt.R"))
+
+set.seed(2025)
+
 # Load the data (example using fMRIscrub::Dat1)
 data_matrix <- fMRIscrub::Dat1
 
@@ -54,10 +57,11 @@ SI_boot_results$LB_CI
 SI_boot_results$UB_CI
 
 #-----Multiple Imputation-------------------------------------------------------
+set.seed(2025) # or result <- future_lapply(1:5, function(i) rnorm(1), future.seed = 456 or TRUE)
 multiple_imp <- MImpute( x = imp_result$imp_data,
                          w = kurt_data$lk,
                          outlier_matrix = out_result$outliers,
-                         M = 5, k = 10, seed = 2025)
+                         M = 5, k = 10)
 
 #--3---MI-----------------------------------------------------------------------
 MI_results <- MI(RD_org_obj = RD_org_obj
