@@ -16,8 +16,6 @@ MImpute(x, w, outlier_matrix, M = 50, k = 100)
 \item{M}{Number of multiply imputed datasets (default = 5).}
 
 \item{k}{Number of perturbation cycles per imputation (default = 10).}
-
-\item{seed}{Optional integer for reproducibility.}
 }
 \value{
 A list with:

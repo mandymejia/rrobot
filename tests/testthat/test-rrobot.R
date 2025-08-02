@@ -17,8 +17,8 @@ test_that("emprule_rob flags correct outliers", {
 
 test_that("SI method gives consistent results", {
   # Load test setup data
-  setup_data <- readRDS(test_path("fixtures", "test_setup_data.rds"))
-  reference <- readRDS(test_path("fixtures", "SI_reference.rds"))
+  setup_data <- readRDS(system.file("fixtures", "test_setup_data.rds", package = "rrobot"))
+  reference <- readRDS(system.file("fixtures", "SI_reference.rds", package = "rrobot"))
 
   # Run SI method
   result <- SI(RD_org_obj = setup_data$RD_org_obj,
@@ -32,8 +32,8 @@ test_that("SI method gives consistent results", {
 
 
 test_that("Hardin-Rocke method gives consistent results", {
-  setup_data <- readRDS(test_path("fixtures", "test_setup_data.rds"))
-  reference <- readRDS(test_path("fixtures", "HR_reference.rds"))
+  setup_data <- readRDS(system.file("fixtures", "test_setup_data.rds", package = "rrobot"))
+  reference <- readRDS(system.file("fixtures", "HR_reference.rds", package = "rrobot"))
 
   result <- Fit_F(Q = ncol(setup_data$hk_data),
                   n = nrow(setup_data$hk_data),
@@ -50,8 +50,8 @@ test_that("Hardin-Rocke method gives consistent results", {
 
 test_that("SI_boot method gives consistent results", {
   skip_on_ci()  # Skip on CI due to bootstrap randomness
-  setup_data <- readRDS(test_path("fixtures", "test_setup_data.rds"))
-  reference <- readRDS(test_path("fixtures", "SI_boot_reference.rds"))
+  setup_data <- readRDS(system.file("fixtures", "test_setup_data.rds", package = "rrobot"))
+  reference <- readRDS(system.file("fixtures", "SI_boot_reference.rds", package = "rrobot"))
 
   # Set seed for reproducible bootstrap
   set.seed(2025)
@@ -72,8 +72,8 @@ test_that("SI_boot method gives consistent results", {
 
 test_that("MI method gives consistent results", {
   skip_on_ci()  # Skip on CI due to bootstrap randomness
-  setup_data <- readRDS(test_path("fixtures", "test_setup_data.rds"))
-  reference <- readRDS(test_path("fixtures", "MI_reference.rds"))
+  setup_data <- readRDS(system.file("fixtures", "test_setup_data.rds", package = "rrobot"))
+  reference <- readRDS(system.file("fixtures", "MI_reference.rds", package = "rrobot"))
 
   # Set seed for reproducible multiple imputation
   set.seed(2025)

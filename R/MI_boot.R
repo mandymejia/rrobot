@@ -58,9 +58,12 @@ MI_boot <- function(RD_org_obj, imp_datasets, B = 1000, alpha = 0.01, boot_quant
   lb_ci <- quantile(thresholds_all, probs = 1 - boot_quant, na.rm = TRUE)
   flagged_outliers <- RD_orig > lb_ci
 
-  return(list(
+  result <- list(
     thresholds_all = thresholds_all,
     final_threshold = unname(lb_ci),
     flagged_outliers = flagged_outliers
-  ))
+  )
+
+  class(result) <- "MI_boot_result"
+  return(result)
 }

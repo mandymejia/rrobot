@@ -7,7 +7,6 @@
 #' @param outlier_matrix A logical matrix (same dim as x) indicating univariate outliers to be imputed.
 #' @param M Number of multiply imputed datasets (default = 5).
 #' @param k Number of perturbation cycles per imputation (default = 10).
-#' @param seed Optional integer for reproducibility.
 #'
 #' @return A list with:
 #' \describe{

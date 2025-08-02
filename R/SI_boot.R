@@ -24,37 +24,40 @@ SI_boot <- function(RD_org_obj, imp_data,
   cov_mcd <- RD_org_obj$S_star
   ind_incld <- RD_org_obj$ind_incld
   n_time <- nrow(imp_data)
-  
+
   quant99 <- numeric(B)
   cutoff_q <- 1 - alpha
-  
+
   if (verbose) message("Running ", B, " bootstrap resamples...")
-  
+
   for (b in seq_len(B)) {
     boot_idx <- sample(ind_incld, size = length(ind_incld), replace = TRUE)
-    
+
     mu_boot <- colMeans(imp_data[boot_idx, , drop = FALSE])
     mu_mat <- matrix(mu_boot, nrow = n_time, ncol = ncol(imp_data), byrow = TRUE)
-    
+
     RD_boot <- rowSums(((imp_data - mu_mat) %*% expm::sqrtm(solve(cov_mcd)))^2)
     quant99[b] <- quantile(RD_boot, cutoff_q, na.rm = TRUE)
-    
+
     if (verbose && b %% 10 == 0) message("Bootstrap ", b, "/", B, " complete.")
   }
-  
+
   lower_p <- (1 - boot_quant) / 2
   upper_p <- 1 - lower_p
   LB_CI <- quantile(quant99, probs = lower_p, na.rm = TRUE)
   UB_CI <- quantile(quant99, probs = upper_p, na.rm = TRUE)
-  
+
   if (verbose) {
     message(round(boot_quant * 200), "% CI of 99th quantiles: [",
             round(LB_CI, 3), ", ", round(UB_CI, 3), "]")
   }
-  
-  return(list(
+
+  result <- list(
     quant99 = quant99,
     LB_CI = LB_CI,
     UB_CI = UB_CI
-  ))
+  )
+
+  class(result) <- "SI_boot_result"
+  return(result)
 }

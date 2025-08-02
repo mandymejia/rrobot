@@ -52,9 +52,12 @@ MI <- function(RD_org_obj, imp_datasets, alpha = 0.01) {
   voted_outliers <- rowSums(outlier_flags) > (M / 2)
   LB95_CI <- quantile(thresholds, 0.025, na.rm = TRUE)
 
-  return(list(
+  result <- list(
     thresholds = thresholds,
     voted_outliers = voted_outliers,
     LB95_CI = LB95_CI
-  ))
+  )
+
+  class(result) <- "MI_result"
+  return(result)
 }

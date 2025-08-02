@@ -17,7 +17,7 @@
 SI <- function(RD_org_obj, imp_data, alpha = 0.01) {
   cov_mcd <- RD_org_obj$S_star
   ind_incld <- RD_org_obj$ind_incld
-  
+
   # Compute robust distances using fixed covariance, recomputed mean
   SI_obj <- comp_RD(
     data_matrix = imp_data,
@@ -25,12 +25,15 @@ SI <- function(RD_org_obj, imp_data, alpha = 0.01) {
     cov_mcd = cov_mcd,
     ind_incld = ind_incld
   )
-  
+
   # Threshold = (1 - alpha) quantile of RD
   SI_threshold <- quantile(SI_obj$RD, 1 - alpha, na.rm = TRUE)
-  
-  return(list(
+
+  result <- list(
     SI_obj = SI_obj,
     SI_threshold = SI_threshold
-  ))
+  )
+
+  class(result) <- "SI_result"
+  return(result)
 }
