@@ -7,7 +7,7 @@
 MI_boot(
   RD_org_obj,
   imp_datasets,
-  B = 500,
+  B = 1000,
   alpha = 0.01,
   boot_quant = 0.95,
   verbose = FALSE
@@ -16,9 +16,9 @@ MI_boot(
 \arguments{
 \item{RD_org_obj}{A list output from \code{comp_RD()} on the original hk_data.}
 
-\item{imp_datasets}{A list of M numeric matrices (n_time × Q); multiply imputed datasets.}
+\item{imp_datasets}{A list of M numeric matrices (T × Q); multiply imputed datasets.}
 
-\item{B}{Number of bootstrap samples per imputed dataset (default = 500).}
+\item{B}{Number of bootstrap samples per imputed dataset (default = 1000).}
 
 \item{alpha}{Significance level for quantile thresholding (default = 0.01).}
 
@@ -29,18 +29,20 @@ MI_boot(
 \value{
 A list with:
 \describe{
-\item{thresholds_all}{A numeric vector of length M×B; 99th percentile RDs from all bootstraps.}
-\item{final_threshold}{Lower bound of the (1 - boot_quant) CI from the thresholds.}
-\item{flagged_outliers}{Logical vector indicating flagged time points in the original data.}
+\item{thresholds_all}{Vector of M×B thresholds from each bootstrap sample.}
+\item{final_threshold}{Lower bound of CI across thresholds.}
+\item{flagged_outliers}{Logical vector of outliers based on final threshold.}
 }
 }
 \description{
 Extends single imputation bootstrapping by using multiple imputation. For each of the M imputed datasets:
 \itemize{
-\item Generate B bootstrap samples (with replacement) from the included indices
+\item Generate B bootstrap samples (with replacement) from the included (non-outlier) indices
 \item Compute robust distances (RD) for each sample
-\item Extract the 99th percentile of RD for each sample
-This yields M × B threshold candidates. The lower bound of their 95\% confidence interval
-is used as the final threshold. This threshold is applied to the RD of the original data.
+\item Extract the (1 - alpha) quantile of RD for each sample
 }
+}
+\details{
+This yields M × B threshold candidates. The lower bound of their (1 - boot_quant) confidence interval
+is used as the final threshold. This is applied to the RD of the original data.
 }

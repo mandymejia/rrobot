@@ -7,20 +7,22 @@
 MI(RD_org_obj, imp_datasets, alpha = 0.01)
 }
 \arguments{
-\item{RD_org_obj}{A list output from \code{comp_RD()} applied to the original data.}
+\item{RD_org_obj}{Output list from \code{comp_RD()} on the original data. Must contain $RD, $S_star, and $ind_incld.}
 
-\item{imp_datasets}{A list of M numeric matrices (each n_time × Q), multiply imputed versions of original data.}
+\item{imp_datasets}{A list of M numeric matrices (T × Q), multiply imputed versions of original data.}
 
 \item{alpha}{Significance level used to compute RD threshold (default = 0.01 for 99th percentile).}
 }
 \value{
 A list with:
 \describe{
-\item{thresholds}{A numeric vector of length M; (1 - alpha) quantiles of RD per imputed dataset.}
-\item{voted_outliers}{A logical vector of length n_time; TRUE if flagged as outlier in > M/2 imputations.}
+\item{thresholds}{Numeric vector of length M; (1 - alpha) quantiles of RD per imputed dataset.}
+\item{voted_outliers}{Logical vector (length T); TRUE if RD > threshold in > M/2 imputations.}
+\item{LB95_CI}{Lower bound of the 95\% confidence interval of thresholds (2.5th percentile).}
 }
 }
 \description{
 Applies robust distance (RD) computation to multiply imputed datasets, derives thresholds,
-and flags outliers via majority voting.
+and flags outliers via majority voting. Also computes the lower bound of the 95\% confidence interval
+of the (1 - alpha) quantiles across imputations.
 }

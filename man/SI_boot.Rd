@@ -5,9 +5,8 @@
 \title{Compute SI Boot Thresholds for Outlier Detection}
 \usage{
 SI_boot(
+  RD_org_obj,
   imp_data,
-  cov_mcd,
-  ind_incld,
   B = 1000,
   alpha = 0.01,
   boot_quant = 0.95,
@@ -15,19 +14,17 @@ SI_boot(
 )
 }
 \arguments{
-\item{imp_data}{A numeric matrix (n_time × Q) of imputed data (from Step 2).}
+\item{RD_org_obj}{A list from \code{comp_RD()} on the original data.}
 
-\item{cov_mcd}{Robust covariance matrix (Q × Q) from original data (e.g., RD_obj$S_star).}
+\item{imp_data}{A numeric matrix (T × Q) of single-imputed data.}
 
-\item{ind_incld}{Row indices used to recompute robust mean (e.g., RD_obj$ind_incld).}
+\item{B}{Integer; number of bootstrap resamples (default = 1000).}
 
-\item{B}{Integer; number of bootstrap resamples. Default is 1000.}
-
-\item{alpha}{Significance level for thresholding (e.g., 0.01 for 99th percentile).}
+\item{alpha}{Significance level for quantile thresholding (default = 0.01).}
 
 \item{boot_quant}{Central quantile range for CI (default = 0.95, for 95\% CI).}
 
-\item{verbose}{Logical; whether to print progress messages.}
+\item{verbose}{Logical; whether to print progress.}
 }
 \value{
 A list with:
@@ -39,6 +36,6 @@ A list with:
 }
 \description{
 Computes a robust distance (RD)–based threshold using single-imputed data
-followed by bootstrap resampling. Returns the confidence interval bounds of
-the bootstrapped 99th percentiles.
+followed by bootstrap resampling over clean (included) indices. Returns the confidence interval
+bounds of the bootstrapped 99th percentiles.
 }
