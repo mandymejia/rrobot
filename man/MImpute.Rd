@@ -4,42 +4,28 @@
 \alias{MImpute}
 \title{Multiple Imputation for High-Kurtosis ICA Components}
 \usage{
-MImpute(x, w, outlier_matrix, M = 5, k = 10, seed = NULL)
+MImpute(x, w, outlier_matrix, M = 50, k = 100, seed = NULL)
 }
 \arguments{
-\item{x}{A numeric matrix (n_time × Q) of high-kurtosis components to be imputed.}
+\item{x}{A numeric matrix (n_time × Q) of high-kurtosis ICA components to be imputed.}
 
-\item{w}{A numeric matrix (n_time × L) of low-kurtosis components used as predictors.}
+\item{w}{A numeric matrix (n_time × L) of low-kurtosis ICA components used as predictors.}
 
-\item{outlier_matrix}{A logical matrix of the same dimension as \code{x}, indicating
-the location of univariate outliers to be imputed.}
+\item{outlier_matrix}{A logical matrix (same dim as x) indicating univariate outliers to be imputed.}
 
-\item{M}{Integer; number of multiple imputations (default = 5).}
+\item{M}{Number of multiply imputed datasets (default = 5).}
 
-\item{k}{Integer; number of MCMC-like perturbation cycles per imputation (default = 10).}
+\item{k}{Number of perturbation cycles per imputation (default = 10).}
 
-\item{seed}{Optional integer seed for reproducibility.}
+\item{seed}{Optional integer for reproducibility.}
 }
 \value{
 A list with:
 \describe{
-\item{\code{imp_datasets}}{A list of \code{M} numeric matrices (each of dimension \code{n_time × Q}) representing multiply imputed versions of \code{x}. In each matrix, previously flagged outliers have been replaced by robust regression-based imputations.}
-\item{\code{outlier_matrix}}{A logical matrix (same dimension as \code{x}) indicating the positions of univariate outliers that were imputed. This is the same as the input \code{outlier_matrix}, returned for reference.}
+\item{\code{imp_datasets}}{List of M imputed versions of x}
+\item{\code{outlier_matrix}}{Logical matrix of imputed outlier positions}
 }
 }
 \description{
 Performs multiple imputation using perturbed robust regression models.
-For each variable (column) with flagged univariate outliers, performs M imputations
-using robust linear regression with low-kurtosis components and other high-kurtosis
-variables as predictors. Adds Gaussian noise to regression coefficients to introduce
-variation across imputations.
-}
-\details{
-For each variable \code{x[, j]} with outliers, the function:
-\enumerate{
-\item Replaces outliers with NA in \code{x[, j]}.
-\item Uses the remaining variables (\code{w} followed by \code{x[, -j]}) as predictors in a robust regression.
-\item Fits a linear model and perturbs the coefficients with Gaussian noise for \code{M × k} cycles.
-\item Averages imputed values over \code{k} iterations to stabilize each imputation.
-}
 }

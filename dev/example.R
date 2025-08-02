@@ -8,9 +8,10 @@ library(future.apply)
 library(future)
 library(tibble)
 library(here)
-function_files_RD <- list.files(here::here("R"), pattern = "\\.R$", full.names = TRUE)
-invisible(lapply(function_files_RD, source))
+library(fastICA)
 
+devtools::load_all()
+source(here::here("dev", "ICA_extract_kurt.R"))
 # Load the data (example using fMRIscrub::Dat1)
 data_matrix <- fMRIscrub::Dat1
 
