@@ -21,9 +21,11 @@
 SI_boot <- function(RD_org_obj, imp_data,
                     B = 1000, alpha = 0.01, boot_quant = 0.95,
                     verbose = FALSE) {
-  cov_mcd <- RD_org_obj$S_star
+
   ind_incld <- RD_org_obj$ind_incld
+  ind_excld <- setdiff(seq_len(RD_org_obj$RD), ind_incld)
   n_time <- nrow(imp_data)
+  invcov_sqrt <- RD_org_obj$invcov_sqrt
 
   quant99 <- numeric(B)
   cutoff_q <- 1 - alpha
@@ -31,15 +33,22 @@ SI_boot <- function(RD_org_obj, imp_data,
   if (verbose) message("Running ", B, " bootstrap resamples...")
 
   for (b in seq_len(B)) {
-    boot_idx <- sample(ind_incld, size = length(ind_incld), replace = TRUE)
+    # Sample both included and excluded indices with replacement
+    boot_idx_incld <- sample(ind_incld, size = length(ind_incld), replace = TRUE)
+    boot_idx_excld <- sample(ind_excld, size = length(ind_excld), replace = TRUE)
 
-    mu_boot <- colMeans(imp_data[boot_idx, , drop = FALSE])
-    mu_mat <- matrix(mu_boot, nrow = n_time, ncol = ncol(imp_data), byrow = TRUE)
+    # Combine the two to form the full bootstrapped dataset
+    boot_idx <- sort(c(boot_idx_incld, boot_idx_excld))
+    imp_boot <- imp_data[boot_idx, , drop = FALSE]
 
-    RD_boot <- rowSums(((imp_data - mu_mat) %*% expm::sqrtm(solve(cov_mcd)))^2)
+    # Compute mu_boot and RD_boot on this new dataset
+    mu_boot <- colMeans(imp_boot)
+    mu_mat <- matrix(mu_boot, nrow = nrow(imp_boot), ncol = ncol(imp_boot), byrow = TRUE)
+
+    RD_boot <- rowSums(((imp_boot - mu_mat) %*% invcov_sqrt)^2)
     quant99[b] <- quantile(RD_boot, cutoff_q, na.rm = TRUE)
 
-    if (verbose && b %% 10 == 0) message("Bootstrap ", b, "/", B, " complete.")
+    if (verbose && b %% 100 == 0) message("Bootstrap ", b, "/", B, " complete.")
   }
 
   lower_p <- (1 - boot_quant) / 2
@@ -52,12 +61,9 @@ SI_boot <- function(RD_org_obj, imp_data,
             round(LB_CI, 3), ", ", round(UB_CI, 3), "]")
   }
 
-  result <- list(
+  return(list(
     quant99 = quant99,
     LB_CI = LB_CI,
     UB_CI = UB_CI
-  )
-
-  class(result) <- "SI_boot_result"
-  return(result)
+  ))
 }

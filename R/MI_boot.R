@@ -28,42 +28,50 @@ MI_boot <- function(RD_org_obj, imp_datasets, B = 1000, alpha = 0.01, boot_quant
   Q <- ncol(imp_datasets[[1]])
   thresholds_all <- numeric(M * B)
 
-  cov_mcd <- RD_org_obj$S_star
+  RD_org <- RD_org_obj$RD
   ind_incld <- RD_org_obj$ind_incld
-  RD_orig <- RD_org_obj$RD
+  ind_excld <- setdiff(n_time, ind_incld)
+  invcov_sqrt <- RD_org_obj$invcov_sqrt
   cutoff_q <- 1 - alpha
 
-  invcov_sqrt <- RD_org_obj$invcov_sqrt
-
   idx <- 1
+
   for (m in seq_len(M)) {
     imp_data <- imp_datasets[[m]]
     stopifnot(nrow(imp_data) == n_time, ncol(imp_data) == Q)
 
     for (b in seq_len(B)) {
-      boot_indices <- sample(ind_incld, size = length(ind_incld), replace = TRUE)
+      # Resample both included and excluded indices
+      boot_incld <- sample(ind_incld, size = length(ind_incld), replace = TRUE)
+      boot_excld <- sample(ind_excld, size = length(ind_excld), replace = TRUE)
 
-      mu_boot <- colMeans(imp_data[boot_indices, , drop = FALSE])
-      mu_mat <- matrix(mu_boot, nrow = n_time, ncol = Q, byrow = TRUE)
+      # Combine and sort indices (sorting optional)
+      boot_idx <- sort(c(boot_incld, boot_excld))
 
-      RD_boot <- rowSums(((imp_data - mu_mat) %*% invcov_sqrt)^2)
+      # Bootstrap sample of the imputed dataset
+      imp_boot <- imp_data[boot_idx, , drop = FALSE]
+
+      # Compute mean and RD on the bootstrapped data
+      mu_boot <- colMeans(imp_boot)
+      mu_mat <- matrix(mu_boot, nrow = nrow(imp_boot), ncol = Q, byrow = TRUE)
+
+      RD_boot <- rowSums(((imp_boot - mu_mat) %*% invcov_sqrt)^2)
       thresholds_all[idx] <- quantile(RD_boot, cutoff_q, na.rm = TRUE)
       idx <- idx + 1
 
       if (verbose && b %% 100 == 0) message(sprintf("MI %d, Bootstrap %d", m, b))
     }
+
     if (verbose) message(sprintf("Completed MI %d of %d", m, M))
   }
 
-  lb_ci <- quantile(thresholds_all, probs = 1 - boot_quant, na.rm = TRUE)
-  flagged_outliers <- RD_orig > lb_ci
 
-  result <- list(
+  lb_ci <- quantile(thresholds_all, probs = 1 - boot_quant, na.rm = TRUE)
+  flagged_outliers <- RD_org > lb_ci
+
+  return(list(
     thresholds_all = thresholds_all,
     final_threshold = unname(lb_ci),
     flagged_outliers = flagged_outliers
-  )
-
-  class(result) <- "MI_boot_result"
-  return(result)
+  ))
 }
