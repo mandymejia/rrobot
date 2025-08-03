@@ -14,7 +14,7 @@ MI_boot(
 )
 }
 \arguments{
-\item{RD_org_obj}{A list output from \code{comp_RD()} on the original hk_data.}
+\item{RD_org_obj}{A list output from \code{\link{comp_RD}} on the original hk_data.}
 
 \item{imp_datasets}{A list of M numeric matrices (T × Q); multiply imputed datasets.}
 
