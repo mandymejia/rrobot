@@ -52,7 +52,8 @@ MI_boot <- function(RD_org_obj, imp_datasets, B = 1000, alpha = 0.01, boot_quant
       imp_boot <- imp_data[boot_idx, , drop = FALSE]
 
       # Compute mean and RD on the bootstrapped data
-      mu_boot <- colMeans(imp_boot)
+      # mu_boot <- colMeans(imp_boot)
+      mu_boot <- RD_org_obj$xbar_star # Don't re-compute mean
       mu_mat <- matrix(mu_boot, nrow = nrow(imp_boot), ncol = Q, byrow = TRUE)
 
       RD_boot <- rowSums(((imp_boot - mu_mat) %*% invcov_sqrt)^2)

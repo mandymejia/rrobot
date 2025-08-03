@@ -42,7 +42,9 @@ SI_boot <- function(RD_org_obj, imp_data,
     imp_boot <- imp_data[boot_idx, , drop = FALSE]
 
     # Compute mu_boot and RD_boot on this new dataset
-    mu_boot <- colMeans(imp_boot)
+    # mu_boot <- colMeans(imp_boot)
+    mu_boot <- RD_org_obj$xbar_star # Don't re-compute for now
+
     mu_mat <- matrix(mu_boot, nrow = nrow(imp_boot), ncol = ncol(imp_boot), byrow = TRUE)
 
     RD_boot <- rowSums(((imp_boot - mu_mat) %*% invcov_sqrt)^2)

@@ -40,7 +40,8 @@ MI <- function(RD_org_obj, imp_datasets, alpha = 0.01) {
     imp_data <- imp_datasets[[m]]
     stopifnot(nrow(imp_data) == n_time, ncol(imp_data) == Q)
 
-    mu_MCD <- colMeans(imp_data[ind_incld, , drop = FALSE])
+    # mu_MCD <- colMeans(imp_data[ind_incld, , drop = FALSE])
+    mu_MCD <- RD_org_obj$xbar_star # Don't re-compute mean
     xbar_mat <- matrix(mu_MCD, nrow = n_time, ncol = Q, byrow = TRUE)
 
     RD_imp <- rowSums(((imp_data - xbar_mat) %*% invcov_sqrt)^2)
