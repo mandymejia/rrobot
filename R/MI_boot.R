@@ -30,7 +30,7 @@ MI_boot <- function(RD_org_obj, imp_datasets, B = 1000, alpha = 0.01, boot_quant
 
   RD_org <- RD_org_obj$RD
   ind_incld <- RD_org_obj$ind_incld
-  ind_excld <- RD_org_obj$ind_ecld
+  ind_excld <- RD_org_obj$ind_excld
   invcov_sqrt <- RD_org_obj$invcov_sqrt
   cutoff_q <- 1 - alpha
 
