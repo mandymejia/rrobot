@@ -23,7 +23,7 @@ SHASH_to_normal <- function(x, mu, sigma, nu, tau){
   sigma <- exp(sigma)
   tau   <- exp(tau)
   
-  return(sinh((tau * asinh((x - mu)/ (sigma * tau))) - nu))
+  sinh((tau * asinh((x - mu)/ (sigma * tau))) - nu)
 }
 
 #' @describeIn SHASH_transform Transforms standard normal data back to SHASH-distributed scale.
@@ -38,7 +38,7 @@ normal_to_SHASH <- function(x, mu, sigma, nu, tau){
   sigma <- exp(sigma)
   tau   <- exp(tau)
   
-  return((sigma * tau * sinh((asinh(x) + nu) / tau)) + mu)
+  (sigma * tau * sinh((asinh(x) + nu) / tau)) + mu
 }
 
 #' SHASH-based Outlier Detection (Extended)
@@ -214,7 +214,7 @@ SHASH_out <- function(x,
     params          = params
   )
   class(out) <- "SHASH_out"
-  return(out)
+  out
 }
 
 #' Robust Empirical Rule Outlier Detection
@@ -246,7 +246,7 @@ emprule_rob <- function(x, thr = 4, symmetric = TRUE, use_huber = FALSE, upper_o
     out <- z < -thr | z > thr
   }
   
-  return(out)
+  out
 }
 
 

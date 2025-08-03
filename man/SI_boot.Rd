@@ -14,7 +14,7 @@ SI_boot(
 )
 }
 \arguments{
-\item{RD_org_obj}{A list from \code{comp_RD()} on the original data.}
+\item{RD_org_obj}{A list from \code{\link{comp_RD}} on the original data.}
 
 \item{imp_data}{A numeric matrix (T × Q) of single-imputed data.}
 

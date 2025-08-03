@@ -37,10 +37,10 @@ impTemp_univOut <- function(x, outlier_mask) {
   if (!is.numeric(imp_x)) stop("Imputed result contains non-numeric values.")
   
   # Step 4: Return structured output
-  return(list(
+  list(
     x_df     = as_tibble(NA_x, .name_repair = "unique"),
     NA_data  = NA_x,
     imp_data = imp_x,
     NA_locs  = NA_x_locs
-  ))
+  )
 }

@@ -76,7 +76,7 @@ comp_RD <- function(data_matrix, mode = c("auto", "manual"),
     RD <- NULL
   }
 
-  return(list(
+  list(
     ind_incld = ind_incld,
     ind_excld = ind_excld,
     h = h,
@@ -84,5 +84,5 @@ comp_RD <- function(data_matrix, mode = c("auto", "manual"),
     S_star = cov_mcd,
     invcov_sqrt = invcov_sqrt,
     RD = RD
-  ))
+  )
 }

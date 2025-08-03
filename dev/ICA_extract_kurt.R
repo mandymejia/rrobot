@@ -1,8 +1,8 @@
 #' Extract high and low kurtosis ICA components using fMRIscrub
 #'
-#' This function performs ICA projection on a multivariate time series matrix using `pscrub()` from the
-#' fMRIscrub package and separates high- and low-kurtosis components based on the
-#' `highkurt` indicator.
+#' This function performs ICA projection on a multivariate time series matrix using 
+#' \code{fMRiscrub::pscrub} and separates high- and low-kurtosis components based on the
+#' \code{highkurt} indicator.
 #'
 #' @param time_series A numeric matrix of dimension T × V (time × variables), where each column is a univariate time series.
 #'
@@ -35,9 +35,9 @@ ICA_extract_kurt <- function(time_series) {
   hk <- M[, highkurt_idx, drop = FALSE]
   lk <- M[, !highkurt_idx, drop = FALSE]
 
-  return(list(
+  list(
     hk = hk,
     lk = lk,
     highkurt = highkurt_idx
-  ))
+  )
 }

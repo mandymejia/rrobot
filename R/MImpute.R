@@ -82,8 +82,8 @@ MImpute <- function(x, w, outlier_matrix, M = 50, k = 100) {
     imp_datasets[[m]] <- x_imp
   }
 
-  return(list(
+  list(
     imp_datasets = imp_datasets,
     outlier_matrix = outlier_matrix
-  ))
+  )
 }

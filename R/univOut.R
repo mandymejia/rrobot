@@ -49,8 +49,9 @@ univOut <- function(hk_data, cutoff = 4, trans = c("SHASH", "robust-YJ", "robMAD
       outlier_matrix[ind_out, ii] <- TRUE
     }
   }
-  return(list(
+
+  list(
     outliers = outlier_matrix,
     method = trans
-  ))
+  )
 }
