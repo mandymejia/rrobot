@@ -23,7 +23,7 @@ SI_boot <- function(RD_org_obj, imp_data,
                     verbose = FALSE) {
 
   ind_incld <- RD_org_obj$ind_incld
-  ind_excld <- RD_org_obj$ind_ecld
+  ind_excld <- RD_org_obj$ind_excld
   n_time <- nrow(imp_data)
   invcov_sqrt <- RD_org_obj$invcov_sqrt
 
