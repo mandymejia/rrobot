@@ -14,7 +14,7 @@
 #'   \item{SI_threshold}{Numeric threshold based on the (1 - alpha) quantile of RD.}
 #' }
 #' @export
-SI <- function(RD_org_obj, imp_data, alpha = 0.01) {
+outlier_SI <- function(RD_org_obj, imp_data, alpha = 0.01) {
   cov_mcd <- RD_org_obj$S_star
   ind_incld <- RD_org_obj$ind_incld
 

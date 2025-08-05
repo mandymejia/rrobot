@@ -18,7 +18,7 @@
 #'   \item{UB_CI}{Upper bound of the confidence interval for the 99th quantiles.}
 #' }
 #' @export
-SI_boot <- function(RD_org_obj, imp_data,
+outlier_SI_boot <- function(RD_org_obj, imp_data,
                     B = 1000, alpha = 0.01, boot_quant = 0.95,
                     verbose = FALSE) {
 
@@ -63,9 +63,12 @@ SI_boot <- function(RD_org_obj, imp_data,
             round(LB_CI, 3), ", ", round(UB_CI, 3), "]")
   }
 
-  list(
+  result <- list(
     quant99 = quant99,
     LB_CI = LB_CI,
     UB_CI = UB_CI
   )
+
+  class(result) <- "SI_boot_result"
+  result
 }
