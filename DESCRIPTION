@@ -36,6 +36,7 @@ Imports:
     gamlss,
     imputeTS,
     isotree,
+    ggplot2,
     tidyr
 Remotes:
 Suggests: knitr, rmarkdown, testthat (>= 3.0.0)
