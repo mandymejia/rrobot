@@ -42,37 +42,40 @@ best_org <- RD_org_obj$ind_incld
 
 ###------ STEP 4: to obtain the threshold value for detecting outliers----------
 #--1---SI-----------------------------------------------------------------------
-SI_results <- SI(RD_org_obj = RD_org_obj
+SI_results <- outlier_SI(RD_org_obj = RD_org_obj
                  ,imp_data = imp_result$imp_data
                  ,alpha = 0.01)
 
 SI_results$SI_threshold
+summary(SI_results)
 
 #--2---SIBoot-------------------------------------------------------------------
-SI_boot_results <- SI_boot( RD_org_obj = RD_org_obj
+SI_boot_results <- outlier_SI_boot( RD_org_obj = RD_org_obj
                             ,imp_data = imp_result$imp_data
                             , B = 500, alpha = 0.01, boot_quant = 0.95,
                             verbose = TRUE)
 SI_boot_results$LB_CI
 SI_boot_results$UB_CI
+summary(SI_boot_results)
 
 #-----Multiple Imputation-------------------------------------------------------
-set.seed(2025) # or result <- future_lapply(1:5, function(i) rnorm(1), future.seed = 456 or TRUE)
+set.seed(2025) # or result <- future_lapply(1:5, function(i) rnorm(1), future.seed = 2025 or TRUE)
 multiple_imp <- MImpute( x = imp_result$imp_data,
                          w = kurt_data$lk,
                          outlier_matrix = out_result$outliers,
                          M = 5, k = 10)
 
 #--3---MI-----------------------------------------------------------------------
-MI_results <- MI(RD_org_obj = RD_org_obj
+MI_results <- outlier_MI(RD_org_obj = RD_org_obj
                  , imp_datasets = multiple_imp$imp_datasets
                  , alpha = 0.01)
 
 MI_results$thresholds        # vector of 99th percentiles (length M)
 MI_results$voted_outliers    # logical vector: TRUE if outlier in > M/2 imputations
+summary(MI_results)
 
 #--4---MI Boot-----------------------------------------------------------------------
-MI_boot_results <- MI_boot(
+MI_boot_results <- outlier_MI_boot(
   RD_org_obj   = RD_org_obj,                  # Output from comp_RD(hk_data, mode = "auto")
   imp_datasets = multiple_imp$imp_datasets,   # Multiply imputed datasets (from MImpute)
   B            = 500,                         # Number of bootstrap samples per imputation
@@ -86,11 +89,10 @@ MI_boot_results$final_threshold
 
 # See which time points were flagged as outliers
 which(MI_boot_results$flagged_outliers)
-
+summary(MI_boot_results)
 
 #----Hardin and Rocke-----------------------------------------------------------
-RD_org_obj <- comp_RD(data_matrix = hk_data, mode = "auto")
-HR_result <- Fit_F(Q = ncol(hk_data), n = nrow(hk_data), h = RD_org_obj$h, quantile = 0.01)
+HR_result <- outlier_F(Q = ncol(hk_data), n = nrow(hk_data), h = RD_org_obj$h, quantile = 0.01)
 
 HR_result$threshold
-
+summary(HR_result)

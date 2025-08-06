@@ -22,7 +22,7 @@
 #'   \item{flagged_outliers}{Logical vector of outliers based on final threshold.}
 #' }
 #' @export
-MI_boot <- function(RD_org_obj, imp_datasets, B = 1000, alpha = 0.01, boot_quant = 0.95, verbose = FALSE) {
+outlier_MI_boot <- function(RD_org_obj, imp_datasets, B = 1000, alpha = 0.01, boot_quant = 0.95, verbose = FALSE) {
   M <- length(imp_datasets)
   n_time <- length(RD_org_obj$RD)
   Q <- ncol(imp_datasets[[1]])
@@ -70,9 +70,13 @@ MI_boot <- function(RD_org_obj, imp_datasets, B = 1000, alpha = 0.01, boot_quant
   lb_ci <- quantile(thresholds_all, probs = 1 - boot_quant, na.rm = TRUE)
   flagged_outliers <- RD_org > lb_ci
 
-  list(
+  result <- list(
     thresholds_all = thresholds_all,
     final_threshold = unname(lb_ci),
     flagged_outliers = flagged_outliers
   )
+
+  class(result) <- "MI_boot_result"
+  result
+
 }

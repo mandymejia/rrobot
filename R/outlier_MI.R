@@ -18,7 +18,7 @@
 #' @importFrom stats quantile
 #' @importFrom expm sqrtm
 #' @export
-MI <- function(RD_org_obj, imp_datasets, alpha = 0.01) {
+outlier_MI <- function(RD_org_obj, imp_datasets, alpha = 0.01) {
   stopifnot(is.list(RD_org_obj), !is.null(RD_org_obj$RD), !is.null(RD_org_obj$S_star), !is.null(RD_org_obj$ind_incld))
   stopifnot(is.list(imp_datasets), length(imp_datasets) > 1)
 
