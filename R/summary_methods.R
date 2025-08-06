@@ -98,6 +98,3 @@ summary.F_result <- function(object, ...) {
   invisible(object)
 }
 
-# Alias for HR_result if you use that class name instead
-#' @export
-summary.HR_result <- summary.F_result
