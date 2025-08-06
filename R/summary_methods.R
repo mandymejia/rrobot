@@ -54,7 +54,7 @@ summary.MI_result <- function(object, ...) {
 
   cat("Voted outliers:", paste0(n_outliers, " (", pct_outliers, "%)"), "\n")
   majority_needed <- length(object$thresholds) %/% 2 + 1  # Integer division
-  cat("Voting rule: majority (≥", majority_needed, "out of", length(object$thresholds), "imputations)\n")
+  cat("Voting rule: majority (>=", majority_needed, "out of", length(object$thresholds), "imputations)\n")
   cat("\n")
 
   invisible(object)
