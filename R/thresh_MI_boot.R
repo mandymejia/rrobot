@@ -8,7 +8,7 @@
 #' This yields M × B threshold candidates. The lower bound of their (1 - boot_quant) confidence interval
 #' is used as the final threshold. This is applied to the RD of the original data.
 #'
-#' @param RD_org_obj A list output from \code{\link{comp_RD}} on the original hk_data.
+#' @param RD_org_obj A list output from \code{\link{RD}} on the original hk_data.
 #' @param imp_datasets A list of M numeric matrices (T × Q); multiply imputed datasets.
 #' @param B Number of bootstrap samples per imputed dataset (default = 1000).
 #' @param alpha Significance level for quantile thresholding (default = 0.01).
@@ -22,7 +22,7 @@
 #'   \item{flagged_outliers}{Logical vector of outliers based on final threshold.}
 #' }
 #' @export
-outlier_MI_boot <- function(RD_org_obj, imp_datasets, B = 1000, alpha = 0.01, boot_quant = 0.95, verbose = FALSE) {
+thresh_MI_boot <- function(RD_org_obj, imp_datasets, B = 1000, alpha = 0.01, boot_quant = 0.95, verbose = FALSE) {
   M <- length(imp_datasets)
   n_time <- length(RD_org_obj$RD)
   Q <- ncol(imp_datasets[[1]])

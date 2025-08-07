@@ -34,7 +34,7 @@ out_result <- univOut(hk_data = hk_data, cutoff = 4, trans = "SHASH")
 imp_result <- impTemp_univOut(x = hk_data, outlier_mask = out_result$outliers)
 
 ###------ STEP 3: to compute RD and related objects of kurt_data----------------
-RD_org_obj <- comp_RD(data_matrix = hk_data, mode = "auto")
+RD_org_obj <- RD(data_matrix = hk_data, mode = "auto")
 
 str(RD_org_obj)
 RD_org <- RD_org_obj$RD
@@ -42,7 +42,7 @@ best_org <- RD_org_obj$ind_incld
 
 ###------ STEP 4: to obtain the threshold value for detecting outliers----------
 #--1---SI-----------------------------------------------------------------------
-SI_results <- outlier_SI(RD_org_obj = RD_org_obj
+SI_results <- thresh_SI(RD_org_obj = RD_org_obj
                  ,imp_data = imp_result$imp_data
                  ,alpha = 0.01)
 
@@ -50,7 +50,7 @@ SI_results$SI_threshold
 summary(SI_results)
 
 #--2---SIBoot-------------------------------------------------------------------
-SI_boot_results <- outlier_SI_boot( RD_org_obj = RD_org_obj
+SI_boot_results <- thresh_SI_boot( RD_org_obj = RD_org_obj
                             ,imp_data = imp_result$imp_data
                             , B = 500, alpha = 0.01, boot_quant = 0.95,
                             verbose = TRUE)
@@ -66,7 +66,7 @@ multiple_imp <- MImpute( x = imp_result$imp_data,
                          M = 5, k = 10)
 
 #--3---MI-----------------------------------------------------------------------
-MI_results <- outlier_MI(RD_org_obj = RD_org_obj
+MI_results <- thresh_MI(RD_org_obj = RD_org_obj
                  , imp_datasets = multiple_imp$imp_datasets
                  , alpha = 0.01)
 
@@ -75,8 +75,8 @@ MI_results$voted_outliers    # logical vector: TRUE if outlier in > M/2 imputati
 summary(MI_results)
 
 #--4---MI Boot-----------------------------------------------------------------------
-MI_boot_results <- outlier_MI_boot(
-  RD_org_obj   = RD_org_obj,                  # Output from comp_RD(hk_data, mode = "auto")
+MI_boot_results <- thresh_MI_boot(
+  RD_org_obj   = RD_org_obj,                  # Output from RD(hk_data, mode = "auto")
   imp_datasets = multiple_imp$imp_datasets,   # Multiply imputed datasets (from MImpute)
   B            = 500,                         # Number of bootstrap samples per imputation
   alpha        = 0.01,                        # 99th percentile cutoff
@@ -92,7 +92,7 @@ which(MI_boot_results$flagged_outliers)
 summary(MI_boot_results)
 
 #----Hardin and Rocke-----------------------------------------------------------
-HR_result <- outlier_F(Q = ncol(hk_data), n = nrow(hk_data), h = RD_org_obj$h, quantile = 0.01)
+HR_result <- thresh_F(Q = ncol(hk_data), n = nrow(hk_data), h = RD_org_obj$h, quantile = 0.01)
 
 HR_result$threshold
 summary(HR_result)

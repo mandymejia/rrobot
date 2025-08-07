@@ -4,22 +4,22 @@
 #' using the robust covariance from the original data (via RD_org_obj) and
 #' recomputed mean from the imputed data.
 #'
-#' @param RD_org_obj A list from \code{\link{comp_RD}} containing original RD, S_star, ind_incld.
+#' @param RD_org_obj A list from \code{\link{RD}} containing original RD, S_star, ind_incld.
 #' @param imp_data A numeric matrix (T × Q) of imputed data.
 #' @param alpha Significance level for thresholding (e.g., 0.01 for 99th percentile).
 #'
 #' @return A list with:
 #' \describe{
-#'   \item{SI_obj}{A list from \code{\link{comp_RD}} containing robust distances.}
+#'   \item{SI_obj}{A list from \code{\link{RD}} containing robust distances.}
 #'   \item{SI_threshold}{Numeric threshold based on the (1 - alpha) quantile of RD.}
 #' }
 #' @export
-outlier_SI <- function(RD_org_obj, imp_data, alpha = 0.01) {
+thresh_SI <- function(RD_org_obj, imp_data, alpha = 0.01) {
   cov_mcd <- RD_org_obj$S_star
   ind_incld <- RD_org_obj$ind_incld
 
   # Compute robust distances using fixed covariance, recomputed mean
-  SI_obj <- comp_RD(
+  SI_obj <- RD(
     data_matrix = imp_data,
     mode = "manual",
     cov_mcd = cov_mcd,

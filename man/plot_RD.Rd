@@ -2,44 +2,41 @@
 % Please edit documentation in R/plot_RD.R
 \name{plot_RD}
 \alias{plot_RD}
-\title{Plot Robust Distances and HR Thresholds for One or Multiple Datasets}
+\title{Plot Robust Mahalanobis distances and theoretical threshold from F-distribution}
 \usage{
 plot_RD(
   data_list,
   alpha = 0.01,
-  HR = NULL,
-  n_rep = 1000,
-  label_map = NULL,
-  binwidth = 0.1
+  binwidth = 0.1,
+  log = FALSE,
+  show_f_density = TRUE
 )
 }
 \arguments{
 \item{data_list}{A numeric matrix (T × Q), or a named list of such matrices. Each matrix should contain multivariate observations.}
 
-\item{alpha}{Numeric in (0, 1). The quantile level used to compute the HR threshold via \code{\link{outlier_F}} if \code{HR} is not provided. Default is 0.01.}
-
-\item{HR}{Optional numeric vector of threshold(s) for robust distances. If \code{NULL} (default), the threshold is computed via \code{\link{outlier_F}} for each dataset. If a single value is provided, it will be applied to all datasets. If a named vector is provided, names must match dataset names.}
-
-\item{n_rep}{Integer. Number of repetitions used to estimate the mean false positive rate (FPR) by recomputing the RD and comparing to the threshold. Default is 1000.}
-
-\item{label_map}{Optional named character vector to override facet labels. For example, \code{c("Gaussian" = "N(0,1)", "Skewed" = "Gamma(5,1)")} will relabel facet strips.}
+\item{alpha}{Numeric in (0, 1). The quantile level used to compute the threshold via \code{\link{thresh_F}}. Default is 0.01.}
 
 \item{binwidth}{Bin width for the histogram of robust distances. Default is 0.1.}
+
+\item{log}{Logical. If TRUE, applies log1p() transformation to the x-axis. Default is FALSE.}
+
+\item{show_f_density}{Logical. If \code{TRUE}, overlay a scaled F-distribution density curve. Default \code{TRUE}.}
 }
 \value{
 A \code{ggplot} object that includes:
 \itemize{
 \item Histogram of robust distances by inclusion status (included vs. excluded)
-\item Optional F-distribution density curve (if \code{HR} is \code{NULL})
-\item Vertical dashed line for the supplied or computed threshold
-\item FPR annotation per dataset panel
+\item Scaled F-distribution density curve
+\item Vertical dashed line for the computed threshold
+\item Optional F(α) annotation next to the threshold
 }
 }
 \description{
-Generates histogram(s) of squared robust Mahalanobis distances computed from robust covariance estimates.
-Overlays vertical threshold lines (e.g., HR threshold) and, optionally, F-distribution curves derived from Hotelling’s T² theory.
-Works with either a single dataset or a list of datasets.
+Generates histogram(s) of squared robust Mahalanobis distances from robust covariance estimates.
+Overlays vertical threshold lines (computed via \code{\link{thresh_F}}) and a scaled F-distribution curve.
+Optionally applies log-scaling to the x-axis for better visualization of heavy-tailed data.
 }
 \seealso{
-\code{\link{comp_RD}}, \code{\link{outlier_F}}
+\code{\link{RD}}, \code{\link{thresh_F}}
 }

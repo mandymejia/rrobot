@@ -21,7 +21,7 @@ test_that("SI method gives consistent results", {
   reference <- readRDS(system.file("fixtures", "SI_reference.rds", package = "rrobot"))
 
   # Run SI method
-  result <- outlier_SI(RD_org_obj = setup_data$RD_org_obj,
+  result <- thresh_SI(RD_org_obj = setup_data$RD_org_obj,
                imp_data = setup_data$imp_result$imp_data,
                alpha = 0.01)
 
@@ -35,7 +35,7 @@ test_that("Hardin-Rocke method gives consistent results", {
   setup_data <- readRDS(system.file("fixtures", "test_setup_data.rds", package = "rrobot"))
   reference <- readRDS(system.file("fixtures", "HR_reference.rds", package = "rrobot"))
 
-  result <- outlier_F(Q = ncol(setup_data$hk_data),
+  result <- thresh_F(Q = ncol(setup_data$hk_data),
                   n = nrow(setup_data$hk_data),
                   h = setup_data$RD_org_obj$h,
                   quantile = 0.01)
@@ -55,7 +55,7 @@ test_that("SI_boot method gives consistent results", {
 
   # Set seed for reproducible bootstrap
   set.seed(2025)
-  result <- outlier_SI_boot(RD_org_obj = setup_data$RD_org_obj,
+  result <- thresh_SI_boot(RD_org_obj = setup_data$RD_org_obj,
                     imp_data = setup_data$imp_result$imp_data,
                     B = 50, alpha = 0.01, boot_quant = 0.95,
                     verbose = FALSE)
@@ -86,7 +86,7 @@ test_that("MI method gives consistent results", {
                             M = 3, k = 5)
   })
 
-  result <- outlier_MI(RD_org_obj = setup_data$RD_org_obj,
+  result <- thresh_MI(RD_org_obj = setup_data$RD_org_obj,
                imp_datasets = multiple_imp$imp_datasets,
                alpha = 0.01)
 

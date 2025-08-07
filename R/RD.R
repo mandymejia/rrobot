@@ -26,7 +26,7 @@
 #' @importFrom robustbase covMcd
 #' @importFrom stats cov
 #' @export
-comp_RD <- function(data_matrix, mode = c("auto", "manual"),
+RD <- function(data_matrix, mode = c("auto", "manual"),
                     cov_mcd = NULL, ind_incld = NULL, dist = TRUE) {
   mode <- match.arg(mode)
   data_matrix <- as.matrix(data_matrix)
@@ -76,7 +76,7 @@ comp_RD <- function(data_matrix, mode = c("auto", "manual"),
     RD <- NULL
   }
 
-  list(
+  result <- list(
     ind_incld = ind_incld,
     ind_excld = ind_excld,
     h = h,
@@ -85,4 +85,7 @@ comp_RD <- function(data_matrix, mode = c("auto", "manual"),
     invcov_sqrt = invcov_sqrt,
     RD = RD
   )
+
+  class(result) <- "RD_result"
+  result
 }
