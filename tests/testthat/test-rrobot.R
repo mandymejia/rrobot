@@ -21,7 +21,7 @@ test_that("SI method gives consistent results", {
   reference <- readRDS(system.file("fixtures", "SI_reference.rds", package = "rrobot"))
 
   # Run SI method
-  result <- outlier_SI(RD_org_obj = setup_data$RD_org_obj,
+  result <- thresh_SI(RD_org_obj = setup_data$RD_org_obj,
                imp_data = setup_data$imp_result$imp_data,
                alpha = 0.01)
 
@@ -35,7 +35,7 @@ test_that("Hardin-Rocke method gives consistent results", {
   setup_data <- readRDS(system.file("fixtures", "test_setup_data.rds", package = "rrobot"))
   reference <- readRDS(system.file("fixtures", "HR_reference.rds", package = "rrobot"))
 
-  result <- outlier_F(Q = ncol(setup_data$hk_data),
+  result <- thresh_F(Q = ncol(setup_data$hk_data),
                   n = nrow(setup_data$hk_data),
                   h = setup_data$RD_org_obj$h,
                   quantile = 0.01)
@@ -55,7 +55,7 @@ test_that("SI_boot method gives consistent results", {
 
   # Set seed for reproducible bootstrap
   set.seed(2025)
-  result <- outlier_SI_boot(RD_org_obj = setup_data$RD_org_obj,
+  result <- thresh_SI_boot(RD_org_obj = setup_data$RD_org_obj,
                     imp_data = setup_data$imp_result$imp_data,
                     B = 50, alpha = 0.01, boot_quant = 0.95,
                     verbose = FALSE)
@@ -86,7 +86,7 @@ test_that("MI method gives consistent results", {
                             M = 3, k = 5)
   })
 
-  result <- outlier_MI(RD_org_obj = setup_data$RD_org_obj,
+  result <- thresh_MI(RD_org_obj = setup_data$RD_org_obj,
                imp_datasets = multiple_imp$imp_datasets,
                alpha = 0.01)
 
@@ -98,4 +98,67 @@ test_that("MI method gives consistent results", {
   expect_type(result$voted_outliers, "logical")
   expect_length(result$voted_outliers, length(reference$MI_results$voted_outliers))
   expect_gte(sum(result$voted_outliers), 0)  # Non-negative outlier count
+})
+
+test_that("threshold_RD 'all' method gives consistent results", {
+  skip_on_ci()  # Skip on CI due to bootstrap randomness in MI methods
+
+  # Load test setup data
+  setup_data <- readRDS(system.file("fixtures", "test_setup_data.rds", package = "rrobot"))
+
+  # Load reference results for comparison
+  SI_ref <- readRDS(system.file("fixtures", "SI_reference.rds", package = "rrobot"))
+  HR_ref <- readRDS(system.file("fixtures", "HR_reference.rds", package = "rrobot"))
+  SI_boot_ref <- readRDS(system.file("fixtures", "SI_boot_reference.rds", package = "rrobot"))
+  MI_ref <- readRDS(system.file("fixtures", "MI_reference.rds", package = "rrobot"))
+
+  # Set seed for reproducible results
+  set.seed(2025)
+
+  # Run threshold_RD with "all" method
+  suppressWarnings({
+    result <- threshold_RD(x = setup_data$hk_data,
+                           w = setup_data$kurt_data$lk,
+                           threshold_method = "all",
+                           M = 3, k = 5, B = 50,  # Reduced for faster testing
+                           alpha = 0.01,
+                           cutoff = 4,
+                           trans = "SHASH",
+                           quantile = 0.01,
+                           verbose = FALSE)
+  })
+
+  # Test structure of results
+  expect_type(result, "list")
+  expect_named(result, c("SI", "SI_boot", "MI", "MI_boot", "F"))
+
+  # Test SI method matches reference
+  expect_equal(result$SI$SI_threshold, SI_ref$SI_threshold, tolerance = 1e-10)
+
+  # Test F method matches reference
+  expect_equal(result$F$threshold, HR_ref$threshold, tolerance = 1e-10)
+  expect_equal(result$F$scale, HR_ref$scale, tolerance = 1e-10)
+
+  # Test SI_boot method (looser tolerance due to bootstrap)
+  expect_equal(result$SI_boot$LB_CI, SI_boot_ref$LB_CI, tolerance = 5)
+  expect_equal(result$SI_boot$UB_CI, SI_boot_ref$UB_CI, tolerance = 5)
+  expect_length(result$SI_boot$quant99, 50)
+
+  # Test MI method (looser tolerance due to stochastic nature)
+  expect_length(result$MI$thresholds, 3)  # Should have 3 thresholds (M=3)
+  expect_type(result$MI$voted_outliers, "logical")
+  expect_length(result$MI$voted_outliers, length(setup_data$hk_data[,1]))
+
+  # Test MI_boot method
+  expect_type(result$MI_boot$final_threshold, "double")
+  expect_length(result$MI_boot$final_threshold, 1)
+  expect_type(result$MI_boot$flagged_outliers, "logical")
+  expect_length(result$MI_boot$flagged_outliers, length(setup_data$hk_data[,1]))
+
+  # Test that all methods return reasonable positive thresholds
+  expect_gt(result$SI$SI_threshold, 0)
+  expect_gt(result$F$threshold, 0)
+  expect_gt(result$SI_boot$LB_CI, 0)
+  expect_gt(result$MI_boot$final_threshold, 0)
+  expect_true(all(result$MI$thresholds > 0))
 })

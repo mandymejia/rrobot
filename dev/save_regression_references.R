@@ -23,7 +23,7 @@ kurt_data <- ICA_extract_kurt(time_series = data_matrix)
 hk_data <- kurt_data$hk
 out_result <- univOut(hk_data = hk_data, cutoff = 4, trans = "SHASH")
 imp_result <- impTemp_univOut(x = hk_data, outlier_mask = out_result$outliers)
-RD_org_obj <- comp_RD(data_matrix = hk_data, mode = "auto")
+RD_org_obj <- RD(data_matrix = hk_data, mode = "auto")
 
 # Save the setup data needed for all tests
 saveRDS(list(

@@ -1,4 +1,4 @@
-# File: outlier_F.R
+# File: thresh_F.R
 
 #' Fit F-distribution Parameters for MCD-based Robust Distances
 #'
@@ -26,7 +26,7 @@
 #'
 #' @importFrom stats pchisq qchisq qf
 #' @export
-outlier_F <- function(Q, n, h, quantile) {
+thresh_F <- function(Q, n, h, quantile) {
   # Step 1: consistency correction factor
   c <- pchisq(q = qchisq(p = h / n, df = Q), df = Q + 2) / (h / n)
 

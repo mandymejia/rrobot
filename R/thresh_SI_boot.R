@@ -4,7 +4,7 @@
 #' followed by bootstrap resampling over clean (included) indices. Returns the confidence interval
 #' bounds of the bootstrapped 99th percentiles.
 #'
-#' @param RD_org_obj A list from \code{\link{comp_RD}} on the original data.
+#' @param RD_org_obj A list from \code{\link{RD}} on the original data.
 #' @param imp_data A numeric matrix (T × Q) of single-imputed data.
 #' @param B Integer; number of bootstrap resamples (default = 1000).
 #' @param alpha Significance level for quantile thresholding (default = 0.01).
@@ -18,7 +18,7 @@
 #'   \item{UB_CI}{Upper bound of the confidence interval for the 99th quantiles.}
 #' }
 #' @export
-outlier_SI_boot <- function(RD_org_obj, imp_data,
+thresh_SI_boot <- function(RD_org_obj, imp_data,
                     B = 1000, alpha = 0.01, boot_quant = 0.95,
                     verbose = FALSE) {
 
