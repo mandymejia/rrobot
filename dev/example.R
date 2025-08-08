@@ -96,3 +96,23 @@ HR_result <- thresh_F(Q = ncol(hk_data), n = nrow(hk_data), h = RD_org_obj$h, qu
 
 HR_result$threshold
 summary(HR_result)
+
+
+###################
+## NEW WRAPPER   #
+##################
+data_matrix <- fMRIscrub::Dat1
+kurt_data <- ICA_extract_kurt(time_series = data_matrix)
+hk_data <- kurt_data$hk
+all_results <- threshold_RD(x = hk_data,
+                            w = kurt_data$lk,
+                            threshold_method = "all",
+                            M = 5,
+                            k = 10,
+                            B = 500,
+                            alpha = 0.01,
+                            boot_quant = 0.95,
+                            verbose = TRUE,
+                            cutoff = 4,
+                            trans = "SHASH",
+                            quantile = 0.01)

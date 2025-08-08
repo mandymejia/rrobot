@@ -2,40 +2,64 @@
 % Please edit documentation in R/threshold_RD.R
 \name{threshold_RD}
 \alias{threshold_RD}
-\title{Apply Outlier Detection Thresholding Methods}
+\title{Comprehensive Outlier Detection Using Robust Distance Thresholding}
 \usage{
 threshold_RD(
-  name = NULL,
-  data_matrix,
-  alpha = 0.01,
-  B = 1000,
-  M = 100,
-  k = 200,
+  x,
+  w = NULL,
+  threshold_method = c("all", "SI", "SI_boot", "MI", "MI_boot", "F"),
+  RD_obj = NULL,
+  mode = "auto",
+  cov_mcd = NULL,
+  ind_incld = NULL,
+  dist = TRUE,
+  cutoff = 4,
   trans = "SHASH",
-  cutoff = 3
+  M = 50,
+  k = 100,
+  alpha = 0.01,
+  quantile = 0.01,
+  verbose = FALSE,
+  boot_quant = 0.95,
+  B = 1000
 )
 }
 \arguments{
-\item{name}{Optional label for logging.}
+\item{x}{A numeric matrix or data frame of dimensions T × Q (observations × variables).}
 
-\item{data_matrix}{T × V fMRI time series matrix.}
+\item{w}{A numeric matrix (n_time × L) of low-kurtosis ICA components used as predictors.}
 
-\item{alpha}{Quantile level for thresholding (default = 0.01).}
+\item{threshold_method}{Character string specifying threshold method: "all", "SI", "SI_boot", "MI", "MI_boot", or "F".}
 
-\item{B}{Number of bootstrap samples (default = 1000).}
+\item{RD_obj}{Optional pre-computed RD object from RD() function. If NULL, will compute RD internally.}
 
-\item{M}{Number of multiply imputed datasets (default = 50).}
+\item{mode}{Character string; either "auto" (default) to compute MCD internally or "manual" to use user-supplied values.}
 
-\item{k}{Number of perturbation cycles per imputation (default = 100).}
+\item{cov_mcd}{Optional covariance matrix (Q × Q); required in "manual" mode.}
 
-\item{trans}{Character; transformation method for outlier detection (default = "SHASH").}
+\item{ind_incld}{Optional vector of row indices used to compute the robust mean; required in "manual" mode.}
 
-\item{cutoff}{Numeric; MAD-based outlier cutoff (default = 3).}
-}
-\value{
-A list containing threshold values and intermediate diagnostics.
+\item{dist}{Logical; if TRUE, compute squared robust Mahalanobis distances for all observations.}
+
+\item{cutoff}{A numeric value indicating how many MADs away from the median to flag as outliers. The default value is set to be 4.}
+
+\item{trans}{Character string. One of "SHASH", "robust-YJ", or "robMAD".}
+
+\item{M}{Number of multiply imputed datasets (default = 5).}
+
+\item{k}{Number of perturbation cycles per imputation (default = 10).}
+
+\item{alpha}{Significance level for threshold computation (default = 0.01).}
+
+\item{quantile}{Numeric in (0,1) specifying the upper quantile for thresholding.}
+
+\item{verbose}{Logical; if TRUE, print progress messages.}
+
+\item{boot_quant}{Confidence level for CI (default = 0.95).}
+
+\item{B}{Number of bootstrap samples per imputation (default = 1000).}
 }
 \description{
-Applies five robust thresholding methods (HR, SI, SI_boot, MI, MI_boot)
-after ICA-based univariate outlier detection and imputation.
+Performs complete outlier detection workflow including univariate outlier detection,
+imputation, robust distance computation, and threshold estimation using various methods.
 }
