@@ -17,7 +17,7 @@ source(here::here("dev", "ICA_extract_kurt.R"))
 # ABIDE
 data_matrix <- fMRIscrub::Dat1
 kurt_data <- ICA_extract_kurt(time_series = data_matrix)
-plot_RD(kurt_data$hk, log = TRUE, show_f_density = FALSE)
+plot_RD(kurt_data$hk, log = TRUE, show_f_density = TRUE)
 
 
 # Random

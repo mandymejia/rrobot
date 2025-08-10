@@ -63,7 +63,7 @@ RD(
 Depends on threshold_method:
 \describe{
 \item{Single method}{Returns the result from the specific threshold method.}
-\item{"all"}{Returns a list with results from all threshold methods.}
+\item{call}{The matched function call.}
 }
 }
 \description{
