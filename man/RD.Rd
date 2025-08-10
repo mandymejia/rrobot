@@ -63,6 +63,7 @@ RD(
 Depends on threshold_method:
 \describe{
 \item{Single method}{Returns the result from the specific threshold method.}
+\item{RD_obj}{The robust distance object from compute_RD().}
 \item{call}{The matched function call.}
 }
 }

@@ -34,7 +34,7 @@ out_result <- univOut(x = hk_data, cutoff = 4, method = "SHASH")
 imp_result <- impute_univOut(x = hk_data, method = "mean", outlier_mask = out_result$outliers)
 
 ###------ STEP 3: to compute RD and related objects of kurt_data----------------
-RD_org_obj <- compute_RD(data_matrix = hk_data, mode = "auto")
+RD_org_obj <- compute_RD(x = hk_data, mode = "auto")
 
 str(RD_org_obj)
 RD_org <- RD_org_obj$RD
