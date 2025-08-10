@@ -23,3 +23,24 @@ plot_RD(kurt_data$hk, log = TRUE, show_f_density = TRUE)
 # Random
 norm_dat = mvrnorm(500, mu = rep(0, 5), Sigma = diag(5))
 plot_RD(norm_dat)
+
+
+###############################################################################
+# RE-FACTORED FOR S3                                                          #
+###############################################################################
+#########################################
+# Method: F                             #
+#########################################
+data_matrix <- fMRIscrub::Dat1
+kurt_data <- ICA_extract_kurt(time_series = data_matrix)
+
+result_F <- RD(x = kurt_data$hk,
+               threshold_method = "F",
+               mode = "auto",
+               quantile = 0.01)
+
+RD_obj <- compute_RD(x = kurt_data$hk, mode = "auto")
+result_F_thresh <- threshold_RD(x = kurt_data$hk,
+                                threshold_method = "F",
+                                RD_obj = RD_obj,
+                                quantile = 0.01)
