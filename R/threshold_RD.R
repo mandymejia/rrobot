@@ -21,6 +21,7 @@
 #' \describe{
 #'   \item{Single method}{Returns the result from the specific threshold method.}
 #'   \item{"all"}{Returns a list with results from all threshold methods.}
+#'   \item{RD_obj}{The robust distance object from compute_RD().}
 #' }
 #'
 #' @export
@@ -76,6 +77,11 @@ threshold_RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_
                    )
   )
 
+
+  result <- list(
+    thresholds = result,
+    RD_obj = RD_obj
+  )
 
   result
 }

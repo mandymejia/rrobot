@@ -102,20 +102,16 @@ test_that("MI method gives consistent results", {
 
 test_that("threshold_RD 'all' method gives consistent results", {
   skip_on_ci()  # Skip on CI due to bootstrap randomness in MI methods
-
   # Load test setup data
   setup_data <- readRDS(system.file("fixtures", "test_setup_data.rds", package = "rrobot"))
-
   # Load reference results for comparison
   SI_ref <- readRDS(system.file("fixtures", "SI_reference.rds", package = "rrobot"))
   HR_ref <- readRDS(system.file("fixtures", "HR_reference.rds", package = "rrobot"))
   SI_boot_ref <- readRDS(system.file("fixtures", "SI_boot_reference.rds", package = "rrobot"))
   MI_ref <- readRDS(system.file("fixtures", "MI_reference.rds", package = "rrobot"))
-
   # Set seed for reproducible results
   set.seed(2025)
   RD_obj <- compute_RD(x = setup_data$hk_data, mode = "auto")
-
   # Run threshold_RD with "all" method
   suppressWarnings({
     result <- threshold_RD(x = setup_data$hk_data,
@@ -130,49 +126,49 @@ test_that("threshold_RD 'all' method gives consistent results", {
                            quantile = 0.01,
                            verbose = FALSE)
   })
-
   # Test structure of results
   expect_type(result, "list")
-  expect_named(result, c("SI", "SI_boot", "MI", "MI_boot", "F"))
+  expect_named(result, c("thresholds", "RD_obj"))
+  expect_named(result$thresholds, c("SI", "SI_boot", "MI", "MI_boot", "F"))
 
   # Test SI method matches reference
-  expect_equal(result$SI$SI_threshold, SI_ref$SI_threshold, tolerance = 1e-10)
+  expect_equal(result$thresholds$SI$SI_threshold, SI_ref$SI_threshold, tolerance = 1e-10)
 
   # Test F method matches reference
-  expect_equal(result$F$threshold, HR_ref$threshold, tolerance = 1e-10)
-  expect_equal(result$F$scale, HR_ref$scale, tolerance = 1e-10)
+  expect_equal(result$thresholds$F$threshold, HR_ref$threshold, tolerance = 1e-10)
+  expect_equal(result$thresholds$F$scale, HR_ref$scale, tolerance = 1e-10)
 
   # Test SI_boot method (looser tolerance due to bootstrap)
-  expect_equal(result$SI_boot$LB_CI, SI_boot_ref$LB_CI, tolerance = 5)
-  expect_equal(result$SI_boot$UB_CI, SI_boot_ref$UB_CI, tolerance = 5)
-  expect_length(result$SI_boot$quant99, 50)
+  expect_equal(result$thresholds$SI_boot$LB_CI, SI_boot_ref$LB_CI, tolerance = 5)
+  expect_equal(result$thresholds$SI_boot$UB_CI, SI_boot_ref$UB_CI, tolerance = 5)
+  expect_length(result$thresholds$SI_boot$quant99, 50)
 
   # Test MI method (looser tolerance due to stochastic nature)
-  expect_length(result$MI$thresholds, 3)  # Should have 3 thresholds (M=3)
-  expect_type(result$MI$voted_outliers, "logical")
-  expect_length(result$MI$voted_outliers, length(setup_data$hk_data[,1]))
+  expect_length(result$thresholds$MI$thresholds, 3)  # Should have 3 thresholds (M=3)
+  expect_type(result$thresholds$MI$voted_outliers, "logical")
+  expect_length(result$thresholds$MI$voted_outliers, length(setup_data$hk_data[,1]))
 
   # Test MI_boot method
-  expect_type(result$MI_boot$final_threshold, "double")
-  expect_length(result$MI_boot$final_threshold, 1)
-  expect_type(result$MI_boot$flagged_outliers, "logical")
-  expect_length(result$MI_boot$flagged_outliers, length(setup_data$hk_data[,1]))
+  expect_type(result$thresholds$MI_boot$final_threshold, "double")
+  expect_length(result$thresholds$MI_boot$final_threshold, 1)
+  expect_type(result$thresholds$MI_boot$flagged_outliers, "logical")
+  expect_length(result$thresholds$MI_boot$flagged_outliers, length(setup_data$hk_data[,1]))
 
   # Test that all methods return reasonable positive thresholds
-  expect_gt(result$SI$SI_threshold, 0)
-  expect_gt(result$F$threshold, 0)
-  expect_gt(result$SI_boot$LB_CI, 0)
-  expect_gt(result$MI_boot$final_threshold, 0)
-  expect_true(all(result$MI$thresholds > 0))
+  expect_gt(result$thresholds$SI$SI_threshold, 0)
+  expect_gt(result$thresholds$F$threshold, 0)
+  expect_gt(result$thresholds$SI_boot$LB_CI, 0)
+  expect_gt(result$thresholds$MI_boot$final_threshold, 0)
+  expect_true(all(result$thresholds$MI$thresholds > 0))
+
+  # Test RD_obj structure
+  expect_s3_class(result$RD_obj, "RD_result")
 })
 
 test_that("RD method gives consistent results", {
   skip_on_ci()  # Skip on CI due to bootstrap randomness
-
   setup_data <- readRDS(system.file("fixtures", "test_setup_data.rds", package = "rrobot"))
-
   set.seed(2025)
-
   suppressWarnings({
     result <- RD(x = setup_data$hk_data,
                  w = setup_data$kurt_data$lk,
@@ -182,12 +178,15 @@ test_that("RD method gives consistent results", {
                  impute_method = "interp",
                  trans = "SHASH")
   })
-
-  # Test structure
+  # Test structure - RD() doesn't return RD_obj anymore
   expect_type(result, "list")
-  expect_named(result, c("RD_obj", "thresholds", "call"))
+  expect_named(result, c("thresholds", "RD_obj", "call"))
   expect_s3_class(result, "RD")
 
-  # Test RD_obj structure
+  # Test that thresholds contains the RD_obj
   expect_s3_class(result$RD_obj, "RD_result")
+
+  # Test that call is captured
+  expect_true(is.call(result$call))
 })
+
