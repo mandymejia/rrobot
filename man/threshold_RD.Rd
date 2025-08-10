@@ -51,11 +51,11 @@ threshold_RD(
 \item{B}{Integer; number of bootstrap samples.}
 }
 \value{
-Depends on threshold_method:
+A list with:
 \describe{
-\item{Single method}{Returns the result from the specific threshold method.}
-\item{"all"}{Returns a list with results from all threshold methods.}
+\item{thresholds}{Result from the specific threshold method, or list of all methods if "all".}
 \item{RD_obj}{The robust distance object from compute_RD().}
+\item{call}{The matched function call.}
 }
 }
 \description{

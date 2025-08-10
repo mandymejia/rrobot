@@ -17,11 +17,11 @@
 #' @param boot_quant Numeric; confidence level for bootstrap confidence intervals.
 #' @param B Integer; number of bootstrap samples.
 #'
-#' @return Depends on threshold_method:
+#' @return A list with:
 #' \describe{
-#'   \item{Single method}{Returns the result from the specific threshold method.}
-#'   \item{"all"}{Returns a list with results from all threshold methods.}
+#'   \item{thresholds}{Result from the specific threshold method, or list of all methods if "all".}
 #'   \item{RD_obj}{The robust distance object from compute_RD().}
+#'   \item{call}{The matched function call.}
 #' }
 #'
 #' @export
@@ -40,6 +40,7 @@ threshold_RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_
                                      verbose = FALSE,
                                      boot_quant = 0.95,
                                      B = 1000) {
+  call <- match.call()
   threshold_method <- match.arg(threshold_method)
 
   # Data pre-processing
@@ -53,7 +54,7 @@ threshold_RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_
     multiple_imp <- MImpute(x = imp_result$imp_data, w = w, outlier_matrix = out_result$outliers, M = M, k = k)
   }
 
-  result <- switch(threshold_method,
+  thresholds <- switch(threshold_method,
                    "SI" = thresh_SI(RD_org_obj = RD_obj, imp_data = imp_result$imp_data, alpha = alpha),
 
                    "SI_boot" = thresh_SI_boot(RD_org_obj = RD_obj, imp_data = imp_result$imp_data,
@@ -79,9 +80,11 @@ threshold_RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_
 
 
   result <- list(
-    thresholds = result,
-    RD_obj = RD_obj
+    thresholds = thresholds,
+    RD_obj = RD_obj,
+    call = call
   )
 
+  class(result) <- "RD"
   result
 }
