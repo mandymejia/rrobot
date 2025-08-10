@@ -2,44 +2,70 @@
 % Please edit documentation in R/RD.R
 \name{RD}
 \alias{RD}
-\title{Compute Robust Distance and Covariance from a Subset}
+\title{Comprehensive Outlier Detection Using Robust Distance Thresholding}
 \usage{
 RD(
-  data_matrix,
-  mode = c("auto", "manual"),
+  x,
+  w = NULL,
+  threshold_method = c("SI_boot", "MI", "MI_boot", "SI", "F"),
+  mode = "auto",
   cov_mcd = NULL,
   ind_incld = NULL,
-  dist = TRUE
+  dist = TRUE,
+  impute_method = "mean",
+  cutoff = 4,
+  trans = "SHASH",
+  M = 50,
+  k = 100,
+  alpha = 0.01,
+  quantile = 0.01,
+  verbose = FALSE,
+  boot_quant = 0.95,
+  B = 1000
 )
 }
 \arguments{
-\item{data_matrix}{A numeric matrix or data frame of dimensions T × Q (observations × variables).}
+\item{x}{A numeric matrix or data frame of dimensions T × Q.}
 
-\item{mode}{Character string; either "auto" (default) to compute MCD internally or "manual" to use user-supplied values.}
+\item{w}{A numeric matrix (n_time × L) of low-kurtosis predictors (optional).}
+
+\item{threshold_method}{Character string; one of "all","SI","SI_boot","MI","MI_boot","F".}
+
+\item{mode}{Character string; either "auto" or "manual" for robust covariance computation.}
 
 \item{cov_mcd}{Optional covariance matrix (Q × Q); required in "manual" mode.}
 
-\item{ind_incld}{Optional vector of row indices used to compute the robust mean; required in "manual" mode.}
+\item{ind_incld}{Optional vector of row indices; required in "manual" mode.}
 
-\item{dist}{Logical; if TRUE, compute squared robust Mahalanobis distances for all observations.}
+\item{dist}{Logical; if TRUE, compute squared robust distances.}
+
+\item{impute_method}{Character string; imputation method for univariate outliers.}
+
+\item{cutoff}{Numeric; threshold multiplier for univariate outlier detection.}
+
+\item{trans}{Character string; transformation method, one of "SHASH" or "robZ".}
+
+\item{M}{Integer; number of multiple imputation datasets.}
+
+\item{k}{Integer; number of perturbation cycles per imputation.}
+
+\item{alpha}{Numeric; significance level for quantile thresholding.}
+
+\item{quantile}{Numeric; quantile level for F-distribution threshold.}
+
+\item{verbose}{Logical; if TRUE, print progress messages.}
+
+\item{boot_quant}{Numeric; confidence level for bootstrap confidence intervals.}
+
+\item{B}{Integer; number of bootstrap samples.}
 }
 \value{
-A list with elements:
+Depends on threshold_method:
 \describe{
-\item{ind_incld}{Vector of row indices used to compute the robust mean and covariance.}
-\item{ind_excld}{Vector of excluded row indices.}
-\item{h}{Number of included observations.}
-\item{xbar_star}{Robust mean vector (length Q).}
-\item{S_star}{Robust covariance matrix (Q × Q).}
-\item{invcov_sqrt}{Matrix square root of the inverse covariance matrix (Q × Q).}
-\item{RD}{Squared robust distances for all observations (length T), or NULL if dist = FALSE.}
+\item{Single method}{Returns the result from the specific threshold method.}
+\item{"all"}{Returns a list with results from all threshold methods.}
 }
 }
 \description{
-Calculates the robust mean, covariance matrix, and optionally robust distances
-using either:
-\itemize{
-\item "auto" mode: automatically selects the best robust subset using covMcd
-\item "manual" mode: uses provided robust covariance matrix and subset indices
-}
+Performs univariate outlier detection + imputation, robust distance, and multiple thresholding methods.
 }

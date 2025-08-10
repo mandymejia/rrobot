@@ -23,6 +23,7 @@ A list with the following elements:
 \item{df}{A numeric vector of degrees of freedom: \code{c(df1, df2)}.}
 \item{scale}{Scale factor for the threshold.}
 \item{threshold}{Threshold for squared robust distances.}
+\item{call}{The matched function call.}
 }
 }
 \description{

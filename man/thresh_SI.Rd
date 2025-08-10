@@ -7,7 +7,7 @@
 thresh_SI(RD_org_obj, imp_data, alpha = 0.01)
 }
 \arguments{
-\item{RD_org_obj}{A list from \code{\link{RD}} containing original RD, S_star, ind_incld.}
+\item{RD_org_obj}{A list from \code{\link{compute_RD}} containing original RD, S_star, ind_incld.}
 
 \item{imp_data}{A numeric matrix (T × Q) of imputed data.}
 
@@ -16,8 +16,9 @@ thresh_SI(RD_org_obj, imp_data, alpha = 0.01)
 \value{
 A list with:
 \describe{
-\item{SI_obj}{A list from \code{\link{RD}} containing robust distances.}
+\item{SI_obj}{A list from \code{\link{compute_RD}} containing robust distances.}
 \item{SI_threshold}{Numeric threshold based on the (1 - alpha) quantile of RD.}
+\item{call}{The matched function call.}
 }
 }
 \description{

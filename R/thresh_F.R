@@ -22,11 +22,14 @@
 #'   \item{df}{A numeric vector of degrees of freedom: \code{c(df1, df2)}.}
 #'   \item{scale}{Scale factor for the threshold.}
 #'   \item{threshold}{Threshold for squared robust distances.}
+#'   \item{call}{The matched function call.}
 #' }
 #'
 #' @importFrom stats pchisq qchisq qf
 #' @export
 thresh_F <- function(Q, n, h, quantile) {
+  call <- match.call()
+
   # Step 1: consistency correction factor
   c <- pchisq(q = qchisq(p = h / n, df = Q), df = Q + 2) / (h / n)
 
@@ -66,7 +69,8 @@ thresh_F <- function(Q, n, h, quantile) {
     m = m,
     df = df,
     scale = scale,
-    threshold = q_sHR
+    threshold = q_sHR,
+    call = call
   )
 
   class(result) <- "F_result"
