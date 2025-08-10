@@ -48,7 +48,7 @@ plot_RD <- function(data_list,
     dist_name <- datanames[i]
     message("Processing: ", dist_name)
 
-    rob_obj <- RD(data)
+    rob_obj <- compute_RD(data)
     RD <- rob_obj$RD
     ind_incld <- rob_obj$ind_incld
     observation <- ifelse(seq_len(t) %in% ind_incld, "included", "excluded")
