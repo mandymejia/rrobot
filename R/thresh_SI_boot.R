@@ -4,7 +4,7 @@
 #' followed by bootstrap resampling over clean (included) indices. Returns the confidence interval
 #' bounds of the bootstrapped 99th percentiles.
 #'
-#' @param RD_org_obj A list from \code{\link{RD}} on the original data.
+#' @param RD_org_obj A list from \code{\link{compute_RD}} on the original data.
 #' @param imp_data A numeric matrix (T × Q) of single-imputed data.
 #' @param B Integer; number of bootstrap resamples (default = 1000).
 #' @param alpha Significance level for quantile thresholding (default = 0.01).
@@ -16,11 +16,14 @@
 #'   \item{quant99}{Vector of 99th quantiles of RD for each bootstrap sample.}
 #'   \item{LB_CI}{Lower bound of the confidence interval for the 99th quantiles.}
 #'   \item{UB_CI}{Upper bound of the confidence interval for the 99th quantiles.}
+#'   \item{call}{The matched function call.}
 #' }
 #' @export
 thresh_SI_boot <- function(RD_org_obj, imp_data,
                     B = 1000, alpha = 0.01, boot_quant = 0.95,
                     verbose = FALSE) {
+
+  call <- match.call()
 
   ind_incld <- RD_org_obj$ind_incld
   ind_excld <- RD_org_obj$ind_excld
@@ -66,7 +69,8 @@ thresh_SI_boot <- function(RD_org_obj, imp_data,
   result <- list(
     quant99 = quant99,
     LB_CI = LB_CI,
-    UB_CI = UB_CI
+    UB_CI = UB_CI,
+    call = call
   )
 
   class(result) <- "SI_boot_result"

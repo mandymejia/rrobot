@@ -14,7 +14,7 @@ thresh_SI_boot(
 )
 }
 \arguments{
-\item{RD_org_obj}{A list from \code{\link{RD}} on the original data.}
+\item{RD_org_obj}{A list from \code{\link{compute_RD}} on the original data.}
 
 \item{imp_data}{A numeric matrix (T × Q) of single-imputed data.}
 
@@ -32,6 +32,7 @@ A list with:
 \item{quant99}{Vector of 99th quantiles of RD for each bootstrap sample.}
 \item{LB_CI}{Lower bound of the confidence interval for the 99th quantiles.}
 \item{UB_CI}{Upper bound of the confidence interval for the 99th quantiles.}
+\item{call}{The matched function call.}
 }
 }
 \description{

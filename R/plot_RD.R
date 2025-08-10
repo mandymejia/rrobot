@@ -18,7 +18,7 @@
 #'   \item Optional F(α) annotation next to the threshold
 #' }
 #'
-#' @seealso \code{\link{RD}}, \code{\link{thresh_F}}
+#' @seealso \code{\link{compute_RD}}, \code{\link{thresh_F}}
 #' @importFrom ggplot2 ggplot aes geom_histogram geom_line geom_vline geom_text
 #'   scale_fill_manual scale_color_manual theme_minimal facet_grid after_stat theme element_text
 #'   element_blank scale_x_continuous scale_x_log10 ylab xlab

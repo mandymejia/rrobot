@@ -28,13 +28,13 @@ kurt_data$highkurt       # Logical vector indicating high-kurtosis components
 
 ###------ STEP 1: to detect univariate outliers.---------------------------------
 hk_data <- kurt_data$hk
-out_result <- univOut(hk_data = hk_data, cutoff = 4, trans = "SHASH")
+out_result <- univOut(x = hk_data, cutoff = 4, method = "SHASH")
 
 ###------ STEP 2: to impute univariate outliers.--------------------------------
-imp_result <- impTemp_univOut(x = hk_data, outlier_mask = out_result$outliers)
+imp_result <- impute_univOut(x = hk_data, method = "mean", outlier_mask = out_result$outliers)
 
 ###------ STEP 3: to compute RD and related objects of kurt_data----------------
-RD_org_obj <- RD(data_matrix = hk_data, mode = "auto")
+RD_org_obj <- compute_RD(data_matrix = hk_data, mode = "auto")
 
 str(RD_org_obj)
 RD_org <- RD_org_obj$RD
@@ -97,16 +97,76 @@ HR_result <- thresh_F(Q = ncol(hk_data), n = nrow(hk_data), h = RD_org_obj$h, qu
 HR_result$threshold
 summary(HR_result)
 
-
-###################
-## NEW WRAPPER   #
-##################
+############################################################################
+## NEW WRAPPER FOR USER                                                    #
+############################################################################
 data_matrix <- fMRIscrub::Dat1
 kurt_data <- ICA_extract_kurt(time_series = data_matrix)
-hk_data <- kurt_data$hk
-all_results <- threshold_RD(x = hk_data,
+
+# F method
+result_F <- RD(x = kurt_data$hk,
+               threshold_method = "F",
+               mode = "auto",
+               quantile = 0.01)
+
+# SI method
+result_SI <- RD(x = kurt_data$hk,
+                threshold_method = "SI",
+                mode = "auto",
+                alpha = 0.01,
+                cutoff = 4,
+                trans = "SHASH",
+                impute_method = "mean")
+
+# SI_boot method
+result_SI_boot <- RD(x = kurt_data$hk,
+                     threshold_method = "SI_boot",
+                     mode = "auto",
+                     alpha = 0.01,
+                     cutoff = 4,
+                     trans = "SHASH",
+                     impute_method = "mean",
+                     B = 500,
+                     boot_quant = 0.95,
+                     verbose = TRUE)
+
+# MI method
+result_MI <- RD(x = kurt_data$hk,
+                w = kurt_data$lk,
+                threshold_method = "MI",
+                mode = "auto",
+                alpha = 0.01,
+                cutoff = 4,
+                trans = "SHASH",
+                impute_method = "mean",
+                M = 5,
+                k = 10)
+
+# MI_boot method
+result_MI_boot <- RD(x = kurt_data$hk,
+                     w = kurt_data$lk,
+                     threshold_method = "MI_boot",
+                     mode = "auto",
+                     alpha = 0.01,
+                     M = 5,
+                     k = 10,
+                     B = 500,
+                     boot_quant = 0.95,
+                     verbose = TRUE)
+############################################################################
+## NEW WRAPPER FOR ANLAYSIS                                                #
+############################################################################
+data_matrix <- fMRIscrub::Dat1
+kurt_data <- ICA_extract_kurt(time_series = data_matrix)
+
+# threshold_RD needs a RD object -- usually RD() handle its for you but if you
+# call it yourself, you must compute it.
+RD_obj <- compute_RD(x = kurt_data$hk, mode = "auto")
+
+all_results <- threshold_RD(x = kurt_data$hk,
                             w = kurt_data$lk,
-                            threshold_method = "all",
+                            threshold_method = "all", # Can do single methods, but should use RD for that.
+                            RD_obj = RD_obj,
                             M = 5,
                             k = 10,
                             B = 500,

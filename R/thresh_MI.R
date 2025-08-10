@@ -4,7 +4,7 @@
 #' and flags outliers via majority voting. Also computes the lower bound of the 95% confidence interval
 #' of the (1 - alpha) quantiles across imputations.
 #'
-#' @param RD_org_obj Output list from \code{\link{RD}} on the original data. Must contain $RD, $S_star, and $ind_incld.
+#' @param RD_org_obj Output list from \code{\link{compute_RD}} on the original data. Must contain $RD, $S_star, and $ind_incld.
 #' @param imp_datasets A list of M numeric matrices (T × Q), multiply imputed versions of original data.
 #' @param alpha Significance level used to compute RD threshold (default = 0.01 for 99th percentile).
 #'
@@ -13,6 +13,7 @@
 #'   \item{thresholds}{Numeric vector of length M; (1 - alpha) quantiles of RD per imputed dataset.}
 #'   \item{voted_outliers}{Logical vector (length T); TRUE if RD > threshold in > M/2 imputations.}
 #'   \item{LB95_CI}{Lower bound of the 95% confidence interval of thresholds (2.5th percentile).}
+#'   \item{call}{The matched function call.}
 #' }
 #'
 #' @importFrom stats quantile
@@ -21,6 +22,8 @@
 thresh_MI <- function(RD_org_obj, imp_datasets, alpha = 0.01) {
   stopifnot(is.list(RD_org_obj), !is.null(RD_org_obj$RD), !is.null(RD_org_obj$S_star), !is.null(RD_org_obj$ind_incld))
   stopifnot(is.list(imp_datasets), length(imp_datasets) > 1)
+
+  call <- match.call()
 
   M <- length(imp_datasets)
   n_time <- length(RD_org_obj$RD)
@@ -56,7 +59,8 @@ thresh_MI <- function(RD_org_obj, imp_datasets, alpha = 0.01) {
   result <- list(
     thresholds = thresholds,
     voted_outliers = voted_outliers,
-    LB95_CI = LB95_CI
+    LB95_CI = LB95_CI,
+    call = call
   )
 
   class(result) <- "MI_result"

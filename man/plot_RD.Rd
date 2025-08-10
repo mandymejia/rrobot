@@ -38,5 +38,5 @@ Overlays vertical threshold lines (computed via \code{\link{thresh_F}}) and a sc
 Optionally applies log-scaling to the x-axis for better visualization of heavy-tailed data.
 }
 \seealso{
-\code{\link{RD}}, \code{\link{thresh_F}}
+\code{\link{compute_RD}}, \code{\link{thresh_F}}
 }

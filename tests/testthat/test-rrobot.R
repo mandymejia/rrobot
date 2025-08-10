@@ -114,15 +114,18 @@ test_that("threshold_RD 'all' method gives consistent results", {
 
   # Set seed for reproducible results
   set.seed(2025)
+  RD_obj <- compute_RD(x = setup_data$hk_data, mode = "auto")
 
   # Run threshold_RD with "all" method
   suppressWarnings({
     result <- threshold_RD(x = setup_data$hk_data,
                            w = setup_data$kurt_data$lk,
                            threshold_method = "all",
+                           RD_obj = RD_obj,
                            M = 3, k = 5, B = 50,  # Reduced for faster testing
                            alpha = 0.01,
                            cutoff = 4,
+                           impute_method = "interp",
                            trans = "SHASH",
                            quantile = 0.01,
                            verbose = FALSE)
@@ -161,4 +164,30 @@ test_that("threshold_RD 'all' method gives consistent results", {
   expect_gt(result$SI_boot$LB_CI, 0)
   expect_gt(result$MI_boot$final_threshold, 0)
   expect_true(all(result$MI$thresholds > 0))
+})
+
+test_that("RD method gives consistent results", {
+  skip_on_ci()  # Skip on CI due to bootstrap randomness
+
+  setup_data <- readRDS(system.file("fixtures", "test_setup_data.rds", package = "rrobot"))
+
+  set.seed(2025)
+
+  suppressWarnings({
+    result <- RD(x = setup_data$hk_data,
+                 w = setup_data$kurt_data$lk,
+                 threshold_method = "SI",
+                 alpha = 0.01,
+                 cutoff = 4,
+                 impute_method = "interp",
+                 trans = "SHASH")
+  })
+
+  # Test structure
+  expect_type(result, "list")
+  expect_named(result, c("RD_obj", "thresholds", "call"))
+  expect_s3_class(result, "RD")
+
+  # Test RD_obj structure
+  expect_s3_class(result$RD_obj, "RD_result")
 })

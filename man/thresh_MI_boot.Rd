@@ -14,7 +14,7 @@ thresh_MI_boot(
 )
 }
 \arguments{
-\item{RD_org_obj}{A list output from \code{\link{RD}} on the original hk_data.}
+\item{RD_org_obj}{A list output from \code{\link{compute_RD}} on the original hk_data.}
 
 \item{imp_datasets}{A list of M numeric matrices (T × Q); multiply imputed datasets.}
 
@@ -32,6 +32,7 @@ A list with:
 \item{thresholds_all}{Vector of M×B thresholds from each bootstrap sample.}
 \item{final_threshold}{Lower bound of CI across thresholds.}
 \item{flagged_outliers}{Logical vector of outliers based on final threshold.}
+\item{call}{The matched function call.}
 }
 }
 \description{
