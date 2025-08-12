@@ -56,6 +56,10 @@ RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_boot", "SI
                              M = M, k = k, alpha = alpha, quantile = quantile,
                              verbose = verbose, boot_quant = boot_quant, B = B)
 
+  if(threshold_method == "SHASH"){
+    RD_obj = thresholds$RD_obj_shash
+  }
+
   result <- list(
     thresholds = thresholds$thresholds,
     RD_obj = thresholds$RD_obj,
