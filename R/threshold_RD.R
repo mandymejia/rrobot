@@ -4,7 +4,7 @@
 #'
 #' @param x A numeric matrix or data frame of dimensions T × Q.
 #' @param w A numeric matrix (n_time × L) of low-kurtosis predictors (optional).
-#' @param threshold_method Character string; one of "all","SI","SI_boot","MI","MI_boot","F", "SASH".
+#' @param threshold_method Character string; one of "all","SI","SI_boot","MI","MI_boot","F", "SHASH".
 #' @param RD_obj Pre-computed RD object from compute_RD().
 #' @param impute_method Character string; imputation method for univariate outliers.
 #' @param cutoff Numeric; threshold multiplier for univariate outlier detection.
@@ -67,7 +67,7 @@ threshold_RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_
 
                    "F" = thresh_F(Q = ncol(x), n = nrow(x), h = RD_obj$h, quantile = quantile),
 
-                   "SASH" = thresh_SASH(x = x, cutoff = cutoff, quantile = quantile),
+                   "SHASH" = thresh_SHASH(x = x, cutoff = cutoff, quantile = quantile),
 
                    "all" = list(
                      SI = thresh_SI(RD_org_obj = RD_obj, imp_data = imp_result$imp_data, alpha = alpha),
@@ -77,7 +77,7 @@ threshold_RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_
                      MI_boot = thresh_MI_boot(RD_org_obj = RD_obj, imp_datasets = multiple_imp$imp_datasets,
                                               B = B, alpha = alpha, boot_quant = boot_quant, verbose = verbose),
                      F = thresh_F(Q = ncol(x), n = nrow(x), h = RD_obj$h, quantile = quantile),
-                     SASH = thresh_SASH(x = x, cutoff = cutoff, quantile = quantile)
+                     SHASH = thresh_SHASH(x = x, cutoff = cutoff, quantile = quantile)
                    )
   )
 
