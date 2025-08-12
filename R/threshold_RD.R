@@ -12,7 +12,7 @@
 #' @param M Integer; number of multiple imputation datasets.
 #' @param k Integer; number of perturbation cycles per imputation.
 #' @param alpha Numeric; significance level for quantile thresholding.
-#' @param quantile Numeric; quantile level for F-distribution threshold.
+#' @param quantile Numeric; upper quantile level for identifying outliers.
 #' @param verbose Logical; if TRUE, print progress messages.
 #' @param boot_quant Numeric; confidence level for bootstrap confidence intervals.
 #' @param B Integer; number of bootstrap samples.
