@@ -67,7 +67,7 @@ threshold_RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_
 
                    "F" = thresh_F(Q = ncol(x), n = nrow(x), h = RD_obj$h, quantile = quantile),
 
-                   "SHASH" = thresh_SHASH(x = x, cutoff = cutoff, quantile = quantile),
+                   "SHASH" = thresh_SHASH(x = out_result$x_norm, cutoff = cutoff, quantile = quantile),
 
                    "all" = list(
                      SI = thresh_SI(RD_org_obj = RD_obj, imp_data = imp_result$imp_data, alpha = alpha),
