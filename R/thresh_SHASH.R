@@ -29,27 +29,22 @@
 #'
 #' @seealso \code{\link{univOut}}, \code{\link{thresh_F}}
 #' @export
-thresh_SASH <- function(x, cutoff = 4, quantile = 0.01) {
+thresh_SHASH <- function(x, cutoff = 4, quantile = 0.01) {
   call <- match.call()
 
-
-  univOut_result <- univOut(x = x, cutoff = cutoff, method = "SHASH")
-
-
-  imp_result <- impute_univOut(x = x, outlier_mask = univOut_result$outliers, method = "interp")
-
-  RD_obj <- compute_RD(x = imp_result$imp_data, mode = "auto", dist = TRUE)
+  RD_obj <- compute_RD(x = x, mode = "auto", dist = TRUE)
   F_result <- thresh_F(Q = ncol(x), n = nrow(x), h = RD_obj$h, quantile = quantile)
 
   result <- list(
+    threshold = F_result$threshold,
+    RD = RD_obj$RD,
     c = F_result$c,
     m = F_result$m,
     df = F_result$df,
     scale = F_result$scale,
-    threshold = F_result$threshold,
     call = call
   )
 
-  class(result) <- "SASH_result"
+  class(result) <- "SHASH_result"
   result
 }
