@@ -25,7 +25,7 @@
 #' }
 #'
 #' @export
-threshold_RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_boot", "SI","F", "SASH", "all"), RD_obj = NULL,
+threshold_RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_boot", "SI","F", "SHASH", "all"), RD_obj = NULL,
                                      # impute_univOut paramters
                                      impute_method = "mean",
                                      # univOut parameters
