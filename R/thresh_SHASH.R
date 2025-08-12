@@ -32,29 +32,14 @@
 thresh_SASH <- function(x, cutoff = 4, quantile = 0.01) {
   call <- match.call()
 
-  # Step 1: SHASH-based univariate outlier detection
+
   univOut_result <- univOut(x = x, cutoff = cutoff, method = "SHASH")
 
-  # Step 2: Get h directly from SHASH results
-  outlier_rows <- which(rowSums(univOut_result$outliers) > 0)
-  clean_indices <- setdiff(seq_len(nrow(x)), outlier_rows)
-  h_shash <- length(clean_indices)
 
-  # Step 3: Apply F-distribution thresholding using SHASH h
-  F_result <- thresh_F(
-    Q = ncol(x),
-    n = nrow(x),
-    h = h_shash,
-    quantile = quantile
-  )
+  imp_result <- impute_univOut(x = x, outlier_mask = univOut_result$outliers, method = "interp")
 
-  # Alternative approach using compute_RD
-  # imp_result <- impute_univOut(x = x, outlier_mask = univOut_result$outliers, method = "interp")
-  # RD_obj <- compute_RD(x = imp_result$imp_data, mode = "auto", dist = TRUE)
-  # F_result <- thresh_F(Q = ncol(x), n = nrow(x), h = RD_obj$h, quantile = quantile)
-
-  # Final threshold is ready to use
-  final_threshold <- F_result$threshold
+  RD_obj <- compute_RD(x = imp_result$imp_data, mode = "auto", dist = TRUE)
+  F_result <- thresh_F(Q = ncol(x), n = nrow(x), h = RD_obj$h, quantile = quantile)
 
   result <- list(
     c = F_result$c,

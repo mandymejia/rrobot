@@ -26,7 +26,7 @@ RD_org_obj <- compute_RD(x = hk_data, mode = "auto")
 
 
 SHASH_F_result <- thresh_SASH(x = hk_data, cutoff = 4, quantile = 0.01)
-SHASH_F_result$final_threshold
+SHASH_F_result$threshold
 
 
 
