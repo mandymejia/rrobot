@@ -7,7 +7,7 @@
 threshold_RD(
   x,
   w = NULL,
-  threshold_method = c("SI_boot", "MI", "MI_boot", "SI", "F", "SASH", "all"),
+  threshold_method = c("SI_boot", "MI", "MI_boot", "SI", "F", "SHASH", "all"),
   RD_obj = NULL,
   impute_method = "mean",
   cutoff = 4,
@@ -26,7 +26,7 @@ threshold_RD(
 
 \item{w}{A numeric matrix (n_time × L) of low-kurtosis predictors (optional).}
 
-\item{threshold_method}{Character string; one of "all","SI","SI_boot","MI","MI_boot","F", "SASH".}
+\item{threshold_method}{Character string; one of "all","SI","SI_boot","MI","MI_boot","F", "SHASH".}
 
 \item{RD_obj}{Pre-computed RD object from compute_RD().}
 
@@ -42,7 +42,7 @@ threshold_RD(
 
 \item{alpha}{Numeric; significance level for quantile thresholding.}
 
-\item{quantile}{Numeric; quantile level for F-distribution threshold.}
+\item{quantile}{Numeric; upper quantile level for identifying outliers. # the expected False Positive Rate for the chosen threshold}
 
 \item{verbose}{Logical; if TRUE, print progress messages.}
 

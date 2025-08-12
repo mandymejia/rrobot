@@ -7,7 +7,7 @@
 RD(
   x,
   w = NULL,
-  threshold_method = c("SI_boot", "MI", "MI_boot", "SI", "F", "SASH"),
+  threshold_method = c("SI_boot", "MI", "MI_boot", "SI", "F", "SHASH"),
   mode = "auto",
   cov_mcd = NULL,
   ind_incld = NULL,
@@ -29,7 +29,7 @@ RD(
 
 \item{w}{A numeric matrix (n_time × L) of low-kurtosis predictors (optional).}
 
-\item{threshold_method}{Character string; one of "all","SI","SI_boot","MI","MI_boot","F", "SASH.}
+\item{threshold_method}{Character string; one of "all","SI","SI_boot","MI","MI_boot","F", "SHASH.}
 
 \item{mode}{Character string; either "auto" or "manual" for robust covariance computation.}
 
