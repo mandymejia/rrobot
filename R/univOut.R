@@ -27,13 +27,14 @@ univOut <- function(x, cutoff = 4, method = c("SHASH", "robZ")) {
   n_obv <- nrow(x)
   n_var <- ncol(x)
   outlier_matrix <- matrix(FALSE, n_obv, n_var)
-
+  shash_matrix <- matrix(NA, n_obv, n_var)
   for (ii in seq_len(n_var)) {
     temp <- x[, ii]
 
     if(method == "SHASH") {
       result <- SHASH_out(x = temp, thr = cutoff, use_isotree = TRUE)
       outlier_matrix[result$out_idx, ii] <- TRUE
+      shash_matrix[, ii] <- result$x_norm
 
     }  else if (method == "robZ") {
       temp_med <- median(temp, na.rm = TRUE)
@@ -47,6 +48,7 @@ univOut <- function(x, cutoff = 4, method = c("SHASH", "robZ")) {
   list(
     # Add function call (params -- include both of them with same argument name)
     outliers = outlier_matrix,
+    x_norm = shash_matrix, # normality transformed data matrix when method =SHASH, if method = robZ this returns NA matrix
     method = method,
     call <- call
   )
