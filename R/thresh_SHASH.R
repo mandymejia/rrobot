@@ -32,7 +32,6 @@
 thresh_SHASH <- function(x, cutoff = 4, quantile = 0.01) {
   call <- match.call()
 
-  RD_obj <- compute_RD(x = x, mode = "auto", dist = TRUE)
   F_result <- thresh_F(Q = ncol(x), n = nrow(x), h = RD_obj$h, quantile = quantile)
 
   result <- list(
