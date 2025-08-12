@@ -46,12 +46,17 @@ threshold_RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_
   # Data pre-processing
   stopifnot("RD_obj is required from compute_RD()" = !is.null(RD_obj))
 
-  out_result <- univOut(x = x, cutoff = cutoff, method = trans)
-  imp_result <- impute_univOut(x = x, outlier_mask = out_result$outliers, method = impute_method)
+  out_result <- univOut(x = x, cutoff = cutoff, method = trans) # univariate outlier detection
+  imp_result <- impute_univOut(x = x, outlier_mask = out_result$outliers, method = impute_method) # univariate outlier imputation
 
 
   if (threshold_method %in% c("all", "MI", "MI_boot")) {
     multiple_imp <- MImpute(x = imp_result$imp_data, w = w, outlier_matrix = out_result$outliers, M = M, k = k)
+  }
+
+  RD_obj_shash <- NULL
+  if (threshold_method %in% c("all", "SHASH")) {
+    RD_obj_shash <- compute_RD(x = out_result$x_norm, mode = "auto", dist = TRUE)
   }
 
   thresholds <- switch(threshold_method,
@@ -67,7 +72,7 @@ threshold_RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_
 
                    "F" = thresh_F(Q = ncol(x), n = nrow(x), h = RD_obj$h, quantile = quantile),
 
-                   "SHASH" = thresh_SHASH(x = out_result$x_norm, cutoff = cutoff, quantile = quantile),
+                   "SHASH" = thresh_F(Q = ncol(x), n = nrow(x), h = RD_obj_shash$h, quantile = quantile),
 
                    "all" = list(
                      SI = thresh_SI(RD_org_obj = RD_obj, imp_data = imp_result$imp_data, alpha = alpha),
@@ -77,7 +82,7 @@ threshold_RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_
                      MI_boot = thresh_MI_boot(RD_org_obj = RD_obj, imp_datasets = multiple_imp$imp_datasets,
                                               B = B, alpha = alpha, boot_quant = boot_quant, verbose = verbose),
                      F = thresh_F(Q = ncol(x), n = nrow(x), h = RD_obj$h, quantile = quantile),
-                     SHASH = thresh_SHASH(x = x, cutoff = cutoff, quantile = quantile)
+                     SHASH = thresh_F(Q = ncol(x), n = nrow(x), h = RD_obj_shash$h, quantile = quantile)
                    )
   )
 
@@ -85,6 +90,7 @@ threshold_RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_
   result <- list(
     thresholds = thresholds,
     RD_obj = RD_obj,
+    RD_obj_shash = RD_obj_shash,
     call = call
   )
 
