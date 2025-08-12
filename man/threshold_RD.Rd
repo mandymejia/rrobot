@@ -7,7 +7,7 @@
 threshold_RD(
   x,
   w = NULL,
-  threshold_method = c("SI_boot", "MI", "MI_boot", "SI", "F", "all"),
+  threshold_method = c("SI_boot", "MI", "MI_boot", "SI", "F", "SASH", "all"),
   RD_obj = NULL,
   impute_method = "mean",
   cutoff = 4,
@@ -26,7 +26,7 @@ threshold_RD(
 
 \item{w}{A numeric matrix (n_time × L) of low-kurtosis predictors (optional).}
 
-\item{threshold_method}{Character string; one of "all","SI","SI_boot","MI","MI_boot","F".}
+\item{threshold_method}{Character string; one of "all","SI","SI_boot","MI","MI_boot","F", "SASH".}
 
 \item{RD_obj}{Pre-computed RD object from compute_RD().}
 

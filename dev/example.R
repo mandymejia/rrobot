@@ -97,6 +97,11 @@ HR_result <- thresh_F(Q = ncol(hk_data), n = nrow(hk_data), h = RD_org_obj$h, qu
 HR_result$threshold
 summary(HR_result)
 
+#----SHASH-F--------------------------------------------------------------------
+SHASH_F_result <- thresh_SASH(x = hk_data, cutoff = 4, quantile = 0.01, mode = "auto")
+SHASH_F_result$final_threshold
+which(SHASH_F_result$flagged_outliers)
+
 ############################################################################
 ## NEW WRAPPER FOR USER                                                    #
 ############################################################################
