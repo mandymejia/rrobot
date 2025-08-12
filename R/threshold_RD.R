@@ -4,7 +4,7 @@
 #'
 #' @param x A numeric matrix or data frame of dimensions T × Q.
 #' @param w A numeric matrix (n_time × L) of low-kurtosis predictors (optional).
-#' @param threshold_method Character string; one of "all","SI","SI_boot","MI","MI_boot","F".
+#' @param threshold_method Character string; one of "all","SI","SI_boot","MI","MI_boot","F", "SASH".
 #' @param RD_obj Pre-computed RD object from compute_RD().
 #' @param impute_method Character string; imputation method for univariate outliers.
 #' @param cutoff Numeric; threshold multiplier for univariate outlier detection.
@@ -25,7 +25,7 @@
 #' }
 #'
 #' @export
-threshold_RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_boot", "SI","F", "all"), RD_obj = NULL,
+threshold_RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_boot", "SI","F", "SASH", "all"), RD_obj = NULL,
                                      # impute_univOut paramters
                                      impute_method = "mean",
                                      # univOut parameters
@@ -67,6 +67,8 @@ threshold_RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_
 
                    "F" = thresh_F(Q = ncol(x), n = nrow(x), h = RD_obj$h, quantile = quantile),
 
+                   "SASH" = thresh_SASH(x = x, cutoff = cutoff, quantile = quantile),
+
                    "all" = list(
                      SI = thresh_SI(RD_org_obj = RD_obj, imp_data = imp_result$imp_data, alpha = alpha),
                      SI_boot = thresh_SI_boot(RD_org_obj = RD_obj, imp_data = imp_result$imp_data,
@@ -74,7 +76,8 @@ threshold_RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_
                      MI = thresh_MI(RD_org_obj = RD_obj, imp_datasets = multiple_imp$imp_datasets, alpha = alpha),
                      MI_boot = thresh_MI_boot(RD_org_obj = RD_obj, imp_datasets = multiple_imp$imp_datasets,
                                               B = B, alpha = alpha, boot_quant = boot_quant, verbose = verbose),
-                     F = thresh_F(Q = ncol(x), n = nrow(x), h = RD_obj$h, quantile = quantile)
+                     F = thresh_F(Q = ncol(x), n = nrow(x), h = RD_obj$h, quantile = quantile),
+                     SASH = thresh_SASH(x = x, cutoff = cutoff, quantile = quantile)
                    )
   )
 

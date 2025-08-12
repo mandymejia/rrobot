@@ -129,7 +129,7 @@ test_that("threshold_RD 'all' method gives consistent results", {
   # Test structure of results
   expect_type(result, "list")
   expect_named(result, c("thresholds", "RD_obj", "call"))
-  expect_named(result$thresholds, c("SI", "SI_boot", "MI", "MI_boot", "F"))
+  expect_named(result$thresholds, c("SI", "SI_boot", "MI", "MI_boot", "F", "SASH"))
 
   # Test SI method matches reference
   expect_equal(result$thresholds$SI$SI_threshold, SI_ref$SI_threshold, tolerance = 1e-10)
