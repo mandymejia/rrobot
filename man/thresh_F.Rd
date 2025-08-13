@@ -4,16 +4,16 @@
 \alias{thresh_F}
 \title{Fit F-distribution Parameters for MCD-based Robust Distances}
 \usage{
-thresh_F(Q, n, h, quantile)
+thresh_F(p, n, h, quantile)
 }
 \arguments{
-\item{Q}{Integer. The number of variables (dimension of the data).}
+\item{p}{Integer. The number of variables (dimension of the data).}
 
 \item{n}{Integer. The total sample size.}
 
 \item{h}{Integer. The number of observations retained in the MCD subset.}
 
-\item{quantile}{Numeric in (0,1) specifying the upper quantile for thresholding.}
+\item{quantile}{Numeric in (0,1) specifying the upper quantile for thresholding; the expected False Positive Rate for the chosen threshold.}
 }
 \value{
 A list with the following elements:

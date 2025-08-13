@@ -5,20 +5,20 @@
 #' - "auto" mode: automatically selects the best robust subset using covMcd
 #' - "manual" mode: uses provided robust covariance matrix and subset indices
 #'
-#' @param x A numeric matrix or data frame of dimensions T × Q (observations × variables).
-#' @param mode Character string; either "auto" (default) to compute MCD internally or "manual" to use user-supplied values.
-#' @param cov_mcd Optional covariance matrix (Q × Q); required in "manual" mode.
-#' @param ind_incld Optional vector of row indices used to compute the robust mean; required in "manual" mode.
-#' @param dist Logical; if TRUE, compute squared robust Mahalanobis distances for all observations.
+#' @inheritParams x
+#' @inheritParams mode
+#' @inheritParams cov_mcd
+#' @inheritParams ind_incld
+#' @inheritParams dist
 #'
 #' @return A list with elements:
 #' \describe{
 #'   \item{ind_incld}{Vector of row indices used to compute the robust mean and covariance.}
 #'   \item{ind_excld}{Vector of excluded row indices.}
 #'   \item{h}{Number of included observations.}
-#'   \item{xbar_star}{Robust mean vector (length Q).}
-#'   \item{S_star}{Robust covariance matrix (Q × Q).}
-#'   \item{invcov_sqrt}{Matrix square root of the inverse covariance matrix (Q × Q).}
+#'   \item{xbar_star}{Robust mean vector (length p).}
+#'   \item{S_star}{Robust covariance matrix (p × p).}
+#'   \item{invcov_sqrt}{Matrix square root of the inverse covariance matrix (p × p).}
 #'   \item{RD}{Squared robust distances for all observations (length T), or NULL if dist = FALSE.}
 #'   \item{call}{The matched function call.}
 #' }
@@ -36,7 +36,7 @@ compute_RD <- function(x, mode = c("auto", "manual"),
   stopifnot(is.numeric(x))
 
   t <- nrow(x)
-  Q <- ncol(x)
+  p <- ncol(x)
 
   if (mode == "auto") {
     cov_obj <- robustbase::covMcd(x)
@@ -72,7 +72,7 @@ compute_RD <- function(x, mode = c("auto", "manual"),
 
   # Compute robust distances if requested
   if (dist) {
-    xbar_star_mat <- matrix(xbar_star, nrow = t, ncol = Q, byrow = TRUE)
+    xbar_star_mat <- matrix(xbar_star, nrow = t, ncol = p, byrow = TRUE)
     temp <- (x - xbar_star_mat) %*% invcov_sqrt
     RD <- rowSums(temp^2)
   } else {

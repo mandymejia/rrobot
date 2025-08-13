@@ -2,23 +2,23 @@
 #'
 #' Performs univariate outlier detection + imputation, robust distance, and multiple thresholding methods.
 #'
-#' @param x A numeric matrix or data frame of dimensions T × Q.
-#' @param w A numeric matrix (n_time × L) of low-kurtosis predictors (optional).
-#' @param threshold_method Character string; one of "all","SI","SI_boot","MI","MI_boot","F", "SHASH.
-#' @param mode Character string; either "auto" or "manual" for robust covariance computation.
-#' @param cov_mcd Optional covariance matrix (Q × Q); required in "manual" mode.
-#' @param ind_incld Optional vector of row indices; required in "manual" mode.
-#' @param dist Logical; if TRUE, compute squared robust distances.
-#' @param impute_method Character string; imputation method for univariate outliers.
-#' @param cutoff Numeric; threshold multiplier for univariate outlier detection.
-#' @param trans Character string; transformation method, one of "SHASH" or "robZ".
-#' @param M Integer; number of multiple imputation datasets.
-#' @param k Integer; number of perturbation cycles per imputation.
-#' @param alpha Numeric; significance level for quantile thresholding.
-#' @param quantile Numeric; quantile level for F-distribution threshold.
-#' @param verbose Logical; if TRUE, print progress messages.
-#' @param boot_quant Numeric; confidence level for bootstrap confidence intervals.
-#' @param B Integer; number of bootstrap samples.
+#' @inheritParams x
+#' @inheritParams w
+#' @inheritParams threshold_method
+#' @inheritParams mode
+#' @inheritParams cov_mcd
+#' @inheritParams ind_incld
+#' @inheritParams dist
+#' @inheritParams impute_method
+#' @inheritParams cutoff
+#' @inheritParams trans
+#' @inheritParams M
+#' @inheritParams k
+#' @inheritParams alpha
+#' @inheritParams quantile
+#' @inheritParams verbose
+#' @inheritParams boot_quant
+#' @inheritParams B
 #'
 #' @return Depends on threshold_method:
 #' \describe{
@@ -60,6 +60,7 @@ RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_boot", "SI
     RD_obj = thresholds$RD_obj_shash
   }
 
+
   result <- list(
     thresholds = thresholds$thresholds,
     RD_obj = thresholds$RD_obj,
@@ -68,4 +69,8 @@ RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_boot", "SI
 
   class(result) <- "RD"
   result
-  }
+}
+
+
+
+

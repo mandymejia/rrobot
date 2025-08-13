@@ -14,17 +14,17 @@ thresh_SI_boot(
 )
 }
 \arguments{
-\item{RD_org_obj}{A list from \code{\link{compute_RD}} on the original data.}
+\item{RD_org_obj}{Output list from \code{\link{compute_RD}} on the original data. Must contain $RD, $S_star, and $ind_incld.}
 
-\item{imp_data}{A numeric matrix (T × Q) of single-imputed data.}
+\item{imp_data}{A numeric matrix (T × p) of single-imputed data.}
 
-\item{B}{Integer; number of bootstrap resamples (default = 1000).}
+\item{B}{Integer; number of bootstrap samples per imputed dataset (default = 1000).}
 
-\item{alpha}{Significance level for quantile thresholding (default = 0.01).}
+\item{alpha}{Significance level used to compute RD threshold (default = 0.01 for 99th percentile).}
 
-\item{boot_quant}{Central quantile range for CI (default = 0.95, for 95\% CI).}
+\item{boot_quant}{Numeric; confidence level for bootstrap confidence intervals (default = 0.95, for 95\% CI).}
 
-\item{verbose}{Logical; whether to print progress.}
+\item{verbose}{Logical; if TRUE, print progress messages.}
 }
 \value{
 A list with:

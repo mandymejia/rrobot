@@ -4,9 +4,9 @@
 #' and flags outliers via majority voting. Also computes the lower bound of the 95% confidence interval
 #' of the (1 - alpha) quantiles across imputations.
 #'
-#' @param RD_org_obj Output list from \code{\link{compute_RD}} on the original data. Must contain $RD, $S_star, and $ind_incld.
-#' @param imp_datasets A list of M numeric matrices (T × Q), multiply imputed versions of original data.
-#' @param alpha Significance level used to compute RD threshold (default = 0.01 for 99th percentile).
+#' @inheritParams RD_org_obj
+#' @inheritParams imp_datasets
+#' @inheritParams alpha
 #'
 #' @return A list with:
 #' \describe{
@@ -27,7 +27,7 @@ thresh_MI <- function(RD_org_obj, imp_datasets, alpha = 0.01) {
 
   M <- length(imp_datasets)
   n_time <- length(RD_org_obj$RD)
-  Q <- ncol(imp_datasets[[1]])
+  p <- ncol(imp_datasets[[1]])
 
   thresholds <- numeric(M)
   outlier_flags <- matrix(FALSE, nrow = n_time, ncol = M)
@@ -41,11 +41,11 @@ thresh_MI <- function(RD_org_obj, imp_datasets, alpha = 0.01) {
 
   for (m in seq_len(M)) {
     imp_data <- imp_datasets[[m]]
-    stopifnot(nrow(imp_data) == n_time, ncol(imp_data) == Q)
+    stopifnot(nrow(imp_data) == n_time, ncol(imp_data) == p)
 
     # mu_MCD <- colMeans(imp_data[ind_incld, , drop = FALSE])
     mu_MCD <- RD_org_obj$xbar_star # Don't re-compute mean
-    xbar_mat <- matrix(mu_MCD, nrow = n_time, ncol = Q, byrow = TRUE)
+    xbar_mat <- matrix(mu_MCD, nrow = n_time, ncol = p, byrow = TRUE)
 
     RD_imp <- rowSums(((imp_data - xbar_mat) %*% invcov_sqrt)^2)
     thresholds[m] <- quantile(RD_imp, cutoff_q, na.rm = TRUE)

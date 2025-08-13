@@ -13,11 +13,11 @@ emprule_rob(
 )
 }
 \arguments{
-\item{x}{Numeric vector.}
+\item{x}{A numeric matrix or data frame of dimensions T × p (observations × variables).}
 
-\item{thr}{Threshold multiplier (default = 4).}
+\item{thr}{Threshold multiplier for outlier detection (default = 4).}
 
-\item{symmetric}{Logical. If FALSE, use only upper tail.}
+\item{symmetric}{Logical. Use symmetric bounds for empirical rule.}
 
 \item{use_huber}{Logical. If TRUE, apply Huber-like soft rejection.}
 

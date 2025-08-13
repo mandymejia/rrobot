@@ -2,20 +2,20 @@
 #'
 #' Performs univariate outlier detection + imputation, robust distance, and multiple thresholding methods.
 #'
-#' @param x A numeric matrix or data frame of dimensions T × Q.
-#' @param w A numeric matrix (n_time × L) of low-kurtosis predictors (optional).
-#' @param threshold_method Character string; one of "all","SI","SI_boot","MI","MI_boot","F", "SHASH".
-#' @param RD_obj Pre-computed RD object from compute_RD().
-#' @param impute_method Character string; imputation method for univariate outliers.
-#' @param cutoff Numeric; threshold multiplier for univariate outlier detection.
-#' @param trans Character string; transformation method, one of "SHASH" or "robZ".
-#' @param M Integer; number of multiple imputation datasets.
-#' @param k Integer; number of perturbation cycles per imputation.
-#' @param alpha Numeric; significance level for quantile thresholding.
-#' @param quantile Numeric; upper quantile level for identifying outliers. # the expected False Positive Rate for the chosen threshold
-#' @param verbose Logical; if TRUE, print progress messages.
-#' @param boot_quant Numeric; confidence level for bootstrap confidence intervals.
-#' @param B Integer; number of bootstrap samples.
+#' @inheritParams x
+#' @inheritParams w
+#' @inheritParams threshold_method
+#' @inheritParams RD_obj
+#' @inheritParams impute_method
+#' @inheritParams cutoff
+#' @inheritParams trans
+#' @inheritParams M
+#' @inheritParams k
+#' @inheritParams alpha
+#' @inheritParams quantile
+#' @inheritParams verbose
+#' @inheritParams boot_quant
+#' @inheritParams B
 #'
 #' @return A list with:
 #' \describe{
@@ -44,6 +44,7 @@ threshold_RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_
   threshold_method <- match.arg(threshold_method)
 
   # Data pre-processing
+  stopifnot("When threshold_method = 'SHASH', trans must also be 'SHASH'" = !(threshold_method == "SHASH" && trans != "SHASH"))
   stopifnot("RD_obj is required from compute_RD()" = !is.null(RD_obj))
 
   out_result <- univOut(x = x, cutoff = cutoff, method = trans) # univariate outlier detection
@@ -70,9 +71,9 @@ threshold_RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_
                    "MI_boot" = thresh_MI_boot(RD_org_obj = RD_obj, imp_datasets = multiple_imp$imp_datasets,
                                               B = B, alpha = alpha, boot_quant = boot_quant, verbose = verbose),
 
-                   "F" = thresh_F(Q = ncol(x), n = nrow(x), h = RD_obj$h, quantile = quantile),
+                   "F" = thresh_F(p = ncol(x), n = nrow(x), h = RD_obj$h, quantile = quantile),
 
-                   "SHASH" = thresh_F(Q = ncol(x), n = nrow(x), h = RD_obj_shash$h, quantile = quantile),
+                   "SHASH" = thresh_F(p = ncol(x), n = nrow(x), h = RD_obj_shash$h, quantile = quantile),
 
                    "all" = list(
                      SI = thresh_SI(RD_org_obj = RD_obj, imp_data = imp_result$imp_data, alpha = alpha),
@@ -81,11 +82,10 @@ threshold_RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_
                      MI = thresh_MI(RD_org_obj = RD_obj, imp_datasets = multiple_imp$imp_datasets, alpha = alpha),
                      MI_boot = thresh_MI_boot(RD_org_obj = RD_obj, imp_datasets = multiple_imp$imp_datasets,
                                               B = B, alpha = alpha, boot_quant = boot_quant, verbose = verbose),
-                     F = thresh_F(Q = ncol(x), n = nrow(x), h = RD_obj$h, quantile = quantile),
-                     SHASH = thresh_F(Q = ncol(x), n = nrow(x), h = RD_obj_shash$h, quantile = quantile)
+                     F = thresh_F(p = ncol(x), n = nrow(x), h = RD_obj$h, quantile = quantile),
+                     SHASH = thresh_F(p = ncol(x), n = nrow(x), h = RD_obj_shash$h, quantile = quantile)
                    )
   )
-
 
   result <- list(
     thresholds = thresholds,

@@ -17,9 +17,9 @@ plot_F_histogram(
 \arguments{
 \item{F_result}{F_result object from thresh_F().}
 
-\item{RD_obj}{RD_result object from compute_RD().}
+\item{RD_obj}{Pre-computed RD_result object from \code{\link{compute_RD}}.}
 
-\item{alpha}{Significance level for threshold label (default = 0.01).}
+\item{alpha}{Significance level used to compute RD threshold (default = 0.01 for 99th percentile).}
 
 \item{binwidth}{Histogram bin width (default = 0.1).}
 
@@ -27,7 +27,7 @@ plot_F_histogram(
 
 \item{show_f_density}{Logical. Show F-distribution curve overlay (default = TRUE).}
 
-\item{...}{Additional arguments.}
+\item{...}{Additional arguments to to method-specific functions.}
 }
 \value{
 A ggplot object.

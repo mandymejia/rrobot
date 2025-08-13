@@ -13,11 +13,11 @@ compute_RD(
 )
 }
 \arguments{
-\item{x}{A numeric matrix or data frame of dimensions T × Q (observations × variables).}
+\item{x}{A numeric matrix or data frame of dimensions T × p (observations × variables).}
 
 \item{mode}{Character string; either "auto" (default) to compute MCD internally or "manual" to use user-supplied values.}
 
-\item{cov_mcd}{Optional covariance matrix (Q × Q); required in "manual" mode.}
+\item{cov_mcd}{Optional covariance matrix (p × p); required in "manual" mode.}
 
 \item{ind_incld}{Optional vector of row indices used to compute the robust mean; required in "manual" mode.}
 
@@ -29,9 +29,9 @@ A list with elements:
 \item{ind_incld}{Vector of row indices used to compute the robust mean and covariance.}
 \item{ind_excld}{Vector of excluded row indices.}
 \item{h}{Number of included observations.}
-\item{xbar_star}{Robust mean vector (length Q).}
-\item{S_star}{Robust covariance matrix (Q × Q).}
-\item{invcov_sqrt}{Matrix square root of the inverse covariance matrix (Q × Q).}
+\item{xbar_star}{Robust mean vector (length p).}
+\item{S_star}{Robust covariance matrix (p × p).}
+\item{invcov_sqrt}{Matrix square root of the inverse covariance matrix (p × p).}
 \item{RD}{Squared robust distances for all observations (length T), or NULL if dist = FALSE.}
 \item{call}{The matched function call.}
 }

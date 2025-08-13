@@ -19,17 +19,17 @@ SHASH_out(
 )
 }
 \arguments{
-\item{x}{Numeric vector.}
+\item{x}{A numeric matrix or data frame of dimensions T × p (observations × variables).}
 
 \item{thr0}{Threshold for iterative convergence (default: 2.58).}
 
-\item{thr}{Final outlier threshold (default: 4).}
+\item{thr}{Threshold multiplier for outlier detection (default = 4).}
 
 \item{symmetric}{Logical. Use symmetric bounds for empirical rule.}
 
-\item{use_huber}{Logical. Use Huber loss in empirical rule.}
+\item{use_huber}{Logical. If TRUE, apply Huber-like soft rejection.}
 
-\item{upper_only}{Logical. Flag only right-tail outliers.}
+\item{upper_only}{Logical. If TRUE, use right-tail only.}
 
 \item{use_isotree}{Logical. Use isolation forest scores.}
 

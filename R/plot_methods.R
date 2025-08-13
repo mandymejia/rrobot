@@ -4,7 +4,7 @@
 #'
 #' @param x An object of class "RD" from RD() or threshold_RD().
 #' @param method Character string specifying threshold method. Auto-detected if NULL.
-#' @param ... Additional arguments passed to method-specific plotting functions.
+#' @inheritParams ...
 #' @return A ggplot object.
 #' @method plot RD
 #' @export
@@ -35,12 +35,12 @@ plot.RD <- function(x, method = NULL, ...) {
 #' Creates histogram of robust distances with F-distribution overlay and threshold.
 #'
 #' @param F_result F_result object from thresh_F().
-#' @param RD_obj RD_result object from compute_RD().
-#' @param alpha Significance level for threshold label (default = 0.01).
+#' @inheritParams RD_obj
+#' @inheritParams alpha
 #' @param binwidth Histogram bin width (default = 0.1).
 #' @param log Logical. Apply log10 transformation to x-axis (default = TRUE).
 #' @param show_f_density Logical. Show F-distribution curve overlay (default = TRUE).
-#' @param ... Additional arguments.
+#' @inheritParams ...
 #' @return A ggplot object.
 #' @export
 plot_F_histogram <- function(F_result, RD_obj, alpha = 0.01, binwidth = 0.1, log = FALSE, show_f_density = TRUE, ...) {

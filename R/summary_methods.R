@@ -1,6 +1,6 @@
 #' Summary method for SI results
 #' @param object An object of class "SI_result"
-#' @param ... Additional arguments (unused)
+#' @inheritParams ...
 #' @export
 summary.SI_result <- function(object, ...) {
   cat("Single Imputation (SI) Results\n")
@@ -21,7 +21,7 @@ summary.SI_result <- function(object, ...) {
 
 #' Summary method for SI_boot results
 #' @param object An object of class "SI_boot_result"
-#' @param ... Additional arguments (unused)
+#' @inheritParams ...
 #' @export
 summary.SI_boot_result <- function(object, ...) {
   cat("Single Imputation Bootstrap (SI_boot) Results\n")
@@ -37,7 +37,7 @@ summary.SI_boot_result <- function(object, ...) {
 
 #' Summary method for MI results
 #' @param object An object of class "MI_result"
-#' @param ... Additional arguments (unused)
+#' @inheritParams ...
 #' @export
 summary.MI_result <- function(object, ...) {
   cat("Multiple Imputation (MI) Results\n")
@@ -62,7 +62,7 @@ summary.MI_result <- function(object, ...) {
 
 #' Summary method for MI_boot results
 #' @param object An object of class "MI_boot_result"
-#' @param ... Additional arguments (unused)
+#' @inheritParams ...
 #' @export
 summary.MI_boot_result <- function(object, ...) {
   cat("Multiple Imputation Bootstrap (MI_boot) Results\n")
@@ -83,7 +83,7 @@ summary.MI_boot_result <- function(object, ...) {
 
 #' Summary method for Hardin & Rocke F results
 #' @param object An object of class "F_result" or "HR_result"
-#' @param ... Additional arguments (unused)
+#' @inheritParams ...
 #' @export
 summary.F_result <- function(object, ...) {
   cat("Hardin & Rocke F-Distribution Results\n")

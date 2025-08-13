@@ -4,7 +4,7 @@
 #' Overlays vertical threshold lines (computed via \code{\link{thresh_F}}) and a scaled F-distribution curve.
 #' Optionally applies log-scaling to the x-axis for better visualization of heavy-tailed data.
 #'
-#' @param data_list A numeric matrix (T × Q), or a named list of such matrices. Each matrix should contain multivariate observations.
+#' @param data_list A numeric matrix (T × p), or a named list of such matrices. Each matrix should contain multivariate observations.
 #' @param alpha Numeric in (0, 1). The quantile level used to compute the threshold via \code{\link{thresh_F}}. Default is 0.01.
 #' @param binwidth Bin width for the histogram of robust distances. Default is 0.1.
 #' @param log Logical. If TRUE, applies log1p() transformation to the x-axis. Default is FALSE.
@@ -39,7 +39,7 @@ plot_RD <- function(data_list,
 
   datanames <- names(data_list)
   t <- nrow(data_list[[1]])
-  Q <- ncol(data_list[[1]])
+  p <- ncol(data_list[[1]])
 
   df_RD <- df_HR <- df_HR_label <- NULL
 
@@ -54,7 +54,7 @@ plot_RD <- function(data_list,
     observation <- ifelse(seq_len(t) %in% ind_incld, "included", "excluded")
 
     # Compute threshold from thresh_F
-    fitF_obj <- thresh_F(Q, n = t, h = rob_obj$h, quantile = alpha)
+    fitF_obj <- thresh_F(p, n = t, h = rob_obj$h, quantile = alpha)
     q_HR <- fitF_obj$threshold * fitF_obj$scale
     scale_factor <- fitF_obj$scale
     df1 <- fitF_obj$df[1]

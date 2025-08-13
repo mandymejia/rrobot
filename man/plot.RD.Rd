@@ -11,7 +11,7 @@
 
 \item{method}{Character string specifying threshold method. Auto-detected if NULL.}
 
-\item{...}{Additional arguments passed to method-specific plotting functions.}
+\item{...}{Additional arguments to to method-specific functions.}
 }
 \value{
 A ggplot object.

@@ -10,7 +10,7 @@ SHASH_to_normal(x, mu, sigma, nu, tau)
 normal_to_SHASH(x, mu, sigma, nu, tau)
 }
 \arguments{
-\item{x}{Numeric vector of data to transform.}
+\item{x}{A numeric matrix or data frame of dimensions T × p (observations × variables).}
 
 \item{mu}{Parameter controlling location (mean) of the SHASH distribution.}
 

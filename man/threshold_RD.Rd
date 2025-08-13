@@ -22,33 +22,33 @@ threshold_RD(
 )
 }
 \arguments{
-\item{x}{A numeric matrix or data frame of dimensions T × Q.}
+\item{x}{A numeric matrix or data frame of dimensions T × p (observations × variables).}
 
-\item{w}{A numeric matrix (n_time × L) of low-kurtosis predictors (optional).}
+\item{w}{A numeric matrix (n_time × L) of low-kurtosis ICA components used as predictors (optional).}
 
 \item{threshold_method}{Character string; one of "all","SI","SI_boot","MI","MI_boot","F", "SHASH".}
 
-\item{RD_obj}{Pre-computed RD object from compute_RD().}
+\item{RD_obj}{Pre-computed RD_result object from \code{\link{compute_RD}}.}
 
 \item{impute_method}{Character string; imputation method for univariate outliers.}
 
-\item{cutoff}{Numeric; threshold multiplier for univariate outlier detection.}
+\item{cutoff}{A numeric value indicating how many MADs away from the median to flag as outliers. The default value is set to be 4.}
 
 \item{trans}{Character string; transformation method, one of "SHASH" or "robZ".}
 
-\item{M}{Integer; number of multiple imputation datasets.}
+\item{M}{Integer; number of multiply imputed datasets (default = 5).}
 
-\item{k}{Integer; number of perturbation cycles per imputation.}
+\item{k}{Integer; number of perturbation cycles per imputation (default = 10).}
 
-\item{alpha}{Numeric; significance level for quantile thresholding.}
+\item{alpha}{Significance level used to compute RD threshold (default = 0.01 for 99th percentile).}
 
-\item{quantile}{Numeric; upper quantile level for identifying outliers. # the expected False Positive Rate for the chosen threshold}
+\item{quantile}{Numeric in (0,1) specifying the upper quantile for thresholding; the expected False Positive Rate for the chosen threshold.}
 
 \item{verbose}{Logical; if TRUE, print progress messages.}
 
-\item{boot_quant}{Numeric; confidence level for bootstrap confidence intervals.}
+\item{boot_quant}{Numeric; confidence level for bootstrap confidence intervals (default = 0.95, for 95\% CI).}
 
-\item{B}{Integer; number of bootstrap samples.}
+\item{B}{Integer; number of bootstrap samples per imputed dataset (default = 1000).}
 }
 \value{
 A list with:

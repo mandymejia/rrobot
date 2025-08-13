@@ -18,19 +18,8 @@ set.seed(2025)
 data_matrix <- fMRIscrub::Dat1
 kurt_data <- ICA_extract_kurt(time_series = data_matrix)
 hk_data <- kurt_data$hk
-RD_org_obj <- compute_RD(x = hk_data, mode = "auto")
 
 
+out_result <- univOut(x = hk_data, cutoff = 4, method = "SHASH")
+RD_obj_shash <- compute_RD(x = out_result$x_norm, mode = "auto", dist = TRUE)
 
-
-
-
-SHASH_F_result <- thresh_SASH(x = hk_data, cutoff = 4, quantile = 0.01)
-SHASH_F_result$threshold
-
-
-
-
-HR_result <- thresh_F(Q = ncol(hk_data), n = nrow(hk_data), h = RD_org_obj$h, quantile = 0.01)
-HR_result$threshold
-summary(HR_result)
