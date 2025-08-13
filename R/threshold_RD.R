@@ -57,7 +57,11 @@ threshold_RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_
 
   RD_obj_shash <- NULL
   if (threshold_method %in% c("all", "SHASH")) {
-    RD_obj_shash <- compute_RD(x = out_result$x_norm, mode = "auto", dist = TRUE)
+    x_norm <- out_result$x_norm
+    # truncating extreme values to avoid numerical errors
+    x_norm[ x_norm > 100] <- 100
+    x_norm[ x_norm < -100] <- -100
+    RD_obj_shash <- compute_RD(x = x_norm, mode = "auto", dist = TRUE)
   }
 
   thresholds <- switch(threshold_method,
