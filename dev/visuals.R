@@ -83,5 +83,9 @@ ggplot(df2, aes(x = RD, fill = label)) +
         legend.box = "vertical",
         strip.text = element_text(face = "bold", size = 14))
 
-####-----------------------------------------------------------------------------
+####------scatterplot-----------------------------------------------------------
+df_scat <- data.frame(
+  RD = RD_abide1,
+  RDsh = RD_sh_abide1,
 
+)
