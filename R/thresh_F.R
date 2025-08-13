@@ -10,10 +10,10 @@
 #' This function is useful for deriving robust outlier detection thresholds
 #' in high-dimensional multivariate data contaminated by outliers.
 #'
-#' @param Q Integer. The number of variables (dimension of the data).
+#' @param p Integer. The number of variables (dimension of the data).
 #' @param n Integer. The total sample size.
 #' @param h Integer. The number of observations retained in the MCD subset.
-#' @param quantile Numeric in (0,1) specifying the upper quantile for thresholding.
+#' @inheritParams quantile
 #'
 #' @return A list with the following elements:
 #' \describe{
@@ -27,39 +27,39 @@
 #'
 #' @importFrom stats pchisq qchisq qf
 #' @export
-thresh_F <- function(Q, n, h, quantile) {
+thresh_F <- function(p, n, h, quantile) {
   call <- match.call()
 
   # Step 1: consistency correction factor
-  c <- pchisq(q = qchisq(p = h / n, df = Q), df = Q + 2) / (h / n)
+  c <- pchisq(q = qchisq(p = h / n, df = p), df = p + 2) / (h / n)
 
   # Step 2: asymptotic approximation for degrees of freedom
   alpha <- (n - h) / n
-  q_alpha <- qchisq(p = 1 - alpha, df = Q)
+  q_alpha <- qchisq(p = 1 - alpha, df = p)
 
-  c_alpha <- (1 - alpha) / pchisq(q = q_alpha, df = Q + 2)
-  c2 <- -0.5 * pchisq(q = q_alpha, df = Q + 2)
-  c3 <- -0.5 * pchisq(q = q_alpha, df = Q + 4)
+  c_alpha <- (1 - alpha) / pchisq(q = q_alpha, df = p + 2)
+  c2 <- -0.5 * pchisq(q = q_alpha, df = p + 2)
+  c3 <- -0.5 * pchisq(q = q_alpha, df = p + 4)
   c4 <- 3 * c3
 
   b1 <- c_alpha * (c3 - c4) / (1 - alpha)
-  b2 <- 0.5 + c_alpha * (c3 - (q_alpha / Q) * (c2 + (1 - alpha) / 2)) / (1 - alpha)
+  b2 <- 0.5 + c_alpha * (c3 - (q_alpha / p) * (c2 + (1 - alpha) / 2)) / (1 - alpha)
 
-  v1 <- (1 - alpha) * b1^2 * (alpha * (c_alpha * q_alpha / Q - 1)^2 - 1) -
-    2 * c3 * c_alpha^2 * (3 * (b1 - Q * b2)^2 + (Q + 2) * b2 * (2 * b1 - Q * b2))
+  v1 <- (1 - alpha) * b1^2 * (alpha * (c_alpha * q_alpha / p - 1)^2 - 1) -
+    2 * c3 * c_alpha^2 * (3 * (b1 - p * b2)^2 + (p + 2) * b2 * (2 * b1 - p * b2))
 
-  v2 <- n * (b1 * (b1 - Q * b2) * (1 - alpha))^2 * c_alpha^2
+  v2 <- n * (b1 * (b1 - p * b2) * (1 - alpha))^2 * c_alpha^2
   v <- v1 / v2
 
   m <- 2 / (c_alpha^2 * v)
 
   # Step 3: finite-sample correction
-  m <- m * exp(0.725 - 0.00663 * Q - 0.078 * log(n))
+  m <- m * exp(0.725 - 0.00663 * p - 0.078 * log(n))
 
-  df <- c(Q, m - Q + 1)
+  df <- c(p, m - p + 1)
 
   # scale factor
-  scale <- c * (m - Q + 1) / (Q * m)
+  scale <- c * (m - p + 1) / (p * m)
 
   # threshold inverse scaling due to the scaled RD stated in Hardin&Rocke(2005)
   q_sHR <- qf(p = 1 - quantile, df1 = df[1], df2 = df[2]) / scale

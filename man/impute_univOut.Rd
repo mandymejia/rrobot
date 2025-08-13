@@ -7,7 +7,7 @@
 impute_univOut(x, outlier_mask, method = c("mean", "interp"))
 }
 \arguments{
-\item{x}{A numeric matrix of dimension n_time × n_var (n_time time points, n_var variables).}
+\item{x}{A numeric matrix or data frame of dimensions T × p (observations × variables).}
 
 \item{outlier_mask}{A logical matrix (same dimensions as x) with TRUE at outlier positions.}
 

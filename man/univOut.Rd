@@ -7,7 +7,7 @@
 univOut(x, cutoff = 4, method = c("SHASH", "robZ"))
 }
 \arguments{
-\item{x}{A n_obv × n_var matrix of high kurtosis (n_obv number of time points, n_var number of variables).}
+\item{x}{A numeric matrix or data frame of dimensions T × p (observations × variables).}
 
 \item{cutoff}{A numeric value indicating how many MADs away from the median to flag as outliers. The default value is set to be 4.}
 

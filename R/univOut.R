@@ -6,8 +6,8 @@
 #'   \item \code{"robZ"}: Applies robust z-score outlier detection using median and MAD.
 #' }
 #'
-#' @param x A n_obv × n_var matrix of high kurtosis (n_obv number of time points, n_var number of variables).
-#' @param cutoff A numeric value indicating how many MADs away from the median to flag as outliers. The default value is set to be 4.
+#' @inheritParams x
+#' @inheritParams cutoff
 #' @param method Character string. One of \code{"SHASH"}, \code{"robust-YJ"}, or \code{"robZ"}.
 #'
 #' @return A list with elements:

@@ -170,7 +170,7 @@ RD_obj <- compute_RD(x = kurt_data$hk, mode = "auto")
 
 all_results <- threshold_RD(x = kurt_data$hk,
                             w = kurt_data$lk,
-                            threshold_method = "all", # Can do single methods, but should use RD for that.
+                            threshold_method = "SASH", # Can do single methods, but should use RD for that.
                             RD_obj = RD_obj,
                             M = 5,
                             k = 10,

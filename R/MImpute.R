@@ -2,11 +2,11 @@
 #'
 #' Performs multiple imputation using perturbed robust regression models.
 #'
-#' @param x A numeric matrix (n_time × Q) of high-kurtosis ICA components to be imputed.
-#' @param w A numeric matrix (n_time × L) of low-kurtosis ICA components used as predictors.
+#' @param x A numeric matrix (n_time × p) of high-kurtosis ICA components to be imputed.
+#' @inheritParams w
 #' @param outlier_matrix A logical matrix (same dim as x) indicating univariate outliers to be imputed.
-#' @param M Number of multiply imputed datasets (default = 5).
-#' @param k Number of perturbation cycles per imputation (default = 10).
+#' @inheritParams M
+#' @inheritParams k
 #'
 #' @return A list with:
 #' \describe{
@@ -23,13 +23,13 @@ MImpute <- function(x, w, outlier_matrix, M = 50, k = 100) {
   stopifnot(all(dim(x) == dim(outlier_matrix)))
 
   n_time <- nrow(x)
-  Q <- ncol(x)
+  p <- ncol(x)
   imp_datasets <- vector("list", M)
 
   for (m in seq_len(M)) {
     x_imp <- x
 
-    for (j in seq_len(Q)) {
+    for (j in seq_len(p)) {
       outlier_idx <- which(outlier_matrix[, j])
       if (length(outlier_idx) == 0) next
 
@@ -40,9 +40,9 @@ MImpute <- function(x, w, outlier_matrix, M = 50, k = 100) {
       if (sum(observed) < 10) next  # Skip if insufficient data
 
       # Combine predictors: w + other high-kurtosis variables (excluding j)
-      if (Q > 1) {
+      if (p > 1) {
         other_x <- x[, -j, drop = FALSE]
-        colnames(other_x) <- paste0("X", setdiff(seq_len(Q), j))
+        colnames(other_x) <- paste0("X", setdiff(seq_len(p), j))
         predictors_all <- cbind(w, other_x)
       } else {
         predictors_all <- w

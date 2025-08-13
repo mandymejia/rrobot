@@ -4,9 +4,9 @@
 #' using the robust covariance from the original data (via RD_org_obj) and
 #' recomputed mean from the imputed data.
 #'
-#' @param RD_org_obj A list from \code{\link{compute_RD}} containing original RD, S_star, ind_incld.
-#' @param imp_data A numeric matrix (T × Q) of imputed data.
-#' @param alpha Significance level for thresholding (e.g., 0.01 for 99th percentile).
+#' @inheritParams RD_org_obj
+#' @inheritParams imp_data
+#' @inheritParams alpha
 #'
 #' @return A list with:
 #' \describe{

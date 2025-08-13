@@ -7,15 +7,15 @@
 MImpute(x, w, outlier_matrix, M = 50, k = 100)
 }
 \arguments{
-\item{x}{A numeric matrix (n_time × Q) of high-kurtosis ICA components to be imputed.}
+\item{x}{A numeric matrix (n_time × p) of high-kurtosis ICA components to be imputed.}
 
-\item{w}{A numeric matrix (n_time × L) of low-kurtosis ICA components used as predictors.}
+\item{w}{A numeric matrix (n_time × L) of low-kurtosis ICA components used as predictors (optional).}
 
 \item{outlier_matrix}{A logical matrix (same dim as x) indicating univariate outliers to be imputed.}
 
-\item{M}{Number of multiply imputed datasets (default = 5).}
+\item{M}{Integer; number of multiply imputed datasets (default = 5).}
 
-\item{k}{Number of perturbation cycles per imputation (default = 10).}
+\item{k}{Integer; number of perturbation cycles per imputation (default = 10).}
 }
 \value{
 A list with:

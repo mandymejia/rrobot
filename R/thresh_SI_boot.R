@@ -4,12 +4,12 @@
 #' followed by bootstrap resampling over clean (included) indices. Returns the confidence interval
 #' bounds of the bootstrapped 99th percentiles.
 #'
-#' @param RD_org_obj A list from \code{\link{compute_RD}} on the original data.
-#' @param imp_data A numeric matrix (T × Q) of single-imputed data.
-#' @param B Integer; number of bootstrap resamples (default = 1000).
-#' @param alpha Significance level for quantile thresholding (default = 0.01).
-#' @param boot_quant Central quantile range for CI (default = 0.95, for 95% CI).
-#' @param verbose Logical; whether to print progress.
+#' @inheritParams RD_org_obj
+#' @inheritParams imp_data
+#' @inheritParams B
+#' @inheritParams alpha
+#' @inheritParams boot_quant
+#' @inheritParams verbose
 #'
 #' @return A list with:
 #' \describe{

@@ -8,12 +8,12 @@
 #' This yields M × B threshold candidates. The lower bound of their (1 - boot_quant) confidence interval
 #' is used as the final threshold. This is applied to the RD of the original data.
 #'
-#' @param RD_org_obj A list output from \code{\link{compute_RD}} on the original hk_data.
-#' @param imp_datasets A list of M numeric matrices (T × Q); multiply imputed datasets.
-#' @param B Number of bootstrap samples per imputed dataset (default = 1000).
-#' @param alpha Significance level for quantile thresholding (default = 0.01).
-#' @param boot_quant Confidence level for CI (default = 0.95).
-#' @param verbose Logical; if TRUE, prints progress.
+#' @inheritParams RD_org_obj
+#' @inheritParams imp_datasets
+#' @inheritParams B
+#' @inheritParams alpha
+#' @inheritParams boot_quant
+#' @inheritParams verbose
 #'
 #' @return A list with:
 #' \describe{
@@ -28,7 +28,7 @@ thresh_MI_boot <- function(RD_org_obj, imp_datasets, B = 1000, alpha = 0.01, boo
 
   M <- length(imp_datasets)
   n_time <- length(RD_org_obj$RD)
-  Q <- ncol(imp_datasets[[1]])
+  p <- ncol(imp_datasets[[1]])
   thresholds_all <- numeric(M * B)
 
   RD_org <- RD_org_obj$RD
@@ -41,7 +41,7 @@ thresh_MI_boot <- function(RD_org_obj, imp_datasets, B = 1000, alpha = 0.01, boo
 
   for (m in seq_len(M)) {
     imp_data <- imp_datasets[[m]]
-    stopifnot(nrow(imp_data) == n_time, ncol(imp_data) == Q)
+    stopifnot(nrow(imp_data) == n_time, ncol(imp_data) == p)
 
     for (b in seq_len(B)) {
       # Resample both included and excluded indices
@@ -57,7 +57,7 @@ thresh_MI_boot <- function(RD_org_obj, imp_datasets, B = 1000, alpha = 0.01, boo
       # Compute mean and RD on the bootstrapped data
       # mu_boot <- colMeans(imp_boot)
       mu_boot <- RD_org_obj$xbar_star # Don't re-compute mean
-      mu_mat <- matrix(mu_boot, nrow = nrow(imp_boot), ncol = Q, byrow = TRUE)
+      mu_mat <- matrix(mu_boot, nrow = nrow(imp_boot), ncol = p, byrow = TRUE)
 
       RD_boot <- rowSums(((imp_boot - mu_mat) %*% invcov_sqrt)^2)
       thresholds_all[idx] <- quantile(RD_boot, cutoff_q, na.rm = TRUE)

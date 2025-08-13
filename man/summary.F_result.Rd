@@ -9,7 +9,7 @@
 \arguments{
 \item{object}{An object of class "F_result" or "HR_result"}
 
-\item{...}{Additional arguments (unused)}
+\item{...}{Additional arguments to to method-specific functions.}
 }
 \description{
 Summary method for Hardin & Rocke F results

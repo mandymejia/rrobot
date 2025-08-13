@@ -2,7 +2,7 @@
 #'
 #' Transforms data between the SHASH (Sinh-Arcsinh) distribution and the standard normal distribution.
 #'
-#' @param x Numeric vector of data to transform.
+#' @inheritParams x
 #' @param mu Parameter controlling location (mean) of the SHASH distribution.
 #' @param sigma Parameter controlling spread (variance); must be positive (on log scale).
 #' @param nu Parameter controlling skewness.
@@ -19,10 +19,10 @@ SHASH_to_normal <- function(x, mu, sigma, nu, tau){
   stopifnot(is.numeric(sigma) && length(sigma) == 1)
   stopifnot(is.numeric(nu) && length(nu) == 1)
   stopifnot(is.numeric(tau) && length(tau) == 1)
-  
+
   sigma <- exp(sigma)
   tau   <- exp(tau)
-  
+
   sinh((tau * asinh((x - mu)/ (sigma * tau))) - nu)
 }
 
@@ -34,10 +34,10 @@ normal_to_SHASH <- function(x, mu, sigma, nu, tau){
   stopifnot(is.numeric(sigma) && length(sigma) == 1)
   stopifnot(is.numeric(nu) && length(nu) == 1)
   stopifnot(is.numeric(tau) && length(tau) == 1)
-  
+
   sigma <- exp(sigma)
   tau   <- exp(tau)
-  
+
   (sigma * tau * sinh((asinh(x) + nu) / tau)) + mu
 }
 
@@ -45,12 +45,12 @@ normal_to_SHASH <- function(x, mu, sigma, nu, tau){
 #'
 #' Detect univariate outliers using an iterative SHASH fitting process with optional pre-flagging strategies.
 #'
-#' @param x Numeric vector.
+#' @inheritParams x
 #' @param thr0 Threshold for iterative convergence (default: 2.58).
-#' @param thr Final outlier threshold (default: 4).
-#' @param symmetric Logical. Use symmetric bounds for empirical rule.
-#' @param use_huber Logical. Use Huber loss in empirical rule.
-#' @param upper_only Logical. Flag only right-tail outliers.
+#' @inheritParams thr
+#' @inheritParams symmetric
+#' @inheritParams use_huber
+#' @inheritParams upper_only
 #' @param use_isotree Logical. Use isolation forest scores.
 #' @param use_isoplus Logical. Use isolation forest with directional split.
 #' @param thr_isotree Score threshold for isolation forest.
@@ -80,7 +80,7 @@ SHASH_out <- function(x,
     stop("Cannot use `use_isoplus = TRUE` when `use_isotree = TRUE`. Set `use_isotree = FALSE`.")
   }
   if (!is.numeric(thr_isotree) || length(thr_isotree) != 1 || thr_isotree < 0 || thr_isotree > 1) stop("Threshold Isolation Forest 'thr_isotree' must be a positive numeric value between 0 and 1.")
-  
+
   params <- list(
     orig_values  = x,
     thr0         = thr0,
@@ -94,12 +94,12 @@ SHASH_out <- function(x,
     maxit        = maxit,
     weight_init  = weight_init
   )
-  
+
   na_locs   <- is.na(x)
   x_clean   <- x[!na_locs]
   n_clean   <- length(x_clean)
   x_med     <- median(x_clean)
-  
+
   if (!is.null(weight_init)) {
     weight_new <- as.logical(weight_init[!na_locs])
     iso_scores <- rep(NA_real_, n_clean)
@@ -139,12 +139,12 @@ SHASH_out <- function(x,
   }
 
   initial_weights_clean <- weight_new
-  
+
   norm_iters_clean <- matrix(NA_real_,    nrow=n_clean, ncol=maxit)
   indx_iters_clean <- matrix(NA_integer_, nrow=n_clean, ncol=maxit)
   iter <- 0
   success <- FALSE
-  
+
   repeat {
     iter <- iter + 1
     weight_old <- weight_new
@@ -153,36 +153,36 @@ SHASH_out <- function(x,
       weights=as.numeric(weight_new)
     )
     est <- gamlss::coefAll(mod)
-    
+
     x_norm_clean <- SHASH_to_normal(
       x_clean, mu=est$mu, sigma=est$sigma,
       nu=est$nu, tau=est$tau
     )
     norm_iters_clean[, iter] <- x_norm_clean
-    
+
     weight_new <- if (upper_only) {
       x_norm_clean <= thr0
     } else {
       abs(x_norm_clean) <= thr0
     }
     indx_iters_clean[, iter] <- as.integer(!weight_new)
-    
+
     if (isTRUE(all.equal(weight_old, weight_new))) {
       success <- TRUE
       break
     }
     if (iter >= maxit) break
   }
-  
+
   norm_iters_clean <- norm_iters_clean[, seq_len(iter), drop=FALSE]
   indx_iters_clean <- indx_iters_clean[, seq_len(iter), drop=FALSE]
-  
+
   final_idx_clean <- if (upper_only) {
     which(x_norm_clean > thr)
   } else {
     which(abs(x_norm_clean) > thr)
   }
-  
+
   n_orig <- length(x)
   pad_vec <- function(v) {
     v_full <- rep(NA, n_orig)
@@ -196,11 +196,11 @@ SHASH_out <- function(x,
   norm_iters_full[!na_locs, ] <- norm_iters_clean
   indx_iters_full     <- matrix(NA_integer_, nrow=n_orig, ncol=iter)
   indx_iters_full[!na_locs, ] <- indx_iters_clean
-  
+
   out_flag_full <- rep(FALSE, n_orig)
   out_flag_full[!na_locs][final_idx_clean] <- TRUE
   final_out_idx_full <- which(out_flag_full)
-  
+
   out <- list(
     out_idx         = final_out_idx_full,
     x_norm          = x_norm_full,
@@ -221,23 +221,23 @@ SHASH_out <- function(x,
 #'
 #' Detects outliers using the median ± threshold × MAD rule.
 #'
-#' @param x Numeric vector.
-#' @param thr Threshold multiplier (default = 4).
-#' @param symmetric Logical. If FALSE, use only upper tail.
-#' @param use_huber Logical. If TRUE, apply Huber-like soft rejection.
-#' @param upper_only Logical. If TRUE, use right-tail only.
+#' @inheritParams x
+#' @inheritParams thr
+#' @inheritParams symmetric
+#' @inheritParams use_huber
+#' @inheritParams upper_only
 #'
 #' @return Logical vector: TRUE = outlier, FALSE = inlier.
 #' @keywords internal
 emprule_rob <- function(x, thr = 4, symmetric = TRUE, use_huber = FALSE, upper_only = FALSE) {
   x_med <- median(x, na.rm = TRUE)
   mad_val <- 1.4826 * median(abs(x - x_med), na.rm = TRUE)
-  
+
   z <- (x - x_med) / mad_val
   if (use_huber) {
     z <- pmin(pmax(z, -thr), thr)  # shrink extreme z-scores
   }
-  
+
   if (upper_only) {
     out <- z > thr
   } else if (symmetric) {
@@ -245,7 +245,7 @@ emprule_rob <- function(x, thr = 4, symmetric = TRUE, use_huber = FALSE, upper_o
   } else {
     out <- z < -thr | z > thr
   }
-  
+
   out
 }
 

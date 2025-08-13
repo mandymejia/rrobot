@@ -9,7 +9,7 @@ thresh_MI(RD_org_obj, imp_datasets, alpha = 0.01)
 \arguments{
 \item{RD_org_obj}{Output list from \code{\link{compute_RD}} on the original data. Must contain $RD, $S_star, and $ind_incld.}
 
-\item{imp_datasets}{A list of M numeric matrices (T × Q), multiply imputed versions of original data.}
+\item{imp_datasets}{A list of M numeric matrices (T × p); multiply imputed datasets.}
 
 \item{alpha}{Significance level used to compute RD threshold (default = 0.01 for 99th percentile).}
 }

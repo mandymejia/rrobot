@@ -9,7 +9,7 @@
 \arguments{
 \item{object}{An object of class "MI_boot_result"}
 
-\item{...}{Additional arguments (unused)}
+\item{...}{Additional arguments to to method-specific functions.}
 }
 \description{
 Summary method for MI_boot results

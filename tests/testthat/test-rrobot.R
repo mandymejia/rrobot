@@ -35,7 +35,7 @@ test_that("Hardin-Rocke method gives consistent results", {
   setup_data <- readRDS(system.file("fixtures", "test_setup_data.rds", package = "rrobot"))
   reference <- readRDS(system.file("fixtures", "HR_reference.rds", package = "rrobot"))
 
-  result <- thresh_F(Q = ncol(setup_data$hk_data),
+  result <- thresh_F(p = ncol(setup_data$hk_data),
                   n = nrow(setup_data$hk_data),
                   h = setup_data$RD_org_obj$h,
                   quantile = 0.01)
@@ -128,8 +128,8 @@ test_that("threshold_RD 'all' method gives consistent results", {
   })
   # Test structure of results
   expect_type(result, "list")
-  expect_named(result, c("thresholds", "RD_obj", "call"))
-  expect_named(result$thresholds, c("SI", "SI_boot", "MI", "MI_boot", "F", "SASH"))
+  expect_named(result, c("thresholds", "RD_obj", "RD_obj_shash", "call"))
+  expect_named(result$thresholds, c("SI", "SI_boot", "MI", "MI_boot", "F", "SHASH"))
 
   # Test SI method matches reference
   expect_equal(result$thresholds$SI$SI_threshold, SI_ref$SI_threshold, tolerance = 1e-10)
@@ -189,4 +189,3 @@ test_that("RD method gives consistent results", {
   # Test that call is captured
   expect_true(is.call(result$call))
 })
-

@@ -13,7 +13,7 @@ plot_RD(
 )
 }
 \arguments{
-\item{data_list}{A numeric matrix (T × Q), or a named list of such matrices. Each matrix should contain multivariate observations.}
+\item{data_list}{A numeric matrix (T × p), or a named list of such matrices. Each matrix should contain multivariate observations.}
 
 \item{alpha}{Numeric in (0, 1). The quantile level used to compute the threshold via \code{\link{thresh_F}}. Default is 0.01.}
 
