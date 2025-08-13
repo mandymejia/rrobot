@@ -84,8 +84,58 @@ ggplot(df2, aes(x = RD, fill = label)) +
         strip.text = element_text(face = "bold", size = 14))
 
 ####------scatterplot-----------------------------------------------------------
-df_scat <- data.frame(
-  RD = RD_abide1,
-  RDsh = RD_sh_abide1,
+library(dplyr)
+library(ggplot2)
 
-)
+# Vectors of distances (same length n)
+RD       <- abide1_obj$RD_obj$RD
+RD_shash <- abide1_obj$RD_obj_shash$RD
+
+id <- seq_along(RD)
+
+stopifnot(length(RD) == length(RD_shash))
+
+incl_RD  <- id %in% abide1_obj$RD_obj$ind_incld
+incl_SH  <- id %in% abide1_obj$RD_obj_shash$ind_incld
+
+df <- tibble(
+  id, RD, RD_shash,
+  incl_RD  = incl_RD,
+  incl_SH  = incl_SH,
+  status = case_when(
+    incl_RD  &  incl_SH  ~ "Included by both",
+    !incl_RD  & !incl_SH  ~ "Excluded by both",
+    incl_RD  & !incl_SH  ~ "Only RD included",
+    !incl_RD  &  incl_SH  ~ "Only SHASH included"
+  )
+) %>%
+  # for log scales, remove non-positive or non-finite values
+  filter(is.finite(RD), is.finite(RD_shash), RD > 0, RD_shash > 0) %>%
+  mutate(status = factor(
+    status,
+    levels = c("Included by both", "Excluded by both", "Only RD included", "Only SHASH included")
+  ))
+
+ggplot(df, aes(x = RD, y = RD_shash, color = status)) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +     # y = x reference
+  geom_point(alpha = 0.8, size = 2) +
+  scale_x_log10() +
+  scale_y_log10() +
+  scale_color_manual(values = c(
+    "Included by both"  = "#1b9e77",
+    "Excluded by both"  = "#808080",
+    "Only RD included"  = "#d95f02",
+    "Only SHASH included" = "#7570b3"
+  )) +
+  labs(
+    x = "Robust Distance (RD)",
+    y = "Robust Distance (SHASH)",
+    color = "Agreement status",
+    title = "RD vs RD_SHASH"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "bottom")
+
+
+table(df$status)
+
