@@ -27,27 +27,26 @@ df_thresh <- data.frame(
 
 # Final ggplot
 library(ggplot2)
-ggplot(df1, aes(x = RD, fill = label)) +
+p1 <- ggplot(df1, aes(x = log(RD), fill = label)) +
   geom_histogram(aes(y = ..density..), bins = 40, position = "identity", alpha= 0.7, color = "black") +
   geom_vline(
     data = df_thresh,
-    aes(xintercept = threshold, color = method),
+    aes(xintercept = log(threshold), linetype = method, color = method),
     linewidth = 0.8
   ) +
-  scale_x_log10() +
+  # scale_x_log10() +
+  xlim(0, xmax) +
   scale_fill_manual(values = c("included" = "#009E73", "excluded" = "#D55E00")) +
   scale_color_manual(
     name = "Threshold",
-    values = c("SI" = "#1b9e77", "SI_boot" = "#d95f02", "MI" = "#7570b3", "MI_boot" = "#e7298a", "F" = "red")
+    values = c("SI" = "black", "SI_boot" = "black", "MI" = "gray", "MI_boot" = "gray", "F" = "red")
   ) +
-  geom_text(
-    data = df_thresh,
-    aes(x = threshold, y = Inf, label = method, color = method),
-    angle = 90, vjust = -0.9, hjust = 5, size = 4,
-    inherit.aes = FALSE, show.legend = FALSE
-  )+
+  scale_linetype_manual(
+    name = "Threshold",
+    values = c("SI" = 1, "SI_boot" = 2, "MI" = 1, "MI_boot" = 2, "F" = 1)
+  ) +
   labs(
-    x = "Robust Distance",
+    x = "log of Robust Distance",
     y = "Density",
     fill = "Observations"
   ) +
@@ -68,16 +67,19 @@ df2 <- data.frame(
                  "included", "excluded")
 )
 
+xmax <- log(max(RD_sh_abide1))
+
 df2$label <- factor(df2$label, levels = c("included", "excluded"))
 options(scipen = 999)
-ggplot(df2, aes(x = RD, fill = label)) +
+p2 <- ggplot(df2, aes(x = log(RD), fill = label)) +
   geom_histogram(aes(y = ..density..), bins = 40, position = "identity",
                  alpha = 0.7, color = "black") +
-  geom_vline(xintercept = abide1_obj$thresholds$SHASH$threshold,
+  geom_vline(xintercept = log(abide1_obj$thresholds$SHASH$threshold),
              color = "red", linewidth = 0.8, show.legend = FALSE) +
-  scale_x_log10() +
+  # scale_x_log10() +
+  xlim(0, xmax) +
   scale_fill_manual(values = c("included" = "#009E73", "excluded" = "#D55E00")) +
-  labs(x = "Robust Distance", y = "Density", fill = "Observations") +
+  labs(x = "log Robust Distance", y = "Density", fill = "Observations") +
   theme_minimal(base_size = 14) +
   theme(legend.position = "bottom",
         legend.box = "vertical",
@@ -118,6 +120,8 @@ df <- tibble(
 
 ggplot(df, aes(x = RD, y = RD_shash, color = status)) +
   geom_abline(slope = 1, intercept = 0, linetype = "dashed") +     # y = x reference
+  geom_hline(yintercept = 100) +
+  geom_vline(xintercept = 100) +
   geom_point(alpha = 0.8, size = 2) +
   scale_x_log10() +
   scale_y_log10() +
@@ -139,3 +143,8 @@ ggplot(df, aes(x = RD, y = RD_shash, color = status)) +
 
 table(df$status)
 
+
+gridExtra::grid.arrange(p1, p2, nrow= 2)
+
+
+# how to combine ethes
