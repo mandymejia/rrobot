@@ -49,7 +49,7 @@ test_that("Hardin-Rocke method gives consistent results", {
 
 
 test_that("SI_boot method gives consistent results", {
-  skip_on_ci()  # Skip on CI due to bootstrap randomness
+  # skip_on_ci()  # Skip on CI due to bootstrap randomness
   setup_data <- readRDS(system.file("fixtures", "test_setup_data.rds", package = "rrobot"))
   reference <- readRDS(system.file("fixtures", "SI_boot_reference.rds", package = "rrobot"))
 
@@ -71,7 +71,7 @@ test_that("SI_boot method gives consistent results", {
 })
 
 test_that("MI method gives consistent results", {
-  skip_on_ci()  # Skip on CI due to bootstrap randomness
+  # skip_on_ci()  # Skip on CI due to bootstrap randomness
   setup_data <- readRDS(system.file("fixtures", "test_setup_data.rds", package = "rrobot"))
   reference <- readRDS(system.file("fixtures", "MI_reference.rds", package = "rrobot"))
 
@@ -101,7 +101,7 @@ test_that("MI method gives consistent results", {
 })
 
 test_that("threshold_RD 'all' method gives consistent results", {
-  skip_on_ci()  # Skip on CI due to bootstrap randomness in MI methods
+  # skip_on_ci()  # Skip on CI due to bootstrap randomness in MI methods
   # Load test setup data
   setup_data <- readRDS(system.file("fixtures", "test_setup_data.rds", package = "rrobot"))
   # Load reference results for comparison
@@ -166,7 +166,7 @@ test_that("threshold_RD 'all' method gives consistent results", {
 })
 
 test_that("RD method gives consistent results", {
-  skip_on_ci()  # Skip on CI due to bootstrap randomness
+  # skip_on_ci()  # Skip on CI due to bootstrap randomness
   setup_data <- readRDS(system.file("fixtures", "test_setup_data.rds", package = "rrobot"))
   set.seed(2025)
   suppressWarnings({
