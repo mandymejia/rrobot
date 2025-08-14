@@ -146,5 +146,22 @@ table(df$status)
 
 gridExtra::grid.arrange(p1, p2, nrow= 2)
 
+#################################################################################
+## QQ plots before and after the SHASH transformation
+#################################################################################
+library(fMRIscrub)
+data_matrix <- fMRIscrub::Dat1
+kurt_data <- ICA_extract_kurt(time_series = data_matrix)
+hk <- kurt_data$hk
+dim(kurt_data$hk)
+Zhk <- hk
+Zhk[,] <- NA
+for(i in seq_len(ncol(hk))){
+  hk_i <- hk[,i]
+  Zhk[,i] <- SHASH_out(hk_i)$x_norm
+}
 
-# how to combine ethes
+qq_before <- qqnorm(hk[,1], plot.it = FALSE)
+qq_after  <- qqnorm(Zhk[,1], plot.it = FALSE)
+
+
