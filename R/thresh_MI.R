@@ -7,19 +7,20 @@
 #' @inheritParams RD_org_obj
 #' @inheritParams imp_datasets
 #' @inheritParams alpha
+#' @inheritParams boot_quant
 #' @inheritParams verbose
 #'
 #' @return A list with:
 #' \describe{
 #'   \item{thresholds}{Numeric vector of length M; (1 - alpha) quantiles of RD per imputed dataset.}
-#'   \item{LB95_CI}{Lower bound of the 95% confidence interval of thresholds (2.5th percentile).}
+#'   \item{threshold}{Lower bound of the confidence interval of thresholds.}
 #'   \item{call}{The matched function call.}
 #' }
 #'
 #' @importFrom stats quantile
 #' @importFrom expm sqrtm
 #' @export
-thresh_MI <- function(RD_org_obj, imp_datasets, alpha = 0.01, verbose = FALSE) {
+thresh_MI <- function(RD_org_obj, imp_datasets, alpha = 0.01, boot_quant = 0.95, verbose = FALSE) {
   stopifnot(is.list(RD_org_obj), !is.null(RD_org_obj$RD), !is.null(RD_org_obj$S_star), !is.null(RD_org_obj$ind_incld))
   stopifnot(is.list(imp_datasets), length(imp_datasets) > 1)
   if (verbose) message("Running MI method: thresholds across ", length(imp_datasets), " imputations...")
@@ -54,11 +55,11 @@ thresh_MI <- function(RD_org_obj, imp_datasets, alpha = 0.01, verbose = FALSE) {
     outlier_flags[, m] <- RD_orig > thresholds[m]
   }
 
-  LB95_CI <- quantile(thresholds, 0.025, na.rm = TRUE)
+  LB_CI <- quantile(thresholds, probs = (1 - boot_quant)/2, na.rm = TRUE)
 
   result <- list(
     thresholds = thresholds,
-    LB95_CI = LB95_CI,
+    threshold = LB_CI,
     call = call
   )
 

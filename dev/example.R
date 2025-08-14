@@ -46,7 +46,7 @@ SI_results <- thresh_SI(RD_org_obj = RD_org_obj
                  ,imp_data = imp_result$imp_data
                  ,alpha = 0.01)
 
-SI_results$SI_threshold
+SI_results$threshold
 summary(SI_results)
 
 #--2---SIBoot-------------------------------------------------------------------
@@ -54,7 +54,7 @@ SI_boot_results <- thresh_SI_boot( RD_org_obj = RD_org_obj
                             ,imp_data = imp_result$imp_data
                             , B = 500, alpha = 0.01, boot_quant = 0.95,
                             verbose = TRUE)
-SI_boot_results$LB_CI
+SI_boot_results$threshold
 SI_boot_results$UB_CI
 summary(SI_boot_results)
 
@@ -71,7 +71,6 @@ MI_results <- thresh_MI(RD_org_obj = RD_org_obj
                  , alpha = 0.01)
 
 MI_results$thresholds        # vector of 99th percentiles (length M)
-MI_results$voted_outliers    # logical vector: TRUE if outlier in > M/2 imputations
 summary(MI_results)
 
 #--4---MI Boot-----------------------------------------------------------------------
@@ -85,7 +84,7 @@ MI_boot_results <- thresh_MI_boot(
 )
 
 # Print the final threshold
-MI_boot_results$final_threshold
+MI_boot_results$threshold
 
 # See which time points were flagged as outliers
 which(MI_boot_results$flagged_outliers)
@@ -177,3 +176,4 @@ all_results <- threshold_RD(x = kurt_data$hk,
                             cutoff = 4,
                             trans = "SHASH",
                             quantile = 0.01)
+

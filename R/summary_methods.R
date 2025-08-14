@@ -5,12 +5,12 @@
 summary.SI_result <- function(object, ...) {
   cat("Single Imputation (SI) Results\n")
   cat("==============================\n")
-  cat("SI Threshold:", round(object$SI_threshold, 4), "\n")
+  cat("SI Threshold:", round(object$threshold, 4), "\n")
   cat("Number of observations:", length(object$SI_obj$RD), "\n")
   cat("Robust subset size:", object$SI_obj$h, "\n")
 
   # Can only show outlier count if we have the threshold and RD
-  outliers <- object$SI_obj$RD > object$SI_threshold
+  outliers <- object$SI_obj$RD > object$threshold
   n_outliers <- sum(outliers, na.rm = TRUE)
   pct_outliers <- round(100 * n_outliers / length(outliers), 1)
   cat("Outliers detected:", paste0(n_outliers, " (", pct_outliers, "%)"), "\n")
@@ -28,7 +28,7 @@ summary.SI_boot_result <- function(object, ...) {
   cat("=============================================\n")
   cat("Bootstrap samples:", length(object$quant99), "\n")
   cat("Confidence Interval:\n")
-  cat("  Lower bound:", round(object$LB_CI, 4), "\n")
+  cat("  Lower bound (threshold):", round(object$threshold, 4), "\n")
   cat("  Upper bound:", round(object$UB_CI, 4), "\n")
   cat("\n")
 
@@ -47,12 +47,8 @@ summary.MI_result <- function(object, ...) {
   cat("  Min:", round(min(object$thresholds), 4), "\n")
   cat("  Mean:", round(mean(object$thresholds), 4), "\n")
   cat("  Max:", round(max(object$thresholds), 4), "\n")
-  cat("95% CI Lower bound:", round(object$LB95_CI, 4), "\n")
-
-  majority_needed <- length(object$thresholds) %/% 2 + 1  # Integer division
-  cat("Voting rule: majority (>=", majority_needed, "out of", length(object$thresholds), "imputations)\n")
+  cat("Final threshold:", round(object$threshold, 4), "\n")
   cat("\n")
-
   invisible(object)
 }
 
@@ -66,7 +62,7 @@ summary.MI_boot_result <- function(object, ...) {
 
   total_bootstraps <- length(object$thresholds_all)
   cat("Total bootstrap samples:", total_bootstraps, "\n")
-  cat("Final threshold:", round(object$final_threshold, 4), "\n")
+  cat("Final threshold:", round(object$threshold, 4), "\n")
 
   n_outliers <- sum(object$flagged_outliers, na.rm = TRUE)
   pct_outliers <- round(100 * n_outliers / length(object$flagged_outliers), 1)

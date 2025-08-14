@@ -19,7 +19,7 @@ thresh_SI(RD_org_obj, imp_data, alpha = 0.01, verbose = FALSE)
 A list with:
 \describe{
 \item{SI_obj}{A list from \code{\link{compute_RD}} containing robust distances.}
-\item{SI_threshold}{Numeric threshold based on the (1 - alpha) quantile of RD.}
+\item{threshold}{Numeric threshold based on the (1 - alpha) quantile of RD.}
 \item{call}{The matched function call.}
 }
 }
