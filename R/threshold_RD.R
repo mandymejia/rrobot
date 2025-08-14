@@ -60,6 +60,8 @@ threshold_RD <- function(x, w = NULL, method = c("SI_boot", "MI", "MI_boot", "SI
 
   RD_obj_shash <- x_norm <- NULL
 
+  browser()
+
   if (method %in% c("all", "SHASH")) {
     if (verbose) message("Computing SHASH-transformed robust distances.")
     x_norm <- out_result$x_norm
