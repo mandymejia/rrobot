@@ -59,7 +59,7 @@ impute_univOut <- function(x, outlier_mask, method = c("mean", "interp")) {
 
   # Step 4: Return structured output
   list(
-    x_df     = as_tibble(NA_x, .name_repair = "unique"),
+    x_df = suppressMessages(as_tibble(NA_x, .name_repair = "unique")),
     NA_data  = NA_x,
     imp_data = imp_x,
     NA_locs  = NA_x_locs,

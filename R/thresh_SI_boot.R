@@ -14,7 +14,7 @@
 #' @return A list with:
 #' \describe{
 #'   \item{quant99}{Vector of 99th quantiles of RD for each bootstrap sample.}
-#'   \item{LB_CI}{Lower bound of the confidence interval for the 99th quantiles.}
+#'   \item{threshold}{Threshold based on lower bound of the confidence interval.}
 #'   \item{UB_CI}{Upper bound of the confidence interval for the 99th quantiles.}
 #'   \item{call}{The matched function call.}
 #' }
@@ -33,8 +33,7 @@ thresh_SI_boot <- function(RD_org_obj, imp_data,
   quant99 <- numeric(B)
   cutoff_q <- 1 - alpha
 
-  if (verbose) message("Running ", B, " bootstrap resamples...")
-
+  if (verbose) message("Running SI_boot method: ", B, " bootstrap samples...")
   for (b in seq_len(B)) {
     # Sample both included and excluded indices with replacement
     boot_idx_incld <- sample(ind_incld, size = length(ind_incld), replace = TRUE)
@@ -68,7 +67,7 @@ thresh_SI_boot <- function(RD_org_obj, imp_data,
 
   result <- list(
     quant99 = quant99,
-    LB_CI = LB_CI,
+    threshold = LB_CI,
     UB_CI = UB_CI,
     call = call
   )

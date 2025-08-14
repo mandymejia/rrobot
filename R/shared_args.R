@@ -94,8 +94,8 @@ NULL
 NULL
 
 #' Threshold_method parameter documentation
-#' @param threshold_method Character string; one of "all","SI","SI_boot","MI","MI_boot","F", "SHASH".
-#' @name threshold_method
+#' @param method Character string; one of "all","SI","SI_boot","MI","MI_boot","F", "SHASH".
+#' @name method
 NULL
 
 #' Trans parameter documentation

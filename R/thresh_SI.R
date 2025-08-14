@@ -7,15 +7,17 @@
 #' @inheritParams RD_org_obj
 #' @inheritParams imp_data
 #' @inheritParams alpha
+#' @inheritParams verbose
 #'
 #' @return A list with:
 #' \describe{
 #'   \item{SI_obj}{A list from \code{\link{compute_RD}} containing robust distances.}
-#'   \item{SI_threshold}{Numeric threshold based on the (1 - alpha) quantile of RD.}
+#'   \item{threshold}{Numeric threshold based on the (1 - alpha) quantile of RD.}
 #'   \item{call}{The matched function call.}
 #' }
 #' @export
-thresh_SI <- function(RD_org_obj, imp_data, alpha = 0.01) {
+thresh_SI <- function(RD_org_obj, imp_data, alpha = 0.01, verbose = FALSE) {
+  if (verbose) message("Running SI method: computing single imputation threshold...")
   call <- match.call()
 
   cov_mcd <- RD_org_obj$S_star
@@ -30,11 +32,11 @@ thresh_SI <- function(RD_org_obj, imp_data, alpha = 0.01) {
   )
 
   # Threshold = (1 - alpha) quantile of RD
-  SI_threshold <- quantile(SI_obj$RD, 1 - alpha, na.rm = TRUE)
+  threshold <- quantile(SI_obj$RD, 1 - alpha, na.rm = TRUE)
 
   result <- list(
     SI_obj = SI_obj,
-    SI_threshold = SI_threshold,
+    threshold = threshold,
     call = call
   )
 

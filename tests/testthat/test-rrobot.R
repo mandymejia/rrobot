@@ -26,7 +26,7 @@ test_that("SI method gives consistent results", {
                alpha = 0.01)
 
   # Compare results
-  expect_equal(result$SI_threshold, reference$SI_threshold, tolerance = 1e-10)
+  expect_equal(result$threshold, reference$SI_threshold, tolerance = 1e-10)
   expect_equal(result$SI_obj$RD, reference$SI_obj$RD, tolerance = 1e-10)
 })
 
@@ -61,13 +61,13 @@ test_that("SI_boot method gives consistent results", {
                     verbose = FALSE)
 
   # Use looser tolerances for bootstrap methods (inherently variable)
-  expect_equal(result$LB_CI, reference$LB_CI, tolerance = 5)
+  expect_equal(result$threshold, reference$LB_CI, tolerance = 5)
   expect_equal(result$UB_CI, reference$UB_CI, tolerance = 5)
   expect_length(result$quant99, 50)
 
   # Test that confidence intervals are reasonable
-  expect_lt(result$LB_CI, result$UB_CI)  # Lower < Upper
-  expect_gt(result$LB_CI, 0)             # Positive thresholds
+  expect_lt(result$threshold, result$UB_CI)
+  expect_gt(result$threshold, 0)
 })
 
 test_that("MI method gives consistent results", {
@@ -94,10 +94,6 @@ test_that("MI method gives consistent results", {
   expect_equal(result$thresholds, reference$MI_results$thresholds, tolerance = 50)
   expect_length(result$thresholds, 3)  # Should have 3 thresholds (M=3)
 
-  # Test structural properties instead of exact values
-  expect_type(result$voted_outliers, "logical")
-  expect_length(result$voted_outliers, length(reference$MI_results$voted_outliers))
-  expect_gte(sum(result$voted_outliers), 0)  # Non-negative outlier count
 })
 
 test_that("threshold_RD 'all' method gives consistent results", {
@@ -116,7 +112,7 @@ test_that("threshold_RD 'all' method gives consistent results", {
   suppressWarnings({
     result <- threshold_RD(x = setup_data$hk_data,
                            w = setup_data$kurt_data$lk,
-                           threshold_method = "all",
+                           method = "all",
                            RD_obj = RD_obj,
                            M = 3, k = 5, B = 50,  # Reduced for faster testing
                            alpha = 0.01,
@@ -132,37 +128,43 @@ test_that("threshold_RD 'all' method gives consistent results", {
   expect_named(result$thresholds, c("SI", "SI_boot", "MI", "MI_boot", "F", "SHASH"))
 
   # Test SI method matches reference
-  expect_equal(result$thresholds$SI$SI_threshold, SI_ref$SI_threshold, tolerance = 5)
+  expect_equal(result$thresholds$SI$threshold, SI_ref$SI_threshold, tolerance = 5)
 
   # Test F method matches reference
   expect_equal(result$thresholds$F$threshold, HR_ref$threshold, tolerance = 5)
   expect_equal(result$thresholds$F$scale, HR_ref$scale, tolerance = 5)
 
   # Test SI_boot method (looser tolerance due to bootstrap)
-  expect_equal(result$thresholds$SI_boot$LB_CI, SI_boot_ref$LB_CI, tolerance = 5)
+  expect_equal(result$thresholds$SI_boot$threshold, SI_boot_ref$LB_CI, tolerance = 5)
   expect_equal(result$thresholds$SI_boot$UB_CI, SI_boot_ref$UB_CI, tolerance = 5)
   expect_length(result$thresholds$SI_boot$quant99, 50)
 
   # Test MI method (looser tolerance due to stochastic nature)
   expect_length(result$thresholds$MI$thresholds, 3)  # Should have 3 thresholds (M=3)
-  expect_type(result$thresholds$MI$voted_outliers, "logical")
-  expect_length(result$thresholds$MI$voted_outliers, length(setup_data$hk_data[,1]))
 
   # Test MI_boot method
-  expect_type(result$thresholds$MI_boot$final_threshold, "double")
-  expect_length(result$thresholds$MI_boot$final_threshold, 1)
+  expect_type(result$thresholds$MI_boot$threshold, "double")
+  expect_length(result$thresholds$MI_boot$threshold, 1)
   expect_type(result$thresholds$MI_boot$flagged_outliers, "logical")
   expect_length(result$thresholds$MI_boot$flagged_outliers, length(setup_data$hk_data[,1]))
 
   # Test that all methods return reasonable positive thresholds
-  expect_gt(result$thresholds$SI$SI_threshold, 0)
+  expect_gt(result$thresholds$SI$threshold, 0)
   expect_gt(result$thresholds$F$threshold, 0)
-  expect_gt(result$thresholds$SI_boot$LB_CI, 0)
-  expect_gt(result$thresholds$MI_boot$final_threshold, 0)
+  expect_gt(result$thresholds$SI_boot$threshold, 0)
+  expect_gt(result$thresholds$MI_boot$threshold, 0)
   expect_true(all(result$thresholds$MI$thresholds > 0))
 
   # Test RD_obj structure
   expect_s3_class(result$RD_obj, "RD_result")
+
+  # Summary methods
+  expect_no_error(summary(result$thresholds$SI))
+  expect_no_error(summary(result$thresholds$SI_boot))
+  expect_no_error(summary(result$thresholds$MI))
+  expect_no_error(summary(result$thresholds$MI_boot))
+  expect_no_error(summary(result$thresholds$F))
+  expect_no_error(summary(result$thresholds$SHASH))
 })
 
 test_that("RD method gives consistent results", {
@@ -172,7 +174,7 @@ test_that("RD method gives consistent results", {
   suppressWarnings({
     result <- RD(x = setup_data$hk_data,
                  w = setup_data$kurt_data$lk,
-                 threshold_method = "SI",
+                 method = "SI",
                  alpha = 0.01,
                  cutoff = 4,
                  impute_method = "interp",

@@ -7,7 +7,7 @@
 RD(
   x,
   w = NULL,
-  threshold_method = c("SI_boot", "MI", "MI_boot", "SI", "F", "SHASH"),
+  method = c("SI_boot", "MI", "MI_boot", "SI", "F", "SHASH"),
   mode = "auto",
   cov_mcd = NULL,
   ind_incld = NULL,
@@ -29,7 +29,7 @@ RD(
 
 \item{w}{A numeric matrix (n_time × L) of low-kurtosis ICA components used as predictors (optional).}
 
-\item{threshold_method}{Character string; one of "all","SI","SI_boot","MI","MI_boot","F", "SHASH".}
+\item{method}{Character string; one of "all","SI","SI_boot","MI","MI_boot","F", "SHASH".}
 
 \item{mode}{Character string; either "auto" (default) to compute MCD internally or "manual" to use user-supplied values.}
 
@@ -60,7 +60,7 @@ RD(
 \item{B}{Integer; number of bootstrap samples per imputed dataset (default = 1000).}
 }
 \value{
-Depends on threshold_method:
+Depends on method:
 \describe{
 \item{Single method}{Returns the result from the specific threshold method.}
 \item{RD_obj}{The robust distance object from compute_RD().}

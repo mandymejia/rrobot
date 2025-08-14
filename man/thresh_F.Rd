@@ -4,7 +4,7 @@
 \alias{thresh_F}
 \title{Fit F-distribution Parameters for MCD-based Robust Distances}
 \usage{
-thresh_F(p, n, h, quantile)
+thresh_F(p, n, h, quantile, SHASH = FALSE, verbose = FALSE)
 }
 \arguments{
 \item{p}{Integer. The number of variables (dimension of the data).}
@@ -14,6 +14,10 @@ thresh_F(p, n, h, quantile)
 \item{h}{Integer. The number of observations retained in the MCD subset.}
 
 \item{quantile}{Numeric in (0,1) specifying the upper quantile for thresholding; the expected False Positive Rate for the chosen threshold.}
+
+\item{SHASH}{Boolean. If running SHASH variant.}
+
+\item{verbose}{Logical; if TRUE, print progress messages.}
 }
 \value{
 A list with the following elements:

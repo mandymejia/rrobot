@@ -14,6 +14,8 @@
 #' @param n Integer. The total sample size.
 #' @param h Integer. The number of observations retained in the MCD subset.
 #' @inheritParams quantile
+#' @param SHASH Boolean. If running SHASH variant.
+#' @inheritParams verbose
 #'
 #' @return A list with the following elements:
 #' \describe{
@@ -27,7 +29,8 @@
 #'
 #' @importFrom stats pchisq qchisq qf
 #' @export
-thresh_F <- function(p, n, h, quantile) {
+thresh_F <- function(p, n, h, quantile, SHASH = FALSE, verbose = FALSE) {
+  if (verbose) message("Running ", if (SHASH) "SHASH" else "F", " method: F-distribution threshold...")
   call <- match.call()
 
   # Step 1: consistency correction factor

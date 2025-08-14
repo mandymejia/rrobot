@@ -37,14 +37,14 @@ data_matrix <- fMRIscrub::Dat1
 kurt_data <- ICA_extract_kurt(time_series = data_matrix)
 
 result_F <- RD(x = kurt_data$hk,
-               threshold_method = "F",
+               method = "F",
                mode = "auto",
                quantile = 0.01)
 
 set.seed(2025)
 RD_obj <- compute_RD(x = kurt_data$hk, mode = "auto")
 result_F_thresh <- threshold_RD(x = kurt_data$hk,
-                                threshold_method = "F",
+                                method = "F",
                                 RD_obj = RD_obj,
                                 quantile = 0.01)
 

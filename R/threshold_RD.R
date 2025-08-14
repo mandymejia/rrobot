@@ -4,7 +4,7 @@
 #'
 #' @inheritParams x
 #' @inheritParams w
-#' @inheritParams threshold_method
+#' @inheritParams method
 #' @inheritParams RD_obj
 #' @inheritParams impute_method
 #' @inheritParams cutoff
@@ -25,7 +25,7 @@
 #' }
 #'
 #' @export
-threshold_RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_boot", "SI","F", "SHASH", "all"), RD_obj = NULL,
+threshold_RD <- function(x, w = NULL, method = c("SI_boot", "MI", "MI_boot", "SI","F", "SHASH", "all"), RD_obj = NULL,
                                      # impute_univOut paramters
                                      impute_method = "mean",
                                      # univOut parameters
@@ -41,22 +41,26 @@ threshold_RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_
                                      boot_quant = 0.95,
                                      B = 1000) {
   call <- match.call()
-  threshold_method <- match.arg(threshold_method)
+  method <- match.arg(method)
 
   # Data pre-processing
-  stopifnot("When threshold_method = 'SHASH', trans must also be 'SHASH'" = !(threshold_method == "SHASH" && trans != "SHASH"))
+  stopifnot("When method = 'SHASH', trans must also be 'SHASH'" = !(method == "SHASH" && trans != "SHASH"))
   stopifnot("RD_obj is required from compute_RD()" = !is.null(RD_obj))
 
+  if (verbose) message("Detecting univariate outliers using ", trans, " method.")
   out_result <- univOut(x = x, cutoff = cutoff, method = trans) # univariate outlier detection
+  if (verbose) message("Imputing detected outliers using ", impute_method, " method.")
   imp_result <- impute_univOut(x = x, outlier_mask = out_result$outliers, method = impute_method) # univariate outlier imputation
 
 
-  if (threshold_method %in% c("all", "MI", "MI_boot")) {
+  if (method %in% c("all", "MI", "MI_boot")) {
+    if (verbose) message("Generating ", M, " multiply imputed datasets.")
     multiple_imp <- MImpute(x = imp_result$imp_data, w = w, outlier_matrix = out_result$outliers, M = M, k = k)
   }
 
   RD_obj_shash <- NULL
-  if (threshold_method %in% c("all", "SHASH")) {
+  if (method %in% c("all", "SHASH")) {
+    if (verbose) message("Computing SHASH-transformed robust distances.")
     x_norm <- out_result$x_norm
     # truncating extreme values to avoid numerical errors
     x_norm[ x_norm > 100] <- 100
@@ -64,30 +68,31 @@ threshold_RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_
     RD_obj_shash <- compute_RD(x = x_norm, mode = "auto", dist = TRUE)
   }
 
-  thresholds <- switch(threshold_method,
-                   "SI" = thresh_SI(RD_org_obj = RD_obj, imp_data = imp_result$imp_data, alpha = alpha),
+  thresholds <- switch(method,
+
+                   "SI" = thresh_SI(RD_org_obj = RD_obj, imp_data = imp_result$imp_data, alpha = alpha, verbose = verbose),
 
                    "SI_boot" = thresh_SI_boot(RD_org_obj = RD_obj, imp_data = imp_result$imp_data,
                                               B = B, alpha = alpha, boot_quant = boot_quant, verbose = verbose),
 
-                   "MI" = thresh_MI(RD_org_obj = RD_obj, imp_datasets = multiple_imp$imp_datasets, alpha = alpha),
+                   "MI" = thresh_MI(RD_org_obj = RD_obj, imp_datasets = multiple_imp$imp_datasets, alpha = alpha, verbose = verbose),
 
                    "MI_boot" = thresh_MI_boot(RD_org_obj = RD_obj, imp_datasets = multiple_imp$imp_datasets,
                                               B = B, alpha = alpha, boot_quant = boot_quant, verbose = verbose),
 
-                   "F" = thresh_F(p = ncol(x), n = nrow(x), h = RD_obj$h, quantile = quantile),
+                   "F" = thresh_F(p = ncol(x), n = nrow(x), h = RD_obj$h, quantile = quantile, verbose = verbose),
 
-                   "SHASH" = thresh_F(p = ncol(x), n = nrow(x), h = RD_obj_shash$h, quantile = quantile),
+                   "SHASH" = thresh_F(p = ncol(x), n = nrow(x), h = RD_obj_shash$h, quantile = quantile, verbose = verbose),
 
                    "all" = list(
-                     SI = thresh_SI(RD_org_obj = RD_obj, imp_data = imp_result$imp_data, alpha = alpha),
+                     SI = thresh_SI(RD_org_obj = RD_obj, imp_data = imp_result$imp_data, alpha = alpha, verbose = verbose),
                      SI_boot = thresh_SI_boot(RD_org_obj = RD_obj, imp_data = imp_result$imp_data,
                                               B = B, alpha = alpha, boot_quant = boot_quant, verbose = verbose),
-                     MI = thresh_MI(RD_org_obj = RD_obj, imp_datasets = multiple_imp$imp_datasets, alpha = alpha),
+                     MI = thresh_MI(RD_org_obj = RD_obj, imp_datasets = multiple_imp$imp_datasets, alpha = alpha, verbose = verbose),
                      MI_boot = thresh_MI_boot(RD_org_obj = RD_obj, imp_datasets = multiple_imp$imp_datasets,
                                               B = B, alpha = alpha, boot_quant = boot_quant, verbose = verbose),
-                     F = thresh_F(p = ncol(x), n = nrow(x), h = RD_obj$h, quantile = quantile),
-                     SHASH = thresh_F(p = ncol(x), n = nrow(x), h = RD_obj_shash$h, quantile = quantile)
+                     F = thresh_F(p = ncol(x), n = nrow(x), h = RD_obj$h, quantile = quantile, verbose = verbose),
+                     SHASH = thresh_F(p = ncol(x), n = nrow(x), h = RD_obj_shash$h, quantile = quantile, SHASH = TRUE, verbose = verbose)
                    )
   )
 
