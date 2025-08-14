@@ -150,6 +150,7 @@ gridExtra::grid.arrange(p1, p2, nrow= 2)
 ## QQ plots before and after the SHASH transformation
 #################################################################################
 library(fMRIscrub)
+library(ggplot2)
 data_matrix <- fMRIscrub::Dat1
 kurt_data <- ICA_extract_kurt(time_series = data_matrix)
 hk <- kurt_data$hk
@@ -164,4 +165,74 @@ for(i in seq_len(ncol(hk))){
 qq_before <- qqnorm(hk[,1], plot.it = FALSE)
 qq_after  <- qqnorm(Zhk[,1], plot.it = FALSE)
 
+df_qq <- rbind(
+  data.frame(Theoretical = qq_before$x,
+             Sample = qq_before$y,
+             Type = "Before"),
+  data.frame(Theoretical = qq_after$x,
+             Sample = qq_after$y,
+             Type = "After")
+)
+
+# Symmetric axis limits
+lim <- max(abs(c(df_qq$Theoretical, df_qq$Sample)))
+
+ggplot(df_qq, aes(x = Theoretical, y = Sample, color = Type)) +
+  geom_point(alpha = 0.7) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
+  coord_equal(xlim = c(-3,3), ylim = c(-3, 3)) +
+  labs(title = "QQ Plot: Before vs After SHASH Transformation",
+       x = "Theoretical Quantiles (N(0,1))",
+       y = "Sample Quantiles") +
+  scale_color_manual(values = c("Before" = "lightblue",
+                                "After" = "lightgreen")) +
+  theme_minimal(base_size = 14)
+
+
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(purrr)
+
+# Ensure columns have names
+if (is.null(colnames(hk))) colnames(hk) <- paste0("V", seq_len(ncol(hk)))
+if (is.null(colnames(Zhk))) colnames(Zhk) <- colnames(hk)
+
+# Helper: make QQ df for one vector
+qq_df_one <- function(x, type_label) {
+  q <- qqnorm(x, plot.it = FALSE)
+  data.frame(Theoretical = q$x, Sample = q$y, Type = type_label, stringsAsFactors = FALSE)
+}
+
+# Build combined QQ data for all columns
+df_qq_all <- map_dfr(colnames(hk), function(nm){
+  before <- qq_df_one(hk[, nm],  "Before(ABIDE1)")
+  after  <- qq_df_one(Zhk[, nm], "After (SHASH-Normal)")
+  bind_rows(before, after) %>% mutate(Column = nm)
+})
+
+# to order variables from 1 to 25
+df_qq_all$Column <- factor(
+  df_qq_all$Column,
+  levels = paste0("V", seq_len(ncol(hk)))  # forces V1, V2, ..., V25 order
+)
+
+# Symmetric limits (global); adjust 'cap' if you prefer wider/tighter view
+cap <- 4
+lim <- cap
+
+ggplot(df_qq_all, aes(x = Theoretical, y = Sample, color = Type)) +
+  geom_point(alpha = 0.6, size = 0.9) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", alpha = 0.6) +
+  coord_equal(xlim = c(-lim, lim), ylim = c(-lim, lim)) +
+  facet_wrap(~ Column, scales = "fixed") +
+  labs(title = "QQ Plots: Before vs After SHASH Transformation (All Columns)",
+       x = "Theoretical Quantiles (N(0,1))",
+       y = "Sample Quantiles") +
+  scale_color_manual(values = c(
+    "Before(ABIDE1)"   = "pink",
+    "After (SHASH-Normal)"  = "seagreen3"
+  )) +
+  theme_minimal(base_size = 13)
 
