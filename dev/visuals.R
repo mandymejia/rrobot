@@ -184,7 +184,7 @@ ggplot(df_qq, aes(x = Theoretical, y = Sample, color = Type)) +
   labs(title = "QQ Plot: Before vs After SHASH Transformation",
        x = "Theoretical Quantiles (N(0,1))",
        y = "Sample Quantiles") +
-  scale_color_manual(values = c("Before" = "lightblue",
+  scale_color_manual(values = c("Before" = "#FF99FF",
                                 "After" = "lightgreen")) +
   theme_minimal(base_size = 14)
 
@@ -231,8 +231,14 @@ ggplot(df_qq_all, aes(x = Theoretical, y = Sample, color = Type)) +
        x = "Theoretical Quantiles (N(0,1))",
        y = "Sample Quantiles") +
   scale_color_manual(values = c(
-    "Before(ABIDE1)"   = "pink",
-    "After (SHASH-Normal)"  = "seagreen3"
+    "Before(ABIDE1)"   = "#990000",
+    "After (SHASH-Normal)"  = "#339900"
   )) +
   theme_minimal(base_size = 13)
 
+
+###  adding the F density line over the RD histogram for SHASH
+# truncate the values
+
+
+plot_RD()
