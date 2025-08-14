@@ -12,7 +12,6 @@
 #' @return A list with:
 #' \describe{
 #'   \item{thresholds}{Numeric vector of length M; (1 - alpha) quantiles of RD per imputed dataset.}
-#'   \item{voted_outliers}{Logical vector (length T); TRUE if RD > threshold in > M/2 imputations.}
 #'   \item{LB95_CI}{Lower bound of the 95% confidence interval of thresholds (2.5th percentile).}
 #'   \item{call}{The matched function call.}
 #' }
@@ -55,12 +54,10 @@ thresh_MI <- function(RD_org_obj, imp_datasets, alpha = 0.01, verbose = FALSE) {
     outlier_flags[, m] <- RD_orig > thresholds[m]
   }
 
-  voted_outliers <- rowSums(outlier_flags) > (M / 2)
   LB95_CI <- quantile(thresholds, 0.025, na.rm = TRUE)
 
   result <- list(
     thresholds = thresholds,
-    voted_outliers = voted_outliers,
     LB95_CI = LB95_CI,
     call = call
   )

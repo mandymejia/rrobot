@@ -19,7 +19,6 @@ thresh_MI(RD_org_obj, imp_datasets, alpha = 0.01, verbose = FALSE)
 A list with:
 \describe{
 \item{thresholds}{Numeric vector of length M; (1 - alpha) quantiles of RD per imputed dataset.}
-\item{voted_outliers}{Logical vector (length T); TRUE if RD > threshold in > M/2 imputations.}
 \item{LB95_CI}{Lower bound of the 95\% confidence interval of thresholds (2.5th percentile).}
 \item{call}{The matched function call.}
 }

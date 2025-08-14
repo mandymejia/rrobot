@@ -94,10 +94,6 @@ test_that("MI method gives consistent results", {
   expect_equal(result$thresholds, reference$MI_results$thresholds, tolerance = 50)
   expect_length(result$thresholds, 3)  # Should have 3 thresholds (M=3)
 
-  # Test structural properties instead of exact values
-  expect_type(result$voted_outliers, "logical")
-  expect_length(result$voted_outliers, length(reference$MI_results$voted_outliers))
-  expect_gte(sum(result$voted_outliers), 0)  # Non-negative outlier count
 })
 
 test_that("threshold_RD 'all' method gives consistent results", {
@@ -145,8 +141,6 @@ test_that("threshold_RD 'all' method gives consistent results", {
 
   # Test MI method (looser tolerance due to stochastic nature)
   expect_length(result$thresholds$MI$thresholds, 3)  # Should have 3 thresholds (M=3)
-  expect_type(result$thresholds$MI$voted_outliers, "logical")
-  expect_length(result$thresholds$MI$voted_outliers, length(setup_data$hk_data[,1]))
 
   # Test MI_boot method
   expect_type(result$thresholds$MI_boot$final_threshold, "double")
@@ -163,6 +157,14 @@ test_that("threshold_RD 'all' method gives consistent results", {
 
   # Test RD_obj structure
   expect_s3_class(result$RD_obj, "RD_result")
+
+  # Summary methods
+  expect_no_error(summary(result$thresholds$SI))
+  expect_no_error(summary(result$thresholds$SI_boot))
+  expect_no_error(summary(result$thresholds$MI))
+  expect_no_error(summary(result$thresholds$MI_boot))
+  expect_no_error(summary(result$thresholds$F))
+  expect_no_error(summary(result$thresholds$SHASH))
 })
 
 test_that("RD method gives consistent results", {
