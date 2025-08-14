@@ -205,9 +205,16 @@ qq_df_one <- function(x, type_label) {
   data.frame(Theoretical = q$x, Sample = q$y, Type = type_label, stringsAsFactors = FALSE)
 }
 
+scale_MAD <- function(x){
+  x_med <- median(x, na.rm = TRUE)
+  mad_val <- 1.4826 * median(abs(x - x_med), na.rm = TRUE)
+  z <- (x - x_med) / mad_val
+}
+
+
 # Build combined QQ data for all columns
 df_qq_all <- map_dfr(colnames(hk), function(nm){
-  before <- qq_df_one(hk[, nm],  "Before(ABIDE1)")
+  before <- qq_df_one(scale_MAD(hk[, nm]),  "Before(ABIDE1)")
   after  <- qq_df_one(Zhk[, nm], "After (SHASH-Normal)")
   bind_rows(before, after) %>% mutate(Column = nm)
 })
@@ -239,6 +246,9 @@ ggplot(df_qq_all, aes(x = Theoretical, y = Sample, color = Type)) +
 
 ###  adding the F density line over the RD histogram for SHASH
 # truncate the values
+Zhk[ Zhk > 100] <- 100
+Zhk[ Zhk < -100] <- -100
 
+rrobot::plot_RD(data_list = Zhk, log = TRUE)
+FP_plotRD(Zhk, log = TRUE)
 
-plot_RD()

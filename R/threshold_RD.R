@@ -58,7 +58,8 @@ threshold_RD <- function(x, w = NULL, method = c("SI_boot", "MI", "MI_boot", "SI
     multiple_imp <- MImpute(x = imp_result$imp_data, w = w, outlier_matrix = out_result$outliers, M = M, k = k)
   }
 
-  RD_obj_shash <- NULL
+  RD_obj_shash <- x_norm <- NULL
+
   if (method %in% c("all", "SHASH")) {
     if (verbose) message("Computing SHASH-transformed robust distances.")
     x_norm <- out_result$x_norm
@@ -100,6 +101,7 @@ threshold_RD <- function(x, w = NULL, method = c("SI_boot", "MI", "MI_boot", "SI
     thresholds = thresholds,
     RD_obj = RD_obj,
     RD_obj_shash = RD_obj_shash,
+    x_norm = x_norm,
     call = call
   )
 
