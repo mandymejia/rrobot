@@ -1,12 +1,12 @@
 #' Plot Robust Mahalanobis distances and theoretical threshold from F-distribution
 #'
 #' @param data A numeric matrix (T × Q) containing multivariate observations (rows = time/obs, cols = variables).
-#' @param alpha Numeric in (0, 1). Quantile level used to compute the threshold via Fit_F(). Default 0.01.
+#' @param alpha Numeric in (0, 1). Quantile level used to compute the threshold via tresh_F(). Default 0.01.
 #' @param binwidth Bin width for the histogram of robust distances. Default 0.1.
 #' @param log Logical. If TRUE, applies log10 scale to the x-axis (on 1 + x). Default FALSE.
 #' @param show_f_density Logical. Draw scaled F-density curve. Default TRUE.
 #' @return A ggplot object.
-#' @seealso comp_RD, Fit_F
+#' @seealso comp_RD, tresh_F
 #' @export
 plot_RD <- function(data,
                     alpha = 0.01,
@@ -29,8 +29,8 @@ plot_RD <- function(data,
   ind_incld  <- rob_obj$ind_incld
   observation <- ifelse(seq_len(Tn) %in% ind_incld, "included", "excluded")
 
-  # --- F-threshold via Fit_F ---
-  fitF_obj <- Fit_F(Q, n = Tn, h = rob_obj$h, quantile = alpha)
+  # --- F-threshold via tresh_F ---
+  fitF_obj <- tresh_F(Q, n = Tn, h = rob_obj$h, quantile = alpha)
   q_HR     <- fitF_obj$threshold * fitF_obj$scale
   scale_x  <- fitF_obj$scale
   df1      <- fitF_obj$df[1]
