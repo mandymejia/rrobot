@@ -8,7 +8,7 @@
 #' @return A ggplot object.
 #' @seealso compute_RD, tresh_F
 #' @export
-plot_RD <- function(data,
+FP_plotRD <- function(data,
                     alpha = 0.01,
                     binwidth = 0.1,
                     log = FALSE,
