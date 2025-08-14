@@ -6,7 +6,7 @@
 #' @param log Logical. If TRUE, applies log10 scale to the x-axis (on 1 + x). Default FALSE.
 #' @param show_f_density Logical. Draw scaled F-density curve. Default TRUE.
 #' @return A ggplot object.
-#' @seealso comp_RD, tresh_F
+#' @seealso compute_RD, tresh_F
 #' @export
 plot_RD <- function(data,
                     alpha = 0.01,
@@ -18,13 +18,13 @@ plot_RD <- function(data,
   if (!is.matrix(data) || !is.numeric(data))
     stop("`data` must be a numeric matrix (T × Q).")
   if (any(!is.finite(colSums(is.na(data)))))
-    warning("Data contain NA values; comp_RD() must handle them appropriately.")
+    warning("Data contain NA values; compute_RD() must handle them appropriately.")
 
   Tn <- nrow(data)
   Q  <- ncol(data)
 
   # --- robust distances & inclusion mask ---
-  rob_obj    <- comp_RD(data)
+  rob_obj    <- compute_RD(data)
   RD         <- rob_obj$RD
   ind_incld  <- rob_obj$ind_incld
   observation <- ifelse(seq_len(Tn) %in% ind_incld, "included", "excluded")
