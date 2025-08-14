@@ -7,6 +7,7 @@
 #' @inheritParams RD_org_obj
 #' @inheritParams imp_datasets
 #' @inheritParams alpha
+#' @inheritParams verbose
 #'
 #' @return A list with:
 #' \describe{
@@ -19,9 +20,10 @@
 #' @importFrom stats quantile
 #' @importFrom expm sqrtm
 #' @export
-thresh_MI <- function(RD_org_obj, imp_datasets, alpha = 0.01) {
+thresh_MI <- function(RD_org_obj, imp_datasets, alpha = 0.01, verbose = FALSE) {
   stopifnot(is.list(RD_org_obj), !is.null(RD_org_obj$RD), !is.null(RD_org_obj$S_star), !is.null(RD_org_obj$ind_incld))
   stopifnot(is.list(imp_datasets), length(imp_datasets) > 1)
+  if (verbose) message("Running MI method: thresholds across ", length(imp_datasets), " imputations...")
 
   call <- match.call()
 

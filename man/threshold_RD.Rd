@@ -7,7 +7,7 @@
 threshold_RD(
   x,
   w = NULL,
-  threshold_method = c("SI_boot", "MI", "MI_boot", "SI", "F", "SHASH", "all"),
+  method = c("SI_boot", "MI", "MI_boot", "SI", "F", "SHASH", "all"),
   RD_obj = NULL,
   impute_method = "mean",
   cutoff = 4,
@@ -26,7 +26,7 @@ threshold_RD(
 
 \item{w}{A numeric matrix (n_time × L) of low-kurtosis ICA components used as predictors (optional).}
 
-\item{threshold_method}{Character string; one of "all","SI","SI_boot","MI","MI_boot","F", "SHASH".}
+\item{method}{Character string; one of "all","SI","SI_boot","MI","MI_boot","F", "SHASH".}
 
 \item{RD_obj}{Pre-computed RD_result object from \code{\link{compute_RD}}.}
 

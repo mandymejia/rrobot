@@ -92,15 +92,11 @@ which(MI_boot_results$flagged_outliers)
 summary(MI_boot_results)
 
 #----Hardin and Rocke-----------------------------------------------------------
-HR_result <- thresh_F(Q = ncol(hk_data), n = nrow(hk_data), h = RD_org_obj$h, quantile = 0.01)
+HR_result <- thresh_F(p = ncol(hk_data), n = nrow(hk_data), h = RD_org_obj$h, quantile = 0.01)
 
 HR_result$threshold
 summary(HR_result)
 
-#----SHASH-F--------------------------------------------------------------------
-SHASH_F_result <- thresh_SASH(x = hk_data, cutoff = 4, quantile = 0.01, mode = "auto")
-SHASH_F_result$final_threshold
-which(SHASH_F_result$flagged_outliers)
 
 ############################################################################
 ## NEW WRAPPER FOR USER                                                    #
@@ -110,13 +106,13 @@ kurt_data <- ICA_extract_kurt(time_series = data_matrix)
 
 # F method
 result_F <- RD(x = kurt_data$hk,
-               threshold_method = "F",
+               method = "F",
                mode = "auto",
                quantile = 0.01)
 
 # SI method
 result_SI <- RD(x = kurt_data$hk,
-                threshold_method = "SI",
+                method = "SI",
                 mode = "auto",
                 alpha = 0.01,
                 cutoff = 4,
@@ -125,7 +121,7 @@ result_SI <- RD(x = kurt_data$hk,
 
 # SI_boot method
 result_SI_boot <- RD(x = kurt_data$hk,
-                     threshold_method = "SI_boot",
+                     method = "SI_boot",
                      mode = "auto",
                      alpha = 0.01,
                      cutoff = 4,
@@ -138,7 +134,7 @@ result_SI_boot <- RD(x = kurt_data$hk,
 # MI method
 result_MI <- RD(x = kurt_data$hk,
                 w = kurt_data$lk,
-                threshold_method = "MI",
+                method = "MI",
                 mode = "auto",
                 alpha = 0.01,
                 cutoff = 4,
@@ -150,7 +146,7 @@ result_MI <- RD(x = kurt_data$hk,
 # MI_boot method
 result_MI_boot <- RD(x = kurt_data$hk,
                      w = kurt_data$lk,
-                     threshold_method = "MI_boot",
+                     method = "MI_boot",
                      mode = "auto",
                      alpha = 0.01,
                      M = 5,
@@ -170,7 +166,7 @@ RD_obj <- compute_RD(x = kurt_data$hk, mode = "auto")
 
 all_results <- threshold_RD(x = kurt_data$hk,
                             w = kurt_data$lk,
-                            threshold_method = "SASH", # Can do single methods, but should use RD for that.
+                            method = "all", # Can do single methods, but should use RD for that.
                             RD_obj = RD_obj,
                             M = 5,
                             k = 10,

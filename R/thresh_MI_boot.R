@@ -24,6 +24,7 @@
 #' }
 #' @export
 thresh_MI_boot <- function(RD_org_obj, imp_datasets, B = 1000, alpha = 0.01, boot_quant = 0.95, verbose = FALSE) {
+  if (verbose) message("Running MI_boot method: ", length(imp_datasets)*B, " total bootstrap samples...")
   call <- match.call()
 
   M <- length(imp_datasets)

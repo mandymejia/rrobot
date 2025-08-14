@@ -116,7 +116,7 @@ test_that("threshold_RD 'all' method gives consistent results", {
   suppressWarnings({
     result <- threshold_RD(x = setup_data$hk_data,
                            w = setup_data$kurt_data$lk,
-                           threshold_method = "all",
+                           method = "all",
                            RD_obj = RD_obj,
                            M = 3, k = 5, B = 50,  # Reduced for faster testing
                            alpha = 0.01,
@@ -172,7 +172,7 @@ test_that("RD method gives consistent results", {
   suppressWarnings({
     result <- RD(x = setup_data$hk_data,
                  w = setup_data$kurt_data$lk,
-                 threshold_method = "SI",
+                 method = "SI",
                  alpha = 0.01,
                  cutoff = 4,
                  impute_method = "interp",

@@ -7,6 +7,7 @@
 #' @inheritParams RD_org_obj
 #' @inheritParams imp_data
 #' @inheritParams alpha
+#' @inheritParams verbose
 #'
 #' @return A list with:
 #' \describe{
@@ -15,7 +16,8 @@
 #'   \item{call}{The matched function call.}
 #' }
 #' @export
-thresh_SI <- function(RD_org_obj, imp_data, alpha = 0.01) {
+thresh_SI <- function(RD_org_obj, imp_data, alpha = 0.01, verbose = FALSE) {
+  if (verbose) message("Running SI method: computing single imputation threshold...")
   call <- match.call()
 
   cov_mcd <- RD_org_obj$S_star

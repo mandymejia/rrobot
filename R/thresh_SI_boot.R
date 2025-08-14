@@ -33,8 +33,7 @@ thresh_SI_boot <- function(RD_org_obj, imp_data,
   quant99 <- numeric(B)
   cutoff_q <- 1 - alpha
 
-  if (verbose) message("Running ", B, " bootstrap resamples...")
-
+  if (verbose) message("Running SI_boot method: ", B, " bootstrap samples...")
   for (b in seq_len(B)) {
     # Sample both included and excluded indices with replacement
     boot_idx_incld <- sample(ind_incld, size = length(ind_incld), replace = TRUE)

@@ -4,7 +4,7 @@
 \alias{thresh_MI}
 \title{Outlier Detection via Multiple Imputation Voting (MI)}
 \usage{
-thresh_MI(RD_org_obj, imp_datasets, alpha = 0.01)
+thresh_MI(RD_org_obj, imp_datasets, alpha = 0.01, verbose = FALSE)
 }
 \arguments{
 \item{RD_org_obj}{Output list from \code{\link{compute_RD}} on the original data. Must contain $RD, $S_star, and $ind_incld.}
@@ -12,6 +12,8 @@ thresh_MI(RD_org_obj, imp_datasets, alpha = 0.01)
 \item{imp_datasets}{A list of M numeric matrices (T × p); multiply imputed datasets.}
 
 \item{alpha}{Significance level used to compute RD threshold (default = 0.01 for 99th percentile).}
+
+\item{verbose}{Logical; if TRUE, print progress messages.}
 }
 \value{
 A list with:

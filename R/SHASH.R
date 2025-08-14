@@ -73,6 +73,8 @@ SHASH_out <- function(x,
                       thr_isotree  = 0.55,
                       maxit        = 100,
                       weight_init  = NULL) {
+  stopifnot("Input 'x' must be a numeric vector, not a matrix" = !is.matrix(x))
+
   if ((use_isotree || use_isoplus) && (thr_isotree < 0 || thr_isotree > 1)) {
     warning("`thr_isotree` should be between 0 and 1 when using isolation forest.")
   }

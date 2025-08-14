@@ -4,7 +4,7 @@
 #'
 #' @inheritParams x
 #' @inheritParams w
-#' @inheritParams threshold_method
+#' @inheritParams method
 #' @inheritParams mode
 #' @inheritParams cov_mcd
 #' @inheritParams ind_incld
@@ -20,7 +20,7 @@
 #' @inheritParams boot_quant
 #' @inheritParams B
 #'
-#' @return Depends on threshold_method:
+#' @return Depends on method:
 #' \describe{
 #'   \item{Single method}{Returns the result from the specific threshold method.}
 #'   \item{RD_obj}{The robust distance object from compute_RD().}
@@ -28,7 +28,7 @@
 #' }
 #'
 #' @export
-RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_boot", "SI","F", "SHASH"),
+RD <- function(x, w = NULL, method = c("SI_boot", "MI", "MI_boot", "SI","F", "SHASH"),
                          # RD parameters
                          mode = "auto", cov_mcd = NULL, ind_incld = NULL, dist = TRUE,
                          # impute_univOut paramters
@@ -46,17 +46,17 @@ RD <- function(x, w = NULL, threshold_method = c("SI_boot", "MI", "MI_boot", "SI
                          boot_quant = 0.95,
                          B = 1000) {
   call <- match.call()
-  threshold_method <- match.arg(threshold_method)
+  method <- match.arg(method)
 
-
+  if (verbose) message("Computing robust distances and covariance.")
   RD_obj <- compute_RD(x = x, mode = mode, cov_mcd = cov_mcd, ind_incld = ind_incld, dist = dist)
 
-  thresholds <- threshold_RD(x = x, w = w, threshold_method = threshold_method, RD_obj = RD_obj,
+  thresholds <- threshold_RD(x = x, w = w, method = method, RD_obj = RD_obj,
                              impute_method = impute_method, cutoff = cutoff, trans = trans,
                              M = M, k = k, alpha = alpha, quantile = quantile,
                              verbose = verbose, boot_quant = boot_quant, B = B)
 
-  if(threshold_method == "SHASH"){
+  if(method == "SHASH"){
     RD_obj = thresholds$RD_obj_shash
   }
 
