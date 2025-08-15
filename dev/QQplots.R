@@ -1,6 +1,6 @@
 # visualizations of threshold values using the rrobot outputs directly
 # lets load the object from the local folder
-abide1_obj <- readRDS("~/Documents/GitHub/RobOutlier-paper/results/ABIDE/ABIDE2.rds")
+abide1_obj <- readRDS("~/Documents/GitHub/RobOutlier-paper/results/ABIDE/ABIDE1_thr03.rds")
 
 RD_abide1 <- abide1_obj$RD_obj$RD
 RD_sh_abide1 <- abide1_obj$RD_obj_shash$RD
@@ -26,6 +26,7 @@ df_thresh <- data.frame(
 
 
 # Final ggplot
+xmax <- log(max(RD_sh_abide1))
 library(ggplot2)
 p1 <- ggplot(df1, aes(x = log(RD), fill = label)) +
   geom_histogram(aes(y = ..density..), bins = 40, position = "identity", alpha= 0.7, color = "black") +
@@ -67,8 +68,6 @@ df2 <- data.frame(
   label = ifelse(seq_along(RD_sh_abide1) %in% abide1_obj$RD_obj_shash$ind_incld,
                  "included", "excluded")
 )
-
-xmax <- log(max(RD_sh_abide1))
 
 df2$label <- factor(df2$label, levels = c("included", "excluded"))
 options(scipen = 999)
@@ -148,7 +147,6 @@ ggplot(df, aes(x = RD, y = RD_shash, color = status)) +
 table(df$status)
 
 
-gridExtra::grid.arrange(p1, p2, nrow= 2)
 
 #################################################################################
 ## QQ plots before and after the SHASH transformation
@@ -254,5 +252,4 @@ Zhk[ Zhk > 100] <- 100
 Zhk[ Zhk < -100] <- -100
 
 rrobot::plot_RD(data_list = Zhk, log = TRUE)
-FP_plotRD(Zhk, log = TRUE)
 

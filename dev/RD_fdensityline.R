@@ -1,4 +1,4 @@
-abide1shash_obj <- readRDS("~/Documents/GitHub/RobOutlier-paper/results/ABIDE/ABIDE1_SHASH.rds")
+abide1shash_obj <- readRDS("~/Documents/GitHub/RobOutlier-paper/results/ABIDE/ABIDE1_thr03.rds")
 # df_RD <- readRDS("~/Documents/GitHub/RobOutlier-paper/results/df_RD.rds")
 # df_HR <- readRDS("~/Documents/GitHub/RobOutlier-paper/results/df_HR.rds")
 
