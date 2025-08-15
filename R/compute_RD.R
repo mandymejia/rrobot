@@ -1,4 +1,4 @@
-#' Compute Robust Distance and Covariance from a Subset
+#' Compute Squared robust distance and covariance from a Subset
 #'
 #' Calculates the robust mean, covariance matrix, and optionally robust distances
 #' using either:
@@ -28,68 +28,41 @@
 #' @importFrom stats cov
 #' @export
 compute_RD <- function(x, mode = c("auto", "manual"),
-                    cov_mcd = NULL, ind_incld = NULL, dist = TRUE) {
-  call <- match.call()
-
+                       cov_mcd = NULL, ind_incld = NULL, dist = TRUE) {
   mode <- match.arg(mode)
   x <- as.matrix(x)
   stopifnot(is.numeric(x))
-
-  t <- nrow(x)
-  p <- ncol(x)
+  n <- nrow(x); p <- ncol(x)
 
   if (mode == "auto") {
-    cov_obj <- robustbase::covMcd(x)
+    cov_obj   <- robustbase::covMcd(x)   # uses reweighting + corrections
     ind_incld <- cov_obj$best
-    data_incld <- x[ind_incld, , drop = FALSE]
-    cov_mcd <- cov(data_incld)
+    S_star    <- cov_obj$cov
+    xbar_star <- as.numeric(cov_obj$center)
   } else {
-    if (is.null(cov_mcd) || is.null(ind_incld)) {
+    if (is.null(cov_mcd) || is.null(ind_incld))
       stop("In manual mode, both 'cov_mcd' and 'ind_incld' must be provided.")
-    }
-    stopifnot(all(ind_incld %in% seq_len(t)))
-    data_incld <- x[ind_incld, , drop = FALSE]
+    stopifnot(all(ind_incld %in% seq_len(n)))
+    S_star    <- cov_mcd
+    xbar_star <- colMeans(x[ind_incld, , drop = FALSE])
   }
 
   h <- length(ind_incld)
-  ind_excld <- setdiff(seq_len(t), ind_incld)
+  ind_excld <- setdiff(seq_len(n), ind_incld)
 
-  if (is.null(dim(data_incld)) || ncol(data_incld) == 1) {
-    data_incld <- matrix(data_incld, ncol = 1)
-  }
+  if (qr(S_star)$rank < p)
+    warning("S* may be rank-deficient; distances could be unstable.")
 
-  # Compute robust mean
-  xbar_star <- colMeans(data_incld)
+  RD2_all <- if (dist) stats::mahalanobis(x, center = xbar_star, cov = S_star) else NULL
 
-  # Defensive check for invertibility
-  if (qr(cov_mcd)$rank < ncol(cov_mcd)) {
-    warning("Covariance matrix may be rank-deficient; inverse may be unstable.")
-  }
-
-  invcov <- solve(cov_mcd)
-  invcov_sqrt <- expm::sqrtm(invcov)
-  if (is.null(invcov_sqrt)) stop("Covariance inversion failed")
-
-  # Compute robust distances if requested
-  if (dist) {
-    xbar_star_mat <- matrix(xbar_star, nrow = t, ncol = p, byrow = TRUE)
-    temp <- (x - xbar_star_mat) %*% invcov_sqrt
-    RD <- rowSums(temp^2)
-  } else {
-    RD <- NULL
-  }
-
-  result <- list(
-    ind_incld = ind_incld,
-    ind_excld = ind_excld,
-    h = h,
-    xbar_star = xbar_star,
-    S_star = cov_mcd,
-    invcov_sqrt = invcov_sqrt,
-    RD = RD,
-    call = call
-  )
-
-  class(result) <- "RD_result"
-  result
+  structure(list(
+    ind_incld  = ind_incld,
+    ind_excld  = ind_excld,
+    n = n, p = p, h = h,
+    xbar_star  = xbar_star,
+    S_star     = S_star,
+    RD   = RD2_all,
+    RD2_incld  = if (!is.null(RD2_all)) RD2_all[ind_incld] else NULL,
+    RD2_excld  = if (!is.null(RD2_all)) RD2_all[ind_excld] else NULL
+  ), class = "RD_result")
 }
