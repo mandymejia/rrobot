@@ -34,33 +34,31 @@ thresh_MI <- function(RD_org_obj, imp_datasets, alpha = 0.01, boot_quant = 0.95,
   thresholds <- numeric(M)
   outlier_flags <- matrix(FALSE, nrow = n_time, ncol = M)
 
-  RD_orig <- RD_org_obj$RD
-  cov_mcd <- RD_org_obj$S_star
+  RD_orig  <- RD_org_obj$RD                 # squared RD from original
+  cov_mcd  <- RD_org_obj$S_star             # robust covariance (from covMcd)
   ind_incld <- RD_org_obj$ind_incld
   cutoff_q <- 1 - alpha
-
-  invcov_sqrt <- RD_org_obj$invcov_sqrt
 
   for (m in seq_len(M)) {
     imp_data <- imp_datasets[[m]]
     stopifnot(nrow(imp_data) == n_time, ncol(imp_data) == p)
 
-    # mu_MCD <- colMeans(imp_data[ind_incld, , drop = FALSE])
-    mu_MCD <- RD_org_obj$xbar_star # Don't re-compute mean
-    xbar_mat <- matrix(mu_MCD, nrow = n_time, ncol = p, byrow = TRUE)
+    # Use original robust mean (no recomputation)
+    mu_MCD <- RD_org_obj$xbar_star
 
-    RD_imp <- rowSums(((imp_data - xbar_mat) %*% invcov_sqrt)^2)
-    thresholds[m] <- quantile(RD_imp, cutoff_q, na.rm = TRUE)
+    # Squared robust distances for this imputed dataset
+    RD_imp <- stats::mahalanobis(imp_data, center = mu_MCD, cov = cov_mcd)
 
+    thresholds[m] <- unname(stats::quantile(RD_imp, cutoff_q, na.rm = TRUE))
     outlier_flags[, m] <- RD_orig > thresholds[m]
   }
 
-  LB_CI <- quantile(thresholds, probs = (1 - boot_quant)/2, na.rm = TRUE)
+  LB_CI <- stats::quantile(thresholds, probs = (1 - boot_quant)/2, na.rm = TRUE)
 
   result <- list(
     thresholds = thresholds,
-    threshold = LB_CI,
-    call = call
+    threshold  = LB_CI,
+    call       = call
   )
 
   class(result) <- "MI_result"
