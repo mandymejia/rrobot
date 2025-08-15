@@ -54,10 +54,12 @@ df_hist_lab <- data.frame(
 ggplot(df_hist_lab, aes(z, fill = observation)) +
   geom_histogram(aes(y = after_stat(density)), bins = 30,
                  color = "black", alpha = 0.6, position = "identity") +
-  geom_line(data = df_curve, aes(z, dens), color ="#D55E00", linewidth = 1.1, inherit.aes = FALSE) +
+  geom_line(data = df_curve, aes(z, 2*dens), color ="#D55E00", linewidth = 1.1, inherit.aes = FALSE) +
   geom_vline(xintercept = log(thr), linetype = "dashed",
              color = "red", linewidth = 1, inherit.aes = FALSE) +
   scale_fill_manual(values = c("included" = "#009E73", "excluded" = "#D55E00")) +
   labs(x = "log(RD^2)", y = "Density",
        title = "log(RD^2) histogram by observation with mapped F density") +
   theme_minimal()
+
+
