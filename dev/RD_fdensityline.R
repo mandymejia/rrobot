@@ -214,15 +214,16 @@ curve_df <- data.frame(
   z = seq(z_min, z_max, length.out = 4000)
 )
 curve_df$dens <- exp(curve_df$z) * df(exp(curve_df$z) / s, df1, df2) / s
-
+# install.packages("colorspace")
+library(colorspace)
 # plot
 ggplot(df_hist, aes(z, fill = observation)) +
   geom_histogram(aes(y = after_stat(density)),
                  bins = 30, color = "black", alpha = 0.6, position = "identity") +
-  geom_line(data = curve_df, aes(x = z, y = dens),
-            linewidth = 1.1, color = "black", inherit.aes = FALSE) +  # <- key
+  geom_line(data = curve_df, aes(x = z, y =2* dens),
+            linewidth = 1.1, color = "#D55E00",linetype = 1, inherit.aes = FALSE) +  # <- key
   geom_vline(xintercept = log(thr), linetype = "dashed",
-             color = "red", linewidth = 1, inherit.aes = FALSE) +     # <- key
+             color = "#D55E00", linewidth = 1, inherit.aes = FALSE) +     # <- key
   scale_fill_manual(values = c("included" = "#009E73", "excluded" = "#D55E00")) +
   labs(x = "log(RD^2)", y = "Density",
        title = "log(RD^2) histogram by observation with mapped F density") +
