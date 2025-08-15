@@ -55,7 +55,7 @@ compute_RD <- function(x, mode = c("auto", "manual"),
 
   RD2_all <- if (dist) stats::mahalanobis(x, center = xbar_star, cov = S_star) else NULL
 
-  structure(list(
+  result <- list(
     ind_incld  = ind_incld,
     ind_excld  = ind_excld,
     n = n, p = p, h = h,
@@ -63,6 +63,9 @@ compute_RD <- function(x, mode = c("auto", "manual"),
     S_star     = S_star,
     RD   = RD2_all,
     RD_incld  = if (!is.null(RD2_all)) RD2_all[ind_incld] else NULL,
-    RD_excld  = if (!is.null(RD2_all)) RD2_all[ind_excld] else NULL
-  ), class = "RD_result")
+    RD_excld  = if (!is.null(RD2_all)) RD2_all[ind_excld] else NULL,
+    call = call
+  )
+
+  class(result) <- "RD_result"
 }
