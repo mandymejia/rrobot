@@ -24,6 +24,7 @@
 #' \describe{
 #'   \item{Single method}{Returns the result from the specific threshold method.}
 #'   \item{RD_obj}{The robust distance object from compute_RD().}
+#'   \item{outliers}{Logical vector indicating which observations have RD greater than the threshold.}
 #'   \item{call}{The matched function call.}
 #' }
 #'
@@ -60,10 +61,12 @@ RD <- function(x, w = NULL, method = c("SI_boot", "MI", "MI_boot", "SI","F", "SH
     RD_obj = thresholds$RD_obj_shash
   }
 
+  outliers <- RD_obj$RD > thresholds$thresholds$threshold
 
   result <- list(
     thresholds = thresholds$thresholds,
     RD_obj = thresholds$RD_obj,
+    outliers = outliers,
     call = call
   )
 
