@@ -35,7 +35,7 @@ compute_RD <- function(x, mode = c("auto", "manual"),
   n <- nrow(x); p <- ncol(x)
 
   if (mode == "auto") {
-    cov_obj   <- robustbase::covMcd(x)   # uses reweighting + corrections
+    cov_obj   <- robustbase::covMcd(x)
     ind_incld <- cov_obj$best
     S_star    <- cov_obj$cov
     xbar_star <- as.numeric(cov_obj$center)
@@ -62,7 +62,7 @@ compute_RD <- function(x, mode = c("auto", "manual"),
     xbar_star  = xbar_star,
     S_star     = S_star,
     RD   = RD2_all,
-    RD2_incld  = if (!is.null(RD2_all)) RD2_all[ind_incld] else NULL,
-    RD2_excld  = if (!is.null(RD2_all)) RD2_all[ind_excld] else NULL
+    RD_incld  = if (!is.null(RD2_all)) RD2_all[ind_incld] else NULL,
+    RD_excld  = if (!is.null(RD2_all)) RD2_all[ind_excld] else NULL
   ), class = "RD_result")
 }
