@@ -32,7 +32,8 @@ univOut <- function(x, cutoff = 4, method = c("SHASH", "robZ")) {
     temp <- x[, ii]
 
     if(method == "SHASH") {
-      result <- SHASH_out(x = temp, thr = cutoff, use_isotree = TRUE)
+      result <- SHASH_out(x = temp, thr = cutoff, use_isotree = TRUE
+                          , thr0 = 3, thr_isotree = 0.6)
       outlier_matrix[result$out_idx, ii] <- TRUE
       shash_matrix[, ii] <- result$x_norm
 
