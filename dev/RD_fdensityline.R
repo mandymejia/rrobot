@@ -86,7 +86,6 @@ ggplot(data.frame(RD2 = c(0, 200)), aes(RD2)) +
 
 ###-----
 library(ggplot2)
-
 rd2   <- RD_obj_shash$RD
 incl  <- RD_obj_shash$ind_incld
 df1   <- Fpar$df[1]; df2 <- Fpar$df[2]
@@ -138,6 +137,7 @@ ggplot(df_ex, aes(RD2)) +
 # base plot
 # inputs
 rd2 <- RD_obj_shash$RD
+Fpar <- abide1shash_obj$thresholds
 df1 <- Fpar$df[1]; df2 <- Fpar$df[2]
 s   <- 1 / Fpar$scale               # mapping so RD2= s * F
 thr <- as.numeric(Fpar$threshold)
@@ -188,7 +188,6 @@ ggplot(df_hist, aes(z)) +
        title = "Histogram of log(RD^2) with mapped F density") +
   theme_minimal()
 
-library(ggplot2)
 
 # labels (included / excluded)
 ind_incld <- RD_obj_shash$ind_incld
