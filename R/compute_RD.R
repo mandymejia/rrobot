@@ -68,4 +68,5 @@ compute_RD <- function(x, mode = c("auto", "manual"),
   )
 
   class(result) <- "RD_result"
+  result
 }
