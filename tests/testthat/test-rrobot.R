@@ -182,7 +182,7 @@ test_that("RD method gives consistent results", {
   })
   # Test structure - RD() doesn't return RD_obj anymore
   expect_type(result, "list")
-  expect_named(result, c("thresholds", "RD_obj", "call"))
+  expect_named(result, c("thresholds", "RD_obj", "outliers", "call"))
   expect_s3_class(result, "RD")
 
   # Test that thresholds contains the RD_obj
@@ -190,4 +190,9 @@ test_that("RD method gives consistent results", {
 
   # Test that call is captured
   expect_true(is.call(result$call))
+
+  # Test outliers vector
+  expect_type(result$outliers, "logical")
+  expect_length(result$outliers, nrow(setup_data$hk_data))
+  expect_true(all(is.logical(result$outliers)))
 })
