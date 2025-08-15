@@ -1,6 +1,10 @@
 abide1shash_obj <- readRDS("~/Documents/GitHub/RobOutlier-paper/results/ABIDE/ABIDE1_SHASH.rds")
-df_RD <- readRDS("~/Documents/GitHub/RobOutlier-paper/results/df_RD.rds")
-df_HR <- readRDS("~/Documents/GitHub/RobOutlier-paper/results/df_HR.rds")
+# df_RD <- readRDS("~/Documents/GitHub/RobOutlier-paper/results/df_RD.rds")
+# df_HR <- readRDS("~/Documents/GitHub/RobOutlier-paper/results/df_HR.rds")
+
+Zhk <- abide1shash_obj$x_norm
+RD1 <- rrobot::compute_RD(Zhk, mode = "auto")$RD
+RD2 <- FP_compute_RD(Zhk, mode = "auto")$RD2_all
 
 data <- abide1shash_obj$x_norm
 Tn <- nrow(data)
@@ -87,18 +91,17 @@ s   <- abide1shash_obj$thresholds$scale
 thr <- abide1shash_obj$thresholds$threshold * s
 
 RD_out_abide <- RD_abide[obs_abide == "excluded"]
-xmax_abide   <- max(RD_out_abide, na.rm = TRUE)
-log_scale <- log(seq(0.01, xmax_abide, length.out = 1000))
-xvals_abide  <- log_scale
-yvals_abide  <- (1/s) * stats::df(xvals_abide, df1 = df1, df2 = df2)
+xmax_abide   <- max(RD_out_abide * s, na.rm = TRUE)
 
-# To match your earlier visual scaling (you multiplied by 2):
-yvals_abide_scaled <-  yvals_abide
+xvals_abide_log <- seq(log10(0.01), log10(xmax_abide), length.out = 1000)
+xvals_abide <- 10^(xvals_abide_log)
+#xvals_abide  <- log(seq(0.01, xmax_abide, length.out = 1000))
+yvals_abide  <- stats::df(xvals_abide, df1 = df1, df2 = df2)
 
 # Frames matching your existing structure
 tmp_HR_abide <- data.frame(
   x    = xvals_abide,
-  y    = yvals_abide_scaled,
+  y    = yvals_abide,
   q_HR = thr,
   data = "ABIDE1 (SHASH)"
 )
@@ -130,7 +133,7 @@ curve_scale <- max_hist_density / max(tmp_HR_abide$y, na.rm = TRUE)
 df_HR$y_scaled <- df_HR$y * curve_scale
 
 # Plot using y_scaled
-ggplot(df_RD_HR, aes(x = log(distance))) +
+ggplot(df_RD_HR, aes(x = log10(distance))) +
   geom_histogram(aes(y = after_stat(density), fill = observation, color = observation),
                  binwidth = 0.3, alpha = 0.5) +
   geom_line(data = df_HR, aes(x = x, y =y),
