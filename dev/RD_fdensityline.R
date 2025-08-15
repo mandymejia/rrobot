@@ -71,8 +71,9 @@ df1 <- Fpar$df[1]; df2 <- Fpar$df[2]
 s   <- 1 / Fpar$scale
 thr <- Fpar$threshold
 
+# use the log10 not e
 # Option A: dense grid
-x <- seq(0, 200, by = 0.05)                    # 4001 points
+x <- seq(0, 200, by = 0.05)
 f <- df(x / s, df1 = df1, df2 = df2) / s
 
 library(ggplot2)
@@ -81,7 +82,7 @@ ggplot(data.frame(RD2 = log(x), density = f), aes(RD2, density)) +
   geom_vline(xintercept = log(thr), linetype = "dashed", color = "red") +
   theme_minimal()
 
-# Option B: stat_function (ggplot samples for you; set n high)
+# Option B: stat_function
 ggplot(data.frame(RD2 = c(0, 200)), aes(RD2)) +
   stat_function(fun = function(z) df(z / s, df1, df2) / s, n = 5000) +
   geom_vline(xintercept = thr, linetype = "dashed", color = "red") +
@@ -92,7 +93,6 @@ ggplot(data.frame(RD2 = c(0, 200)), aes(RD2)) +
 ###-----
 library(ggplot2)
 
-# pull objects you already have
 rd2   <- RD_obj_shash$RD
 incl  <- RD_obj_shash$ind_incld
 df1   <- Fpar$df[1]; df2 <- Fpar$df[2]
@@ -181,7 +181,10 @@ z_min <- min(z_data, na.rm=TRUE); z_max <- max(z_data, na.rm=TRUE)
 curve_df <- data.frame(
   z = seq(z_min, z_max, length.out = 4000)
 )
+
 curve_df$dens <- exp(curve_df$z) * df(exp(curve_df$z)/s, df1, df2) / s
+# remove the exp, without log transformation
+# without the histogram
 
 ggplot(df_hist, aes(z)) +
   geom_histogram(aes(y = after_stat(density)), bins = 30, fill = "grey80", color = "white") +
