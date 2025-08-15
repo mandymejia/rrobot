@@ -58,16 +58,10 @@ ggplot(df, aes(RD2, fill = observation)) +
   theme_minimal()
 
 
-
-
-# --- Inputs you already have ---
-# RD_obj_shash  # from compute_RD(x_norm or scaled)
-# Fpar          # from thresh_F(...)
-
 library(ggplot2)
 
 df1 <- Fpar$df[1]; df2 <- Fpar$df[2]
-# choose the mapping consistent with your threshold (you already picked s)
+
 s   <- 1 / Fpar$scale
 thr <- Fpar$threshold
 
@@ -98,7 +92,6 @@ incl  <- RD_obj_shash$ind_incld
 df1   <- Fpar$df[1]; df2 <- Fpar$df[2]
 thr   <- as.numeric(Fpar$threshold)
 
-# mapping F -> RD²  (consistent with your thresh_F)
 s <- 1 / Fpar$scale
 stopifnot(abs(qf(0.99, df1, df2)/Fpar$scale - thr) < 1e-6)  # quick sanity check
 
@@ -146,10 +139,10 @@ ggplot(df_ex, aes(RD2)) +
 # inputs
 rd2 <- RD_obj_shash$RD
 df1 <- Fpar$df[1]; df2 <- Fpar$df[2]
-s   <- 1 / Fpar$scale               # mapping so RD² = s * F
+s   <- 1 / Fpar$scale               # mapping so RD2= s * F
 thr <- as.numeric(Fpar$threshold)
 
-# histogram of log(RD²) with density scale
+# histogram of log(RD2) with density scale
 eps <- 1e-12
 z_data <- log(pmax(rd2, eps))
 h <- hist(z_data, breaks = 30, freq = FALSE, main = "", xlab = "log(RD^2)")
@@ -177,13 +170,14 @@ df1 <- Fpar$df[1]; df2 <- Fpar$df[2]
 s   <- 1 / Fpar$scale
 thr <- as.numeric(Fpar$threshold)
 
-z_min <- min(z_data, na.rm=TRUE); z_max <- max(z_data, na.rm=TRUE)
+z_min <- min(z_data, na.rm=TRUE)
+z_max <- max(z_data, na.rm=TRUE)
+
 curve_df <- data.frame(
   z = seq(z_min, z_max, length.out = 4000)
 )
 
 curve_df$dens <- exp(curve_df$z) * df(exp(curve_df$z)/s, df1, df2) / s
-# remove the exp, without log transformation
 # without the histogram
 
 ggplot(df_hist, aes(z)) +
