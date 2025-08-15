@@ -3,142 +3,49 @@ abide1shash_obj <- readRDS("~/Documents/GitHub/RobOutlier-paper/results/ABIDE/AB
 # df_HR <- readRDS("~/Documents/GitHub/RobOutlier-paper/results/df_HR.rds")
 
 Zhk <- abide1shash_obj$x_norm
-RD1 <- rrobot::compute_RD(Zhk, mode = "auto")$RD
-RD2 <- FP_compute_RD(Zhk, mode = "auto")$RD2_all
 
-data <- abide1shash_obj$x_norm
-Tn <- nrow(data)
-Q  <- ncol(data)
+RD_obj_shash <- abide1shash_obj$RD_obj_shash
+RDs   <- RD_obj_shash$RD
+incl  <- RD_obj_shash$ind_incld
+excl  <- RD_obj_shash$ind_excld
+Sstar <- RD_obj_shash$S_star
+xN    <- abide1shash_obj$x_norm
 
-# --- robust distances & inclusion mask ---
-RD         <- abide1shash_obj$RD_obj_shash$RD
-ind_incld  <- abide1shash_obj$RD_obj_shash$ind_incld
-observation <- ifelse(seq_len(Tn) %in% ind_incld, "included", "excluded")
+c(p = RD_obj_shash$p, n = RD_obj_shash$n, h = RD_obj_shash$h)
 
-# --- F-threshold via Fit_F ---
-q_HR     <- abide1shash_obj$thresholds$threshold
-scale_x  <- abide1shash_obj$thresholds$scale
-df1      <- abide1shash_obj$thresholds$df[1]
-df2      <- abide1shash_obj$thresholds$df[2]
+summary(RDs[incl])           # for inliers, RD² should be ~ O(p), not thousands
+summary(RDs[excl])
 
+# Covariance health
+ev <- eigen(Sstar, symmetric = TRUE, only.values = TRUE)$values
+range(ev); kappa_S <- max(ev)/min(ev); kappa_S
 
-RD_out <- RD[ind_excld_shash]
-xvals <- seq(0, max(RD_out * scale_x), length.out = Tn)
-yvals <- df(xvals, df1 = df[1], df2 = df[2])
-
-# --- assemble frames for plotting ---
-df_hist <- data.frame(
-  distance    = RD * scale_x,
-  observation = factor(observation, levels = c("included", "excluded"))
-)
-df_fcurve <- data.frame(x = xvals, y = yvals, q_HR = q_HR*scale_x)
-
-# Find max histogram density
-max_hist_density <- max(
-  ggplot_build(
-    ggplot(df_hist, aes(x = distance)) +
-      geom_histogram(aes(y = after_stat(density)), binwidth = 0.3)
-  )$data[[1]]$density
-)
-
-# Scale your fcurve's y to match histogram density scale
-df_fcurve <- df_fcurve %>%
-  mutate(y_scaled = y * (max_hist_density / max(y, na.rm = TRUE)))
-
-# --- ggplot ---
-library(ggplot2)
-ggplot(df_hist, aes(x = distance))+
-  geom_histogram(aes(y = after_stat(density), fill = observation, color = observation),
-                 binwidth = 0.3, alpha = 0.5) +
-  geom_vline(xintercept = q_HR, linetype = "dashed", linewidth = 0.8, color = "#333333") +
-  scale_x_log10() +
-  geom_line(data = df_fcurve, aes(x = x, y = y_scaled),
-                                  inherit.aes = FALSE, linewidth = 0.8, color = "#333333") +
-  scale_fill_manual(values = c("included" = "#009E73", "excluded" = "#D55E00")) +
-  scale_color_manual(values = c("included" = "#009E73", "excluded" = "#D55E00")) +
-  labs(y = "Density",
-       x = "log10(Squared robust distances") +
-  theme_minimal(base_size = 14) +
-  theme(
-    legend.position = "bottom",
-    legend.title = element_text(size = 12),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    axis.title = element_text(size = 14),
-    axis.text  = element_text(size = 12),
-    strip.text = element_text(size = 13),
-    legend.key = element_blank()
-  )
+any(!is.finite(xN)); colSums(!is.finite(xN))  # NA/Inf after SHASH?
+apply(xN, 2, sd)
 
 
+Fpar <- abide1shash_obj$thresholds
 
-
-## --- Append ABIDE1 (SHASH) to the existing three panels -----------------
-abide1shash_obj <- readRDS("~/Documents/GitHub/RobOutlier-paper/results/ABIDE/ABIDE1_SHASH.rds")
-
-# data + RD on original scale used in your first panels
-RD_abide   <- abide1shash_obj$RD_obj_shash$RD
-ind_incld  <- abide1shash_obj$RD_obj_shash$ind_incld
-Tn         <- length(RD_abide)
-
-obs_abide <- rep("excluded", Tn)
-obs_abide[ind_incld] <- "included"
-
-# F params from object
-df1 <- abide1shash_obj$thresholds$df[1]
-df2 <- abide1shash_obj$thresholds$df[2]
-s   <- abide1shash_obj$thresholds$scale
-thr <- abide1shash_obj$thresholds$threshold * s
-
-RD_out_abide <- RD_abide[obs_abide == "excluded"]
-xmax_abide   <- max(RD_out_abide * s, na.rm = TRUE)
-
-xvals_abide_log <- seq(log10(0.01), log10(xmax_abide), length.out = 1000)
-xvals_abide <- 10^(xvals_abide_log)
-#xvals_abide  <- log(seq(0.01, xmax_abide, length.out = 1000))
-yvals_abide  <- stats::df(xvals_abide, df1 = df1, df2 = df2)
-
-# Frames matching your existing structure
-tmp_HR_abide <- data.frame(
-  x    = xvals_abide,
-  y    = yvals_abide,
-  q_HR = thr,
-  data = "ABIDE1 (SHASH)"
-)
-
-tmp_RD_abide <- data.frame(
-  distance    = RD_abide * s,
-  observation = obs_abide,
-  data        = "ABIDE1 (SHASH)"
-)
-
-# Bind to existing frames then rebuild df_RD_HR
-df_HR <- rbind(tmp_HR_abide)
-df_RD <- rbind(tmp_RD_abide)
-
-df_RD_HR <- merge(df_RD, df_HR[, c("x", "y", "q_HR", "data")], by = "data")
-df_RD_HR$observation <- factor(df_RD_HR$observation, levels = c("included", "excluded"))
 
 library(ggplot2)
 
-mean_emp <- mean(df_RD_HR$distance, na.rm = TRUE)
+lab <- rep("excluded", RD_obj$n)
+lab[RD_obj$ind_incld] <- "included"
 
-# Build histogram once to get its max density
-p_tmp <- ggplot(df_RD_HR, aes(x = distance)) +
-  geom_histogram(aes(y = after_stat(density)), binwidth = 0.3)
-max_hist_density <- max(ggplot_build(p_tmp)$data[[1]]$density, na.rm = TRUE)
+df <- data.frame(
+  RD2 = RD_obj$RD,  # squared distances
+  observation = factor(lab, levels = c("included","excluded"))
+)
 
-# Scale the F curve up to match
-curve_scale <- max_hist_density / max(tmp_HR_abide$y, na.rm = TRUE)
-df_HR$y_scaled <- df_HR$y * curve_scale
+# F-density
+df1 <- Fpar$df[1]
+df2 <- Fpar$df[2]
+s   <- 1 / Fpar$scale      # map F → RD²
+thr <- Fpar$threshold      # already on RD² scale
 
-# Plot using y_scaled
-ggplot(df_RD_HR, aes(x = log10(distance))) +
-  geom_histogram(aes(y = after_stat(density), fill = observation, color = observation),
-                 binwidth = 0.3, alpha = 0.5) +
-  geom_line(data = df_HR, aes(x = x, y =y),
-            inherit.aes = FALSE, linewidth = 0.8, color = "#333333") +
-  geom_vline(aes(xintercept = q_HR), linetype = "dashed", linewidth = 0.8, color = "#333333")
+# choose an x-range that shows the F curve (otherwise it’s squashed at ~0)
+rd2_excl <- RD_obj$RD_excld
+x_max <- max(thr * 6, stats::quantile(rd2_excl, 0.95, na.rm = TRUE))
 
-
-
+x <- seq(0, x_max, length.out = 100)
+f_RD2 <- stats::df(x / s, df1 = df1, df2 = df2) / s

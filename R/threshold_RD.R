@@ -67,7 +67,9 @@ threshold_RD <- function(x, w = NULL, method = c("SI_boot", "MI", "MI_boot", "SI
     # truncating extreme values to avoid numerical errors
     x_norm[ x_norm > 100] <- 100
     x_norm[ x_norm < -100] <- -100
-    RD_obj_shash <- compute_RD(x = x_norm, mode = "auto", dist = TRUE)
+    # standardizing the column
+    x_norm_scaled <- scale(x_norm)
+    RD_obj_shash <- compute_RD(x = x_norm_scaled, mode = "auto", dist = TRUE)
   }
 
   thresholds <- switch(method,
