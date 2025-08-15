@@ -23,8 +23,10 @@
 #'   \item{call}{The matched function call.}
 #' }
 #' @export
-thresh_MI_boot <- function(RD_org_obj, imp_datasets, B = 1000, alpha = 0.01, boot_quant = 0.95, verbose = FALSE) {
-  if (verbose) message("Running MI_boot method: ", length(imp_datasets)*B, " total bootstrap samples...")
+thresh_MI_boot <- function(RD_org_obj, imp_datasets,
+                           B = 1000, alpha = 0.01, boot_quant = 0.95,
+                           verbose = FALSE) {
+  if (verbose) message("Running MI_boot method: ", length(imp_datasets) * B, " total bootstrap samples...")
   call <- match.call()
 
   M <- length(imp_datasets)
@@ -32,11 +34,12 @@ thresh_MI_boot <- function(RD_org_obj, imp_datasets, B = 1000, alpha = 0.01, boo
   p <- ncol(imp_datasets[[1]])
   thresholds_all <- numeric(M * B)
 
-  RD_org <- RD_org_obj$RD
+  RD_org    <- RD_org_obj$RD
   ind_incld <- RD_org_obj$ind_incld
   ind_excld <- RD_org_obj$ind_excld
-  invcov_sqrt <- RD_org_obj$invcov_sqrt
-  cutoff_q <- 1 - alpha
+  center0   <- RD_org_obj$xbar_star
+  S0        <- RD_org_obj$S_star
+  cutoff_q  <- 1 - alpha
 
   idx <- 1
 
@@ -55,13 +58,10 @@ thresh_MI_boot <- function(RD_org_obj, imp_datasets, B = 1000, alpha = 0.01, boo
       # Bootstrap sample of the imputed dataset
       imp_boot <- imp_data[boot_idx, , drop = FALSE]
 
-      # Compute mean and RD on the bootstrapped data
-      # mu_boot <- colMeans(imp_boot)
-      mu_boot <- RD_org_obj$xbar_star # Don't re-compute mean
-      mu_mat <- matrix(mu_boot, nrow = nrow(imp_boot), ncol = p, byrow = TRUE)
+      # Use original robust center/covariance
+      RD_boot <- stats::mahalanobis(imp_boot, center = center0, cov = S0)
 
-      RD_boot <- rowSums(((imp_boot - mu_mat) %*% invcov_sqrt)^2)
-      thresholds_all[idx] <- quantile(RD_boot, cutoff_q, na.rm = TRUE)
+      thresholds_all[idx] <- unname(stats::quantile(RD_boot, cutoff_q, na.rm = TRUE))
       idx <- idx + 1
 
       if (verbose && b %% 100 == 0) message(sprintf("MI %d, Bootstrap %d", m, b))
@@ -70,18 +70,16 @@ thresh_MI_boot <- function(RD_org_obj, imp_datasets, B = 1000, alpha = 0.01, boo
     if (verbose) message(sprintf("Completed MI %d of %d", m, M))
   }
 
-
-  lb_ci <- quantile(thresholds_all, probs = 1 - boot_quant, na.rm = TRUE)
+  lb_ci <- stats::quantile(thresholds_all, probs = 1 - boot_quant, na.rm = TRUE)
   flagged_outliers <- RD_org > lb_ci
 
   result <- list(
-    thresholds_all = thresholds_all,
-    threshold = unname(lb_ci),
+    thresholds_all   = thresholds_all,
+    threshold        = unname(lb_ci),
     flagged_outliers = flagged_outliers,
-    call = call
+    call             = call
   )
 
   class(result) <- "MI_boot_result"
   result
-
 }
