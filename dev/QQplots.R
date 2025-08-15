@@ -1,6 +1,6 @@
 # visualizations of threshold values using the rrobot outputs directly
 # lets load the object from the local folder
-abide1_obj <- readRDS("~/Documents/GitHub/RobOutlier-paper/results/ABIDE/ABIDE1.rds")
+abide1_obj <- readRDS("~/Documents/GitHub/RobOutlier-paper/results/ABIDE/ABIDE2.rds")
 
 RD_abide1 <- abide1_obj$RD_obj$RD
 RD_sh_abide1 <- abide1_obj$RD_obj_shash$RD
@@ -16,10 +16,10 @@ df_comb$label <- factor(df_comb$label, levels = c("included", "excluded"))
 
 df_thresh <- data.frame(
   threshold = c(
-    abide1_obj$thresholds$SI$SI_threshold,
-    abide1_obj$thresholds$SI_boot$LB_CI,
-    abide1_obj$thresholds$MI$LB95_CI,
-    abide1_obj$thresholds$MI_boot$final_threshold,
+    abide1_obj$thresholds$SI$threshold,
+    abide1_obj$thresholds$SI_boot$threshold,
+    abide1_obj$thresholds$MI$threshold,
+    abide1_obj$thresholds$MI_boot$threshold,
     abide1_obj$thresholds$F$threshold),
   method = c("SI", "SI_boot", "MI", "MI_boot", "F")
 )
@@ -46,6 +46,7 @@ p1 <- ggplot(df1, aes(x = log(RD), fill = label)) +
     values = c("SI" = 1, "SI_boot" = 2, "MI" = 1, "MI_boot" = 2, "F" = 1)
   ) +
   labs(
+    title = "ABIDE1",
     x = "log of Robust Distance",
     y = "Density",
     fill = "Observations"
@@ -84,6 +85,9 @@ p2 <- ggplot(df2, aes(x = log(RD), fill = label)) +
   theme(legend.position = "bottom",
         legend.box = "vertical",
         strip.text = element_text(face = "bold", size = 14))
+
+gridExtra::grid.arrange(p1, p2, nrow= 2)
+
 
 ####------scatterplot-----------------------------------------------------------
 library(dplyr)
