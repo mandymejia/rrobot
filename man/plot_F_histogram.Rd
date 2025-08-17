@@ -35,3 +35,4 @@ A ggplot object.
 \description{
 Creates histogram of robust distances with F-distribution overlay and threshold.
 }
+\keyword{internal}

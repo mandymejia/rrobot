@@ -101,12 +101,15 @@ threshold_RD <- function(x, w = NULL, method = c("SI_boot", "MI", "MI_boot", "SI
   )
 
   result <- list(
-    thresholds = thresholds,
+    thresholds = thresholds,  # Shared with RD()
     RD_obj = RD_obj,
     RD_obj_shash = RD_obj_shash,
     x_norm = x_norm,
     call = call
   )
+
+  # Attributes for S3 plotting.
+  attr(result, "univOut_hk") <- out_result
 
   class(result) <- "RD"
   result

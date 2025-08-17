@@ -30,6 +30,31 @@ plot_RD(norm_dat)
 ###############################################################################
 # RE-FACTORED FOR S3                                                          #
 ###############################################################################
+data_matrix <- fMRIscrub::Dat1
+kurt_data <- ICA_extract_kurt(time_series = data_matrix)
+
+result_MI <- RD(x = kurt_data$hk,
+                w = kurt_data$lk,
+                method = "MI",
+                mode = "auto",
+                cutoff = 3,
+                quantile = 0.01,
+                verbse = TRUE)
+
+set.seed(2025)
+RD_obj <- compute_RD(x = kurt_data$hk, mode = "auto")
+result_MI_thresh <- threshold_RD(x = kurt_data$hk,
+                                 w = kurt_data$lk,
+                                 method = "MI_boot",
+                                 RD_obj = RD_obj,
+                                 cutoff = 4,
+                                 quantile = 0.01,
+                                 verbose = TRUE)
+
+
+plot(result_MI_thresh, type="univOut")
+plot(result_MI, type="univOut")
+
 #########################################
 # Method: F                             #
 #########################################
@@ -50,4 +75,6 @@ result_F_thresh <- threshold_RD(x = kurt_data$hk,
 
 
 plot(result_F_thresh)
+
+
 

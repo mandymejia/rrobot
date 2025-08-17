@@ -3,13 +3,27 @@
 #' Creates diagnostic plots for robust distance analysis results.
 #'
 #' @param x An object of class "RD" from RD() or threshold_RD().
+#' @param type Character string specifying plot type: "histogram" (default), "thresholds", "imputation", or "univOut".
 #' @param method Character string specifying threshold method. Auto-detected if NULL.
-#' @inheritParams ...
+#' @param ... Additional arguments passed to plotting functions.
 #' @return A ggplot object.
 #' @method plot RD
 #' @export
-plot.RD <- function(x, method = NULL, ...) {
-  # Auto-detect method if not specified
+plot.RD <- function(x, type = c("histogram", "thresholds", "imputation", "univOut"), method = NULL, ...) {
+  type <- match.arg(type)
+  if (type == "univOut") {
+    return(plot_univOut(x, ...))
+  }
+
+  if (type == "imputation") {
+    return(plot_imputation(x, ...))
+  }
+
+  if (type == "thresholds") {
+    return(plot_thresholds(x, ...))
+  }
+
+  # type == "histogram" (default) - auto-detect method and show histogram
   if (is.null(method)) {
     if (inherits(x$thresholds, "F_result")) {
       method <- "F"
@@ -21,7 +35,7 @@ plot.RD <- function(x, method = NULL, ...) {
     # Add other method detection...
   }
 
-  # Dispatch to method-specific plotting
+  # Dispatch to method-specific plotting for default histograms
   switch(method,
          "F" = plot_F_histogram(x$thresholds, x$RD_obj, ...),
          "SI" = plot_SI_method(x$thresholds, x$RD_obj, ...),
@@ -42,7 +56,7 @@ plot.RD <- function(x, method = NULL, ...) {
 #' @param show_f_density Logical. Show F-distribution curve overlay (default = TRUE).
 #' @inheritParams ...
 #' @return A ggplot object.
-#' @export
+#' @keywords internal
 plot_F_histogram <- function(F_result, RD_obj, alpha = 0.01, binwidth = 0.1, log = FALSE, show_f_density = TRUE, ...) {
   # Extract what we need from the pre-computed objects
   RD <- RD_obj$RD
@@ -117,6 +131,59 @@ plot_F_histogram <- function(F_result, RD_obj, alpha = 0.01, binwidth = 0.1, log
       strip.text.y = element_text(angle = 0),
       legend.key = element_blank()
     )
+
+  return(p)
+}
+
+#' Plot Univariate Outliers from RD Analysis
+#'
+#' Creates a heatmap visualization of univariate outliers detected in high-kurtosis components.
+#'
+#' @param RD An object of class "RD" from RD() or threshold_RD().
+#' @inheritParams cutoff
+#' @inheritParams method_univOut
+#'
+#' @return A ggplot object showing a heatmap of outlier locations.
+#' @keywords internal
+plot_univOut <- function(
+    RD,
+    cutoff = NULL,
+    method = NULL
+) {
+  method <- match.arg(method)
+
+  # Get attributes from S3
+  imp_x <- attr(RD, "univOut_hk")
+  stopifnot("univOut data not available" = !is.null(imp_x))
+
+  # Get cutoff/method if user specified
+  call_obj <- RD$call
+  cutoff <- if (is.null(cutoff)) (if ("cutoff" %in% names(call_obj)) eval(call_obj$cutoff) else 4) else cutoff
+  method <- if (is.null(method)) (if ("trans" %in% names(call_obj)) as.character(eval(call_obj$trans)) else "SHASH") else method
+
+  # Use the extracted parameters (or function defaults if user didn't specify in call)
+  final_cutoff <- cutoff  # Function parameter takes precedence
+  final_method <- method  # Function parameter takes precedence
+
+  message("Plotting univOut with method=", method, ", cutoff=", cutoff)
+
+  out_hk <- imp_x$outliers
+
+  # True indices and timepoints
+  idx_hk <- which(out_hk, arr.ind = TRUE)
+  tp_hk  <- unique(idx_hk[, 1])
+
+  # ---- Heatmap of hk outlier matrix ----
+  mat_df <- reshape2::melt(out_hk)
+  colnames(mat_df) <- c("Time", "Variable", "Outlier")
+  p <- ggplot2::ggplot(mat_df, ggplot2::aes(x = Variable, y = Time, fill = Outlier)) +
+    ggplot2::geom_tile(color = "#D6E9FF")+
+    ggplot2::scale_fill_manual(values = c("FALSE" = "#f5f5f5", "TRUE" = "#191970")) +
+    ggplot2::theme_minimal() +
+    ggplot2::labs(title = "Outlier Matrix (High-Kurtosis Components)", x = "Variable", y = "Time") +
+    ggplot2::theme(aspect.ratio = 1.2) +
+    scale_x_continuous(expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0))
 
   return(p)
 }

@@ -61,14 +61,17 @@ RD <- function(x, w = NULL, method = c("SI_boot", "MI", "MI_boot", "SI","F", "SH
     RD_obj = thresholds$RD_obj_shash
   }
 
-  outliers <- RD_obj$RD > thresholds$thresholds$threshold
+  outliers <- RD_obj$RD > thresholds$thresholds$threshold # Copy attributes from RD() for S3 plotting
 
   result <- list(
-    thresholds = thresholds$thresholds,
+    thresholds = thresholds$thresholds, # Shared with threshold_RD()
     RD_obj = thresholds$RD_obj,
     outliers = outliers,
     call = call
   )
+
+  # Attributes for S3 plotting.
+  attr(result, "univOut_hk") <- attr(thresholds, "univOut_hk")
 
   class(result) <- "RD"
   result

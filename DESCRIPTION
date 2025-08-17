@@ -38,7 +38,8 @@ Imports:
     isotree,
     ggplot2,
     tidyr,
-    rlang
+    rlang,
+    reshape2
 Remotes:
 Suggests: knitr, rmarkdown, testthat (>= 3.0.0)
 VignetteBuilder: knitr

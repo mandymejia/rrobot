@@ -11,7 +11,7 @@ univOut(x, cutoff = 4, method = c("SHASH", "robZ"))
 
 \item{cutoff}{A numeric value indicating how many MADs away from the median to flag as outliers. The default value is set to be 4.}
 
-\item{method}{Character string. One of \code{"SHASH"}, \code{"robust-YJ"}, or \code{"robZ"}.}
+\item{method}{Character string. One of \code{"SHASH"} or \code{"robZ"}.}
 }
 \value{
 A list with elements:
