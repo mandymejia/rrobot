@@ -39,7 +39,7 @@ result_MI <- RD(x = kurt_data$hk,
                 mode = "auto",
                 cutoff = 3,
                 quantile = 0.01,
-                verbse = TRUE)
+                verbose = TRUE)
 
 set.seed(2025)
 RD_obj <- compute_RD(x = kurt_data$hk, mode = "auto")
@@ -75,6 +75,6 @@ result_F_thresh <- threshold_RD(x = kurt_data$hk,
 
 
 plot(result_F_thresh)
-
+plot(result_F)
 
 

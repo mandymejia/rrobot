@@ -57,7 +57,7 @@ plot.RD <- function(x, type = c("histogram", "thresholds", "imputation", "univOu
 #' @inheritParams ...
 #' @return A ggplot object.
 #' @keywords internal
-plot_F_histogram <- function(F_result, RD_obj, alpha = 0.01, binwidth = 0.1, log = FALSE, show_f_density = TRUE, ...) {
+plot_F_histogram <- function(F_result, RD_obj, alpha = 0.01, binwidth = 0.1, show_f_density = TRUE, ...) {
   # Extract what we need from the pre-computed objects
   RD <- RD_obj$RD
   ind_incld <- RD_obj$ind_incld
@@ -116,9 +116,9 @@ plot_F_histogram <- function(F_result, RD_obj, alpha = 0.01, binwidth = 0.1, log
               hjust = -0.1, vjust = -0.5, size = 4.5, color = "#333333") +
     scale_fill_manual(values = c("included" = "#009E73", "excluded" = "#D55E00")) +
     scale_color_manual(values = c("included" = "#009E73", "excluded" = "#D55E00")) +
-    (if (log) scale_x_log10() else scale_x_continuous(n.breaks = 10)) +
+    scale_x_log10() +
     ylab("Density") +
-    xlab(if (log) "log10(Squared robust distances)" else "Squared robust distances") +
+    xlab("log10(Squared robust distances)") +
     theme_minimal(base_size = 14) +
     theme(
       legend.position = "bottom",
@@ -139,25 +139,25 @@ plot_F_histogram <- function(F_result, RD_obj, alpha = 0.01, binwidth = 0.1, log
 #'
 #' Creates a heatmap visualization of univariate outliers detected in high-kurtosis components.
 #'
-#' @param RD An object of class "RD" from RD() or threshold_RD().
+#' @param x An object of class "RD" from RD() or threshold_RD().
 #' @inheritParams cutoff
 #' @inheritParams method_univOut
 #'
 #' @return A ggplot object showing a heatmap of outlier locations.
 #' @keywords internal
 plot_univOut <- function(
-    RD,
+    x,
     cutoff = NULL,
     method = NULL
 ) {
   method <- match.arg(method)
 
   # Get attributes from S3
-  imp_x <- attr(RD, "univOut_hk")
+  imp_x <- attr(x, "univOut_hk")
   stopifnot("univOut data not available" = !is.null(imp_x))
 
   # Get cutoff/method if user specified
-  call_obj <- RD$call
+  call_obj <- x$call
   cutoff <- if (is.null(cutoff)) (if ("cutoff" %in% names(call_obj)) eval(call_obj$cutoff) else 4) else cutoff
   method <- if (is.null(method)) (if ("trans" %in% names(call_obj)) as.character(eval(call_obj$trans)) else "SHASH") else method
 

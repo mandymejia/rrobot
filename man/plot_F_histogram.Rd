@@ -9,7 +9,6 @@ plot_F_histogram(
   RD_obj,
   alpha = 0.01,
   binwidth = 0.1,
-  log = FALSE,
   show_f_density = TRUE,
   ...
 )
@@ -23,11 +22,11 @@ plot_F_histogram(
 
 \item{binwidth}{Histogram bin width (default = 0.1).}
 
-\item{log}{Logical. Apply log10 transformation to x-axis (default = TRUE).}
-
 \item{show_f_density}{Logical. Show F-distribution curve overlay (default = TRUE).}
 
 \item{...}{Additional arguments to to method-specific functions.}
+
+\item{log}{Logical. Apply log10 transformation to x-axis (default = TRUE).}
 }
 \value{
 A ggplot object.

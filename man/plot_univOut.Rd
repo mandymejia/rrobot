@@ -4,12 +4,10 @@
 \alias{plot_univOut}
 \title{Plot Univariate Outliers from RD Analysis}
 \usage{
-plot_univOut(imp_x, w, cutoff = 3, method = c("SHASH", "robZ"))
+plot_univOut(x, cutoff = NULL, method = NULL)
 }
 \arguments{
-\item{imp_x}{A list output from \code{\link{univOut}} containing univariate outlier detection results for high-kurtosis data.}
-
-\item{w}{A numeric matrix (n_time × L) of low-kurtosis ICA components used as predictors (required for MI).}
+\item{x}{An object of class "RD" from RD() or threshold_RD().}
 
 \item{cutoff}{A numeric value indicating how many MADs away from the median to flag as outliers. The default value is set to be 4.}
 
