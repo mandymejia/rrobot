@@ -263,7 +263,11 @@ plot_imputations <- function(x) {
       p <- p + geom_line(data = plot_data, aes(x = Time, y = Original), color = "black", size = 0.8)
     }
     # Add labels and theme
+    # p <- p + labs(title = paste("Time Series for Column", q, "with Missing Data and Imputed Values"),
+    #               x = "Time", y = "Value") +
+    #   theme_minimal()
     p <- p + labs(title = paste("Time Series for Column", q, "with Missing Data and Imputed Values"),
+                  subtitle = "Black: Original | Green dashed: Temporal imputation | Blue: Multiple imputations | Orange: Random MI | Red dots: Outliers",
                   x = "Time", y = "Value") +
       theme_minimal()
     # Print each plot for each column (IC)
