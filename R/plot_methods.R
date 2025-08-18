@@ -257,7 +257,7 @@ plot_imputations <- function(x) {
     }
     # Add the original time series in black (plotted last)
 
-    if (method_used == "interp") {
+    if (method_used == "mean") {
       p <- p + geom_point(data = plot_data, aes(x = Time, y = Original), color = "black", size = 0.8)
     } else {
       p <- p + geom_line(data = plot_data, aes(x = Time, y = Original), color = "black", size = 0.8)

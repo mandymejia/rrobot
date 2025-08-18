@@ -49,6 +49,7 @@ result_MI_thresh <- threshold_RD(x = kurt_data$hk,
                                  RD_obj = RD_obj,
                                  cutoff = 4,
                                  quantile = 0.01,
+                                 trans = "robZ",
                                  impute_method = "interp",
                                  verbose = TRUE)
 
