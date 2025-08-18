@@ -49,6 +49,16 @@ result_MI_thresh <- threshold_RD(x = kurt_data$hk,
                                  RD_obj = RD_obj,
                                  cutoff = 4,
                                  quantile = 0.01,
+                                 trans = "robZ",
+                                 impute_method = "interp",
+                                 verbose = TRUE)
+
+result_all <- threshold_RD(x = kurt_data$hk,
+                                 w = kurt_data$lk,
+                                 method = "all",
+                                 RD_obj = RD_obj,
+                                 cutoff = 4,
+                                 quantile = 0.01,
                                  impute_method = "interp",
                                  verbose = TRUE)
 
@@ -58,6 +68,8 @@ plot(result_MI, type="univOut")
 
 plot(result_MI, type="imputations")
 plot(result_MI_thresh, type="imputations")
+plot(result_all, type="imputations")
+
 
 
 #########################################

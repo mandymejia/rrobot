@@ -217,7 +217,7 @@ plot_imputations <- function(x) {
   num_columns <- ncol(out_result$outliers)  # Number of time series (columns)
 
   # Set seed for reproducibility in selecting a random imputed dataset
-  set.seed(123)
+  # set.seed(123)
 
   # Choose a random imputed dataset to highlight in orange
   random_imputed_idx <- sample(1:num_imputations, 1)
@@ -257,13 +257,17 @@ plot_imputations <- function(x) {
     }
     # Add the original time series in black (plotted last)
 
-    if (method_used == "interp") {
+    if (method_used == "mean") {
       p <- p + geom_point(data = plot_data, aes(x = Time, y = Original), color = "black", size = 0.8)
     } else {
       p <- p + geom_line(data = plot_data, aes(x = Time, y = Original), color = "black", size = 0.8)
     }
     # Add labels and theme
+    # p <- p + labs(title = paste("Time Series for Column", q, "with Missing Data and Imputed Values"),
+    #               x = "Time", y = "Value") +
+    #   theme_minimal()
     p <- p + labs(title = paste("Time Series for Column", q, "with Missing Data and Imputed Values"),
+                  subtitle = "Black: Original | Green dashed: Temporal imputation | Blue: Multiple imputations | Orange: Random MI | Red dots: Outliers",
                   x = "Time", y = "Value") +
       theme_minimal()
     # Print each plot for each column (IC)
