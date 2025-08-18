@@ -30,6 +30,46 @@ hk1_thrs <- rrobot::threshold_RD(x = hk_abide1, w = lk_abide1,
 Rprof(NULL)
 summaryRprof("profile.out")  # shows top functions by time
 
-# Or interactive flamegraph:
-# install.packages("profvis")
-# profvis::profvis({ ... your call ... })
+
+
+out_result <- rrobot::univOut(x = hk_abide1, cutoff = 4, method = "SHASH")
+
+MImpute_obj <- rrobot::MImpute(x = hk_abide1, w = lk_abide1,
+                               outlier_matrix = out_result$outliers,
+                               k = 5, M = 50)
+
+MImpute_fast_obj <- MImpute_fast(x = hk_abide1, w = lk_abide1,
+                               outlier_matrix = out_result$outliers,
+                               k = 5, M = 50)
+
+
+##---- speed benchmark---------------------------------------------------------
+set.seed(2025)
+
+# Quick wall-clock timing
+t_old  <- system.time({
+  MImpute_obj <- rrobot::MImpute(
+    x = hk_abide1, w = lk_abide1,
+    outlier_matrix = out_result$outliers,
+    k = 5, M = 50
+  )
+})
+
+t_fast <- system.time({
+  MImpute_fast_obj <- MImpute_fast(
+    x = hk_abide1, w = lk_abide1,
+    outlier_matrix = out_result$outliers,
+    k = 5, M = 50
+  )
+})
+
+print(t_old["elapsed"]); print(t_fast["elapsed"])
+
+# Optional: richer benchmark
+# install.packages("bench")
+library(bench)
+bench::mark(
+  MImpute      = rrobot::MImpute(hk_abide1, lk_abide1, out_result$outliers, k = 5, M = 50),
+  MImpute_fast = MImpute_fast   (hk_abide1, lk_abide1, out_result$outliers, k = 5, M = 50),
+  iterations = 3, check = FALSE
+)
