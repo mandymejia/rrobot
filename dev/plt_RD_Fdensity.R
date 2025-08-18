@@ -1,7 +1,7 @@
 library(ggplot2)
-
+library(here)
 # --- Load ---------------------------------------------------------------------
-abide1shash_obj <- readRDS("~/Documents/GitHub/RobOutlier-paper/results/ABIDE/ABIDE1_SHASH.rds")
+abide1shash_obj <- readRDS(here::here("dev", "fixtures", "ABIDE1.rds"))
 
 RD_obj <- abide1shash_obj$RD_obj_shash
 rd2    <- as.numeric(RD_obj$RD)          # RDsquare vector

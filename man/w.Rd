@@ -4,7 +4,7 @@
 \alias{w}
 \title{W parameter documentation}
 \arguments{
-\item{w}{A numeric matrix (n_time × L) of low-kurtosis ICA components used as predictors (optional).}
+\item{w}{A numeric matrix (n_time × L) of low-kurtosis ICA components used as predictors (required for MI).}
 }
 \description{
 W parameter documentation

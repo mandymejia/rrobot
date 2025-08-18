@@ -119,11 +119,16 @@ NULL
 NULL
 
 #' W parameter documentation
-#' @param w A numeric matrix (n_time × L) of low-kurtosis ICA components used as predictors (optional).
+#' @param w A numeric matrix (n_time × L) of low-kurtosis ICA components used as predictors (required for MI).
 #' @name w
 NULL
 
 #' X parameter documentation
 #' @param x A numeric matrix or data frame of dimensions T × p (observations × variables).
 #' @name x
+NULL
+
+#' Method_univOut parameter documentation
+#' @param method Character string. One of \code{"SHASH"} or \code{"robZ"}.
+#' @name method_univOut
 NULL
