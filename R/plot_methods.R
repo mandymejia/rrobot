@@ -222,7 +222,7 @@ plot_imputations <- function(x) {
   # Choose a random imputed dataset to highlight in orange
   random_imputed_idx <- sample(1:num_imputations, 1)
 
-  method_used <- if ("interp" %in% as.character(imp_result$call)) "interp" else "mean"
+  method_used <- if ("interp" %in% as.character(x$call)) "interp" else "mean"
   message("Using method: ", method_used)
   # Loop through each column (IC)
   for (q in 1:num_columns) {
