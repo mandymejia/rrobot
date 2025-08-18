@@ -200,6 +200,80 @@ plot_univOut <- function(
 #' @keywords internal
 plot_imputations <- function(x) {
   outliers = TRUE # Want red dots
+  x_data <- attr(x, "x_data")
+  out_result <- attr(x, "univOut_hk")
+  imp_result <- attr(x, "impute_univOut_hk")
+  multiple_imp <- attr(x, "MImpute_hk")
+  stopifnot("Multiple imputation data not available. This plot only available for MI and MI_boot methods." =
+              !is.null(attr(x, "MImpute_hk")))
+  NA_locs <- imp_result$NA_locs
+  imputed_datasets <- multiple_imp$imp_datasets
+  num_imputations <- length(imputed_datasets)
+  num_columns <- ncol(out_result$outliers)  # Number of time series (columns)
+  # Set seed for reproducibility in selecting a random imputed dataset
+  set.seed(123)
+  # Choose a random imputed dataset to highlight in orange
+  random_imputed_idx <- sample(1:num_imputations, 1)
+  method_used <- if ("interp" %in% as.character(x$call)) "interp" else "mean"
+  message("Using method: ", method_used)
+  # Loop through each column (IC)
+  for (q in 1:num_columns) {
+    # Prepare data for the current column (IC)
+    plot_data <- data.frame(Time = 1:nrow(x_data), Original = x_data[, q])
+    # Find the NA locations for this column (IC q)
+    na_rows <- NA_locs[NA_locs[, 2] == q, 1]
+    # Create the base plot without the original black line yet
+    p <- ggplot()
+    if (outliers) {
+      # Add red dots for the missing data points (NA locations)
+      p <- p + geom_point(data = data.frame(Time = na_rows, Original = x_data[na_rows, q]),
+                          aes(x = Time, y = Original, color = "Outliers"), size = 2, alpha = 0.7)
+    }
+    # Add temporal imputation line (GREEN DASHED)
+    p <- p + geom_line(data = data.frame(Time = 1:nrow(imp_result$imp_data), Temporal = imp_result$imp_data[, q]),
+                       aes(x = Time, y = Temporal, color = "Temporal Imputation"), size = 1.0, linetype = "dashed")
+    # Add imputed datasets as blue lines with transparency
+    for (i in 1:num_imputations) {
+      imp_data <- imputed_datasets[[i]]
+      imp_data_plot <- data.frame(Time = 1:nrow(imp_data), Imputed = imp_data[, q])
+      # If the current imputation is the randomly selected one, color it orange
+      if (i == random_imputed_idx) {
+        p <- p + geom_line(data = imp_data_plot, aes(x = Time, y = Imputed, color = "Random MI"),
+                           size = 0.8)
+      } else {
+        p <- p + geom_line(data = imp_data_plot, aes(x = Time, y = Imputed, color = "Multiple Imputations"),
+                           size = 0.5, alpha = 0.02)
+      }
+    }
+    # Add the original time series in black (plotted last)
+    if (method_used == "mean") {
+      p <- p + geom_point(data = plot_data, aes(x = Time, y = Original, color = "Original"), size = 0.8)
+    } else {
+      p <- p + geom_line(data = plot_data, aes(x = Time, y = Original, color = "Original"), size = 0.8)
+    }
+
+    # Add manual color scale to match original colors
+    p <- p + scale_color_manual(
+      name = "Data Type",
+      values = c(
+        "Original" = "black",
+        "Temporal Imputation" = "green",
+        "Multiple Imputations" = "blue",
+        "Random MI" = "orange",
+        "Outliers" = "red"
+      )
+    ) +
+      labs(title = paste("Time Series for Column", q, "with Missing Data and Imputed Values"),
+           x = "Time", y = "Value") +
+      theme_minimal() +
+      theme(legend.position = "bottom")
+
+    print(p)
+  }
+}
+
+plot_imputations_old <- function(x) {
+  outliers = TRUE # Want red dots
 
   x_data <- attr(x, "x_data")
   out_result <- attr(x, "univOut_hk")
