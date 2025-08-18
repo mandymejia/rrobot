@@ -24,7 +24,7 @@ threshold_RD(
 \arguments{
 \item{x}{A numeric matrix or data frame of dimensions T × p (observations × variables).}
 
-\item{w}{A numeric matrix (n_time × L) of low-kurtosis ICA components used as predictors (optional).}
+\item{w}{A numeric matrix (n_time × L) of low-kurtosis ICA components used as predictors (required for MI).}
 
 \item{method}{Character string; one of "all","SI","SI_boot","MI","MI_boot","F", "SHASH".}
 

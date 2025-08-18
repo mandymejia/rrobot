@@ -9,7 +9,7 @@ MImpute(x, w, outlier_matrix, M = 50, k = 100)
 \arguments{
 \item{x}{A numeric matrix (n_time × p) of high-kurtosis ICA components to be imputed.}
 
-\item{w}{A numeric matrix (n_time × L) of low-kurtosis ICA components used as predictors (optional).}
+\item{w}{A numeric matrix (n_time × L) of low-kurtosis ICA components used as predictors (required for MI).}
 
 \item{outlier_matrix}{A logical matrix (same dim as x) indicating univariate outliers to be imputed.}
 

@@ -18,18 +18,60 @@ source(here::here("dev", "ICA_extract_kurt.R"))
 data_matrix <- fMRIscrub::Dat1
 kurt_data <- ICA_extract_kurt(time_series = data_matrix)
 
-set.seed(2025)
-plot_RD(kurt_data$hk, log = TRUE, show_f_density = TRUE)
-
-
-# Random
-norm_dat = mvrnorm(500, mu = rep(0, 5), Sigma = diag(5))
-plot_RD(norm_dat)
+# set.seed(2025)
+# plot_RD(kurt_data$hk, log = TRUE, show_f_density = TRUE)
+#
+#
+# # Random
+# norm_dat = mvrnorm(500, mu = rep(0, 5), Sigma = diag(5))
+# plot_RD(norm_dat)
 
 
 ###############################################################################
 # RE-FACTORED FOR S3                                                          #
 ###############################################################################
+data_matrix <- fMRIscrub::Dat1
+kurt_data <- ICA_extract_kurt(time_series = data_matrix)
+
+result_MI <- RD(x = kurt_data$hk,
+                w = kurt_data$lk,
+                method = "MI",
+                mode = "auto",
+                cutoff = 3,
+                quantile = 0.01,
+                verbose = TRUE)
+
+set.seed(2025)
+RD_obj <- compute_RD(x = kurt_data$hk, mode = "auto")
+result_MI_thresh <- threshold_RD(x = kurt_data$hk,
+                                 w = kurt_data$lk,
+                                 method = "MI_boot",
+                                 RD_obj = RD_obj,
+                                 cutoff = 4,
+                                 quantile = 0.01,
+                                 trans = "robZ",
+                                 impute_method = "interp",
+                                 verbose = TRUE)
+
+result_all <- threshold_RD(x = kurt_data$hk,
+                                 w = kurt_data$lk,
+                                 method = "all",
+                                 RD_obj = RD_obj,
+                                 cutoff = 4,
+                                 quantile = 0.01,
+                                 impute_method = "interp",
+                                 verbose = TRUE)
+
+
+plot(result_MI_thresh, type="univOut")
+plot(result_MI, type="univOut")
+
+plot(result_MI, type="imputations")
+plot(result_MI_thresh, type="imputations")
+plot(result_all, type="imputations")
+
+
+
 #########################################
 # Method: F                             #
 #########################################
@@ -50,4 +92,6 @@ result_F_thresh <- threshold_RD(x = kurt_data$hk,
 
 
 plot(result_F_thresh)
+plot(result_F)
+
 

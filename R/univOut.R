@@ -8,7 +8,7 @@
 #'
 #' @inheritParams x
 #' @inheritParams cutoff
-#' @param method Character string. One of \code{"SHASH"}, \code{"robust-YJ"}, or \code{"robZ"}.
+#' @inheritParams method_univOut
 #'
 #' @return A list with elements:
 #' \describe{

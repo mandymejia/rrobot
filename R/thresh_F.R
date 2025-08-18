@@ -76,6 +76,11 @@ thresh_F <- function(p, n, h, quantile, SHASH = FALSE, verbose = FALSE) {
     call = call
   )
 
-  class(result) <- "F_result"
+  if (SHASH) {
+    class(result) <- "SHASH_result"
+  } else {
+    class(result) <- "F_result"
+  }
+
   result
 }
