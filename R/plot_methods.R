@@ -217,7 +217,7 @@ plot_imputations <- function(x) {
   num_columns <- ncol(out_result$outliers)  # Number of time series (columns)
 
   # Set seed for reproducibility in selecting a random imputed dataset
-  set.seed(123)
+  # set.seed(123)
 
   # Choose a random imputed dataset to highlight in orange
   random_imputed_idx <- sample(1:num_imputations, 1)
