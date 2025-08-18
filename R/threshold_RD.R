@@ -56,7 +56,7 @@ threshold_RD <- function(x, w = NULL, method = c("SI_boot", "MI", "MI_boot", "SI
   if (method %in% c("all", "MI", "MI_boot")) {
     if (verbose) message("Generating ", M, " multiply imputed datasets.")
     multiple_imp <- MImpute(x = imp_result$imp_data, w = w, outlier_matrix = out_result$outliers, M = M, k = k)
-  }
+  } else { multiple_imp <- NULL }
 
   RD_obj_shash <- x_norm <- NULL
 
@@ -109,7 +109,10 @@ threshold_RD <- function(x, w = NULL, method = c("SI_boot", "MI", "MI_boot", "SI
   )
 
   # Attributes for S3 plotting.
+  attr(result, "x_data") <- x
   attr(result, "univOut_hk") <- out_result
+  attr(result, "impute_univOut_hk") <- imp_result
+  attr(result, "MImpute_hk") <- multiple_imp
 
   class(result) <- "RD"
   result

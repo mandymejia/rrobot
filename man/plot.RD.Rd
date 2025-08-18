@@ -6,7 +6,7 @@
 \usage{
 \method{plot}{RD}(
   x,
-  type = c("histogram", "thresholds", "imputation", "univOut"),
+  type = c("histogram", "thresholds", "imputations", "univOut"),
   method = NULL,
   ...
 )

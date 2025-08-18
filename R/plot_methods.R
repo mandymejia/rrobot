@@ -9,14 +9,14 @@
 #' @return A ggplot object.
 #' @method plot RD
 #' @export
-plot.RD <- function(x, type = c("histogram", "thresholds", "imputation", "univOut"), method = NULL, ...) {
+plot.RD <- function(x, type = c("histogram", "thresholds", "imputations", "univOut"), method = NULL, ...) {
   type <- match.arg(type)
   if (type == "univOut") {
     return(plot_univOut(x, ...))
   }
 
-  if (type == "imputation") {
-    return(plot_imputation(x, ...))
+  if (type == "imputations") {
+    return(plot_imputations(x, ...))
   }
 
   if (type == "thresholds") {
@@ -93,7 +93,7 @@ plot_F_histogram <- function(F_result, RD_obj, alpha = 0.01, binwidth = 0.1, sho
   df_HR_label <- data.frame(
     x = q_HR,
     y = max(yvals, na.rm = TRUE) * 1.05,
-    label = paste0("F(", 1 - alpha, ")")
+    label = ""
   )
 
   # Filter positive values
@@ -180,10 +180,93 @@ plot_univOut <- function(
     ggplot2::geom_tile(color = "#D6E9FF")+
     ggplot2::scale_fill_manual(values = c("FALSE" = "#f5f5f5", "TRUE" = "#191970")) +
     ggplot2::theme_minimal() +
-    ggplot2::labs(title = "Outlier Matrix (High-Kurtosis Components)", x = "Variable", y = "Time") +
-    ggplot2::theme(aspect.ratio = 1.2) +
-    scale_x_continuous(expand = c(0, 0)) +
-    scale_y_continuous(expand = c(0, 0))
+    ggplot2::labs(title = "Outlier Matrix", x = "Variable", y = "Observations") +
+    ggplot2::theme(aspect.ratio = 1.2) #+
+    # scale_x_continuous(expand = c(0.01, 0)) +
+    # scale_y_continuous(expand = c(0.01, 0))
 
   return(p)
+}
+
+#' Plot Multiple Imputation Results from RD Analysis
+#'
+#' Creates time series plots showing original data, temporal imputation,
+#' and multiple imputation results with outlier locations highlighted.
+#'
+#' @param x An object of class "RD" from RD() or threshold_RD().
+#' @param ... Additional arguments (unused).
+#'
+#' @return Prints ggplot objects for each variable showing imputation results.
+#' @keywords internal
+plot_imputations <- function(x) {
+  outliers = TRUE # Want red dots
+
+  x_data <- attr(x, "x_data")
+  out_result <- attr(x, "univOut_hk")
+  imp_result <- attr(x, "impute_univOut_hk")
+  multiple_imp <- attr(x, "MImpute_hk")
+
+  stopifnot("Multiple imputation data not available. This plot only available for MI and MI_boot methods." =
+              !is.null(attr(x, "MImpute_hk")))
+
+  NA_locs <- imp_result$NA_locs
+  imputed_datasets <- multiple_imp$imp_datasets
+
+
+  num_imputations <- length(imputed_datasets)
+  num_columns <- ncol(out_result$outliers)  # Number of time series (columns)
+
+  # Set seed for reproducibility in selecting a random imputed dataset
+  set.seed(123)
+
+  # Choose a random imputed dataset to highlight in orange
+  random_imputed_idx <- sample(1:num_imputations, 1)
+
+  method_used <- if ("interp" %in% as.character(imp_result$call)) "interp" else "mean"
+  message("Using method: ", method_used)
+  # Loop through each column (IC)
+  for (q in 1:num_columns) {
+    # Prepare data for the current column (IC)
+    plot_data <- data.frame(Time = 1:nrow(x_data), Original = x_data[, q])
+    # Find the NA locations for this column (IC q)
+    na_rows <- NA_locs[NA_locs[, 2] == q, 1]
+    # Create the base plot without the original black line yet
+    p <- ggplot()
+
+    if (outliers) {
+      # Add red dots for the missing data points (NA locations)
+      p <- p + geom_point(data = data.frame(Time = na_rows, Original = x_data[na_rows, q]),
+                          aes(x = Time, y = Original), color = "red", size = 2, alpha = 0.7)
+    }
+
+    # Add temporal imputation line (GREEN DASHED)
+    p <- p + geom_line(data = data.frame(Time = 1:nrow(imp_result$imp_data), Temporal = imp_result$imp_data[, q]),
+                       aes(x = Time, y = Temporal), color = "green", size = 1.0, linetype = "dashed")
+    # Add imputed datasets as blue lines with transparency
+    for (i in 1:num_imputations) {
+      imp_data <- imputed_datasets[[i]]
+      imp_data_plot <- data.frame(Time = 1:nrow(imp_data), Imputed = imp_data[, q])
+      # If the current imputation is the randomly selected one, color it orange
+      if (i == random_imputed_idx) {
+        p <- p + geom_line(data = imp_data_plot, aes(x = Time, y = Imputed),
+                           color = "orange", size = 0.8)
+      } else {
+        p <- p + geom_line(data = imp_data_plot, aes(x = Time, y = Imputed),
+                           color = "blue", size = 0.5, alpha = 0.02)
+      }
+    }
+    # Add the original time series in black (plotted last)
+
+    if (method_used == "interp") {
+      p <- p + geom_point(data = plot_data, aes(x = Time, y = Original), color = "black", size = 0.8)
+    } else {
+      p <- p + geom_line(data = plot_data, aes(x = Time, y = Original), color = "black", size = 0.8)
+    }
+    # Add labels and theme
+    p <- p + labs(title = paste("Time Series for Column", q, "with Missing Data and Imputed Values"),
+                  x = "Time", y = "Value") +
+      theme_minimal()
+    # Print each plot for each column (IC)
+    print(p)
+  }
 }

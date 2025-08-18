@@ -18,13 +18,13 @@ source(here::here("dev", "ICA_extract_kurt.R"))
 data_matrix <- fMRIscrub::Dat1
 kurt_data <- ICA_extract_kurt(time_series = data_matrix)
 
-set.seed(2025)
-plot_RD(kurt_data$hk, log = TRUE, show_f_density = TRUE)
-
-
-# Random
-norm_dat = mvrnorm(500, mu = rep(0, 5), Sigma = diag(5))
-plot_RD(norm_dat)
+# set.seed(2025)
+# plot_RD(kurt_data$hk, log = TRUE, show_f_density = TRUE)
+#
+#
+# # Random
+# norm_dat = mvrnorm(500, mu = rep(0, 5), Sigma = diag(5))
+# plot_RD(norm_dat)
 
 
 ###############################################################################
@@ -49,11 +49,16 @@ result_MI_thresh <- threshold_RD(x = kurt_data$hk,
                                  RD_obj = RD_obj,
                                  cutoff = 4,
                                  quantile = 0.01,
+                                 impute_method = "interp",
                                  verbose = TRUE)
 
 
 plot(result_MI_thresh, type="univOut")
 plot(result_MI, type="univOut")
+
+plot(result_MI, type="imputations")
+plot(result_MI_thresh, type="imputations")
+
 
 #########################################
 # Method: F                             #
