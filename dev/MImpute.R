@@ -10,7 +10,7 @@
 #' @return list(imp_datasets, outlier_matrix)
 #' @importFrom MASS mvrnorm ginv
 #' @export
-MImpute <- function(x, w, outlier_matrix, M = 50, k = 5, ridge_eps = 1e-8, tol = NA_real_) {
+MImpute_fast <- function(x, w, outlier_matrix, M = 50, k = 5, ridge_eps = 1e-8, tol = NA_real_) {
   stopifnot(is.matrix(x), is.matrix(w), is.logical(outlier_matrix))
   stopifnot(all(dim(x) == dim(outlier_matrix)))
   stopifnot(nrow(w) == nrow(x))
@@ -82,5 +82,6 @@ MImpute <- function(x, w, outlier_matrix, M = 50, k = 5, ridge_eps = 1e-8, tol =
     imp_datasets[[m]] <- x_imp
   }
 
-  list(imp_datasets = imp_datasets, outlier_matrix = outlier_matrix)
+  list(imp_datasets = imp_datasets,
+       outlier_matrix = outlier_matrix)
 }

@@ -55,6 +55,7 @@ threshold_RD <- function(x, w = NULL, method = c("SI_boot", "MI", "MI_boot", "SI
 
   if (method %in% c("all", "MI", "MI_boot")) {
     if (verbose) message("Generating ", M, " multiply imputed datasets.")
+    # multiple_imp <- MImpute(x = imp_result$imp_data, w = w, outlier_matrix = out_result$outliers, M = M, k = k)
     multiple_imp <- MImpute(x = imp_result$imp_data, w = w, outlier_matrix = out_result$outliers, M = M, k = k)
   } else { multiple_imp <- NULL }
 
