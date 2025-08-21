@@ -132,3 +132,13 @@ NULL
 #' @param method Character string. One of \code{"SHASH"} or \code{"robZ"}.
 #' @name method_univOut
 NULL
+
+#' Thresh_result parameter documentation
+#' @param thresh_result A threshold result object from any threshold method containing threshold information.
+#' @name thresh_result
+NULL
+
+#' Binwidth parameter documentation
+#' @param binwidth Histogram bin width (default = 0.1).
+#' @name binwidth
+NULL

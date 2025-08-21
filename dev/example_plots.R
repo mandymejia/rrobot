@@ -70,7 +70,9 @@ plot(result_MI, type="imputations")
 plot(result_MI_thresh, type="imputations")
 plot(result_all, type="imputations")
 
-
+# Default RD Histograms
+plot(result_all, method = "SI")
+plot(result_all)
 
 #########################################
 # Method: F                             #

@@ -1,3 +1,23 @@
+
+library(MASS)
+library(expm)
+library(cellWise)
+library(forecast)
+library(fMRIscrub)
+library(isotree)
+library(future.apply)
+library(future)
+library(tibble)
+library(here)
+library(fastICA)
+
+devtools::load_all()
+source(here::here("dev", "ICA_extract_kurt.R"))
+
+set.seed(2025)
+
+
+
 #' Plot Robust Mahalanobis distances and theoretical threshold from F-distribution
 #'
 #' @param data A numeric matrix (T × Q) containing multivariate observations (rows = time/obs, cols = variables).
@@ -58,11 +78,11 @@ FP_plotRD <- function(data,
     observation = factor(observation, levels = c("included", "excluded"))
   )
   df_fcurve <- data.frame(x = xvals, y = yvals, q_HR = q_HR)
-  df_label  <- data.frame(
-    x = q_HR,
-    y = max(yvals, na.rm = TRUE) * 1.05,
-    label = paste0("F(", 1 - alpha, ")")
-  )
+  # df_label  <- data.frame(
+  #   x = q_HR,
+  #   y = max(yvals, na.rm = TRUE) * 1.05,
+  #   label = paste0("F(", 1 - alpha, ")")
+  # )
 
   # --- ggplot ---
   library(ggplot2)
@@ -72,8 +92,8 @@ FP_plotRD <- function(data,
     geom_vline(xintercept = q_HR, linetype = "dashed", linewidth = 0.8, color = "#333333") +
     { if (show_f_density) geom_line(data = df_fcurve, aes(x = x, y = y),
                                     inherit.aes = FALSE, linewidth = 0.8, color = "#333333") } +
-    geom_text(data = df_label, aes(x = x, y = y, label = label),
-              inherit.aes = FALSE, hjust = -0.1, vjust = -0.5, size = 4.5, color = "#333333") +
+    # geom_text(data = df_label, aes(x = x, y = y, label = label),
+    #           inherit.aes = FALSE, hjust = -0.1, vjust = -0.5, size = 4.5, color = "#333333") +
     scale_fill_manual(values = c("included" = "#009E73", "excluded" = "#D55E00")) +
     scale_color_manual(values = c("included" = "#009E73", "excluded" = "#D55E00")) +
     { if (log) scale_x_log10() else scale_x_continuous(n.breaks = 10) } +
@@ -93,3 +113,9 @@ FP_plotRD <- function(data,
 
   return(p)
 }
+
+
+data_matrix <- fMRIscrub::Dat1
+kurt_data <- ICA_extract_kurt(time_series = data_matrix)
+hk_data <- kurt_data$hk
+FP_plotRD(hk_data, log = TRUE)

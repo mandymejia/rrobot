@@ -6,7 +6,7 @@ abide1shash_obj <- readRDS(here::here("dev", "fixtures", "ABIDE1.rds"))
 RD_obj <- abide1shash_obj$RD_obj_shash
 rd2    <- as.numeric(RD_obj$RD)          # RDsquare vector
 
-Fpar <- abide1shash_obj$thresholds
+Fpar <- abide1shash_obj$thresholds$F
 df1  <- Fpar$df[1]
 df2  <- Fpar$df[2]
 s    <- 1 / Fpar$scale
