@@ -14,62 +14,55 @@ t <- system.time({
                   x = hk_abide1, w = lk_abide1,
                   method = "all", RD_obj = hk1_obj,
                   impute_method = "interp",
-                  M = 50, k = 5, B = 1000)
+                  M = 100, k = 5, B = 1000)
 })
 
 print(t)              # user / system / elapsed
 t["elapsed"]          # numeric seconds
 
-
-# Base R profiler
-Rprof("profile.out")
-hk1_thrs <- rrobot::threshold_RD(x = hk_abide1, w = lk_abide1,
-                                 method = "all", RD_obj = hk1_obj,
-                                 impute_method = "interp",
-                                 M = 50, k = 5, B = 1000)
-Rprof(NULL)
-summaryRprof("profile.out")  # shows top functions by time
+str(hk1_thrs)
+hist(log(hk1_thrs$RD_obj$RD), breaks = 30)
 
 
+library(ggplot2)
 
-out_result <- rrobot::univOut(x = hk_abide1, cutoff = 4, method = "SHASH")
+# --- Data for histogram -------------------------------------------------------
+RD      <- hk1_thrs$RD_obj$RD
+ind_in  <- hk1_thrs$RD_obj$ind_incld
+label   <- rep("excluded", length(RD))
+label[ind_in] <- "included"
 
-MImpute_obj <- rrobot::MImpute(x = hk_abide1, w = lk_abide1,
-                               outlier_matrix = out_result$outliers,
-                               k = 5, M = 50)
+eps <- 1e-12
+z   <- log(pmax(RD, eps))
+df  <- data.frame(z = z, label = factor(label, levels = c("included","excluded")))
 
-MImpute_fast_obj <- MImpute_fast(x = hk_abide1, w = lk_abide1,
-                               outlier_matrix = out_result$outliers,
-                               k = 5, M = 50)
+# --- Collect thresholds (on RD scale), EXCLUDING SHASH ------------------------
+thr_SI      <- hk1_thrs$thresholds$SI$threshold
+thr_SI_boot <- hk1_thrs$thresholds$SI_boot$threshold
+thr_MI      <- hk1_thrs$thresholds$MI$threshold
+thr_MI_boot <- hk1_thrs$thresholds$MI_boot$threshold
+# F threshold needs scaling to RD units:
+thr_F       <- hk1_thrs$thresholds$F$threshold * hk1_thrs$thresholds$F$scale
 
-
-##---- speed benchmark---------------------------------------------------------
-set.seed(2025)
-
-# Quick wall-clock timing
-t_old  <- system.time({
-  MImpute_obj <- rrobot::MImpute(
-    x = hk_abide1, w = lk_abide1,
-    outlier_matrix = out_result$outliers,
-    k = 5, M = 50
-  )
-})
-
-t_fast <- system.time({
-  MImpute_fast_obj <- MImpute_fast(
-    x = hk_abide1, w = lk_abide1,
-    outlier_matrix = out_result$outliers,
-    k = 5, M = 50
-  )
-})
-
-print(t_old["elapsed"]); print(t_fast["elapsed"])
-
-# Optional: richer benchmark
-# install.packages("bench")
-library(bench)
-bench::mark(
-  MImpute      = rrobot::MImpute(hk_abide1, lk_abide1, out_result$outliers, k = 5, M = 50),
-  MImpute_fast = MImpute_fast   (hk_abide1, lk_abide1, out_result$outliers, k = 5, M = 50),
-  iterations = 3, check = FALSE
+df_thresh <- data.frame(
+  method  = factor(c("SI (99%)", "SI_boot (2.5% CI LB)", "MI (2.5%)", "MI_boot", "F"),
+                   levels = c("SI (99%)", "SI_boot (2.5% CI LB)", "MI (2.5%)", "MI_boot", "F")),
+  thr_log = log(pmax(c(thr_SI, thr_SI_boot, thr_MI, thr_MI_boot, thr_F), eps))
 )
+
+# --- Plot ---------------------------------------------------------------------
+ggplot(df, aes(x = z, fill = label)) +
+  geom_histogram(aes(y = after_stat(density)),
+                 bins = 30, position = "identity", alpha = 0.6, color = "black") +
+  geom_vline(data = df_thresh,
+             aes(xintercept = thr_log, color = method),
+             linewidth = 0.9, linetype = "solid") +
+  scale_fill_manual(values = c("included" = "#009E73", "excluded" = "#D55E00")) +
+  labs(
+    title = "Histogram of log(RD) with Thresholds (non-SHASH)",
+    x = "log(RD)",
+    y = "Density",
+    fill = "Observation",
+    color = "Threshold"
+  ) +
+  theme_minimal(base_size = 12)
