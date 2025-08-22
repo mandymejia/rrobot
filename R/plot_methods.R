@@ -74,7 +74,74 @@ plot.RD <- function(x, type = c("histogram", "thresholds", "imputations", "univO
 #' @return A ggplot object with histogram colored by inclusion status and multiple
 #'   colored threshold lines for comparison of different methods.
 #' @keywords internal
-plot_RD_histogram_multi <- function(RD_result, RD_obj, methods = c("SI", "SI_boot", "MI", "MI_boot"), alpha = 0.01, binwidth = 0.1, ...) {
+plot_RD_histogram_multi <- function(RD_result, RD_obj, methods = c("SI", "SI_boot", "MI", "MI_boot", "F"), alpha = 0.01, binwidth = 0.1, ...) {
+  stopifnot("thresh_result must have a $threshold element" = inherits(RD_result$thresholds, "list"))
+  stopifnot("RD_obj must have $RD and $ind_incld elements" = !is.null(RD_obj$RD) && !is.null(RD_obj$ind_incld))
+
+  # --- Data for histogram -------------------------------------------------------
+  RD      <- RD_obj$RD
+  ind_in  <- RD_obj$ind_incld
+  label   <- rep("excluded", length(RD))
+  label[ind_in] <- "included"
+  eps <- 1e-12
+  z   <- log(pmax(RD, eps))
+  df  <- data.frame(z = z, label = factor(label, levels = c("included","excluded")))
+
+  # --- Collect thresholds (on RD scale) -----------------------------------------
+  thresholds <- sapply(methods, function(m) {
+    if (m == "F") {
+      RD_result$thresholds[[m]]$threshold * RD_result$thresholds[[m]]$scale
+    } else {
+      RD_result$thresholds[[m]]$threshold
+    }
+  })
+
+  method_labels <- c(
+    "SI" = "SI (99%)",
+    "SI_boot" = "SI_boot (2.5% CI LB)",
+    "MI" = "MI (2.5%)",
+    "MI_boot" = "MI_boot",
+    "F" = "F"
+  )
+
+  df_thresh <- data.frame(
+    method  = factor(method_labels[methods], levels = method_labels[methods]),
+    thr_log = log(pmax(thresholds, eps))
+  )
+
+  # --- Plot ---------------------------------------------------------------------
+  p <- ggplot(df, aes(x = z, fill = label)) +
+    geom_histogram(aes(y = after_stat(density)),
+                   bins = 30, position = "identity", alpha = 0.6, color = "black") +
+    geom_vline(data = df_thresh,
+               aes(xintercept = thr_log, color = method),
+               linewidth = 0.9, linetype = "solid") +
+    scale_fill_manual(values = c("included" = "#009E73", "excluded" = "#D55E00")) +
+    labs(
+      title = "Histogram of log(RD) with Thresholds (non-SHASH)",
+      x = "log(RD)",
+      y = "Density",
+      fill = "Observation",
+      color = "Threshold"
+    ) +
+    theme_minimal(base_size = 12)
+
+  return(p)
+}
+
+#' @title Decommissioned Multi-Method Threshold Plot (Legacy Style)
+#' @description This function is deprecated and kept for backwards compatibility.
+#'   Uses an older plotting style with different aesthetics. Consider using
+#'   the updated plot methods instead.
+#' @param RD_result An RD result object from threshold_RD()
+#' @param RD_obj Robust distance object from compute_RD()
+#' @param methods Character vector of methods to display
+#' @param alpha Significance level (unused in this version)
+#' @param binwidth Bin width (unused, uses bins=30 instead)
+#' @param ... Additional arguments (ignored)
+#' @return A ggplot object with legacy styling
+#' @keywords internal
+plot_RD_histogram_mult_s2 <- function(RD_result, RD_obj, methods = c("SI", "SI_boot", "MI", "MI_boot", "F"), alpha = 0.01, binwidth = 0.1, ...) {
   stopifnot("thresh_result must have a $threshold element" = inherits(RD_result$thresholds, "list"))
   stopifnot("RD_obj must have $RD and $ind_incld elements" = !is.null(RD_obj$RD) && !is.null(RD_obj$ind_incld))
 
@@ -107,7 +174,13 @@ plot_RD_histogram_multi <- function(RD_result, RD_obj, methods = c("SI", "SI_boo
 
   # Add all thresholds into a single dataframe
   threshold_df <- data.frame(
-    threshold = sapply(methods, function(m) RD_result$thresholds[[m]]$threshold),
+    threshold = sapply(methods, function(m) {
+      if (m == "F") {
+        RD_result$thresholds[[m]]$threshold * RD_result$thresholds[[m]]$scale
+      } else {
+        RD_result$thresholds[[m]]$threshold
+      }
+    }),
     method = methods
   )
   # Create the plot (no faceting for single dataset)
@@ -125,7 +198,8 @@ plot_RD_histogram_multi <- function(RD_result, RD_obj, methods = c("SI", "SI_boo
       "SI" = "#1b9e77",
       "SI_boot" = "#2166ac",
       "MI" = "#7570b3",
-      "MI_boot" = "#e7298a"
+      "MI_boot" = "#e7298a",
+      "F" = "#666666"
     )) +
     scale_x_log10() +
     ylab("Density") +

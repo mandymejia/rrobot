@@ -7,7 +7,7 @@
 plot_RD_histogram_multi(
   RD_result,
   RD_obj,
-  methods = c("SI", "SI_boot", "MI", "MI_boot"),
+  methods = c("SI", "SI_boot", "MI", "MI_boot", "F"),
   alpha = 0.01,
   binwidth = 0.1,
   ...
