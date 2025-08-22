@@ -74,7 +74,7 @@ plot.RD <- function(x, type = c("histogram", "thresholds", "imputations", "univO
 #' @return A ggplot object with histogram colored by inclusion status and multiple
 #'   colored threshold lines for comparison of different methods.
 #' @keywords internal
-plot_RD_histogram_multi <- function(RD_result, RD_obj, methods = c("SI", "SI_boot", "MI", "MI_boot"), alpha = 0.01, binwidth = 0.1, ...) {
+plot_RD_histogram_multi <- function(RD_result, RD_obj, methods = c("SI", "SI_boot", "MI", "MI_boot", "F"), alpha = 0.01, binwidth = 0.1, ...) {
   stopifnot("thresh_result must have a $threshold element" = inherits(RD_result$thresholds, "list"))
   stopifnot("RD_obj must have $RD and $ind_incld elements" = !is.null(RD_obj$RD) && !is.null(RD_obj$ind_incld))
 
@@ -107,7 +107,13 @@ plot_RD_histogram_multi <- function(RD_result, RD_obj, methods = c("SI", "SI_boo
 
   # Add all thresholds into a single dataframe
   threshold_df <- data.frame(
-    threshold = sapply(methods, function(m) RD_result$thresholds[[m]]$threshold),
+    threshold = sapply(methods, function(m) {
+      if (m == "F") {
+        RD_result$thresholds[[m]]$threshold * RD_result$thresholds[[m]]$scale
+      } else {
+        RD_result$thresholds[[m]]$threshold
+      }
+    }),
     method = methods
   )
   # Create the plot (no faceting for single dataset)
@@ -125,7 +131,8 @@ plot_RD_histogram_multi <- function(RD_result, RD_obj, methods = c("SI", "SI_boo
       "SI" = "#1b9e77",
       "SI_boot" = "#2166ac",
       "MI" = "#7570b3",
-      "MI_boot" = "#e7298a"
+      "MI_boot" = "#e7298a",
+      "F" = "#666666"
     )) +
     scale_x_log10() +
     ylab("Density") +
