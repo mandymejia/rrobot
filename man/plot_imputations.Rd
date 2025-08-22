@@ -8,8 +8,6 @@ plot_imputations(x)
 }
 \arguments{
 \item{x}{An object of class "RD" from RD() or threshold_RD().}
-
-\item{...}{Additional arguments (unused).}
 }
 \value{
 Prints ggplot objects for each variable showing imputation results.
