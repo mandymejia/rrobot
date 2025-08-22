@@ -58,6 +58,30 @@ plot.RD <- function(x, type = c("histogram", "thresholds", "imputations", "univO
   )
 }
 
+#' Plot Thresholds Comparison (Not Yet Implemented)
+#'
+#' Creates a comparison plot of different threshold methods for robust distance analysis.
+#' This function is a placeholder and will be implemented in a future version.
+#'
+#' @param x An object of class "RD" from RD() or threshold_RD().
+#' @param methods Character vector of threshold methods to compare (default: all available).
+#' @param ... Additional arguments (currently unused).
+#'
+#' @return Currently returns NULL and prints a message. Will return a ggplot object in future versions.
+#'
+#' @export
+plot_thresholds <- function(x, methods = NULL, ...) {
+  # Input validation
+  stopifnot(inherits(x, "RD"))
+
+  # Placeholder implementation
+  message("plot_thresholds() is not yet implemented.")
+  message("This function will create threshold comparison visualizations in a future version.")
+
+  # Return NULL for now
+  invisible(NULL)
+}
+
 #' Plot Multiple Threshold Methods on Robust Distance Histogram
 #'
 #' Creates a histogram of robust distances with multiple colored threshold lines
@@ -125,97 +149,6 @@ plot_RD_histogram_multi <- function(RD_result, RD_obj, methods = c("SI", "SI_boo
       color = "Threshold"
     ) +
     theme_minimal(base_size = 12)
-
-  return(p)
-}
-
-#' @title Decommissioned Multi-Method Threshold Plot (Legacy Style)
-#' @description This function is deprecated and kept for backwards compatibility.
-#'   Uses an older plotting style with different aesthetics. Consider using
-#'   the updated plot methods instead.
-#' @param RD_result An RD result object from threshold_RD()
-#' @param RD_obj Robust distance object from compute_RD()
-#' @param methods Character vector of methods to display
-#' @param alpha Significance level (unused in this version)
-#' @param binwidth Bin width (unused, uses bins=30 instead)
-#' @param ... Additional arguments (ignored)
-#' @return A ggplot object with legacy styling
-#' @keywords internal
-plot_RD_histogram_mult_s2 <- function(RD_result, RD_obj, methods = c("SI", "SI_boot", "MI", "MI_boot", "F"), alpha = 0.01, binwidth = 0.1, ...) {
-  stopifnot("thresh_result must have a $threshold element" = inherits(RD_result$thresholds, "list"))
-  stopifnot("RD_obj must have $RD and $ind_incld elements" = !is.null(RD_obj$RD) && !is.null(RD_obj$ind_incld))
-
-  # Extract what we need from the pre-computed objects
-  RD <- RD_obj$RD
-  ind_incld <- RD_obj$ind_incld
-  t <- length(RD)
-
-  scale_factor <- 1
-
-  # Create observation status
-  observation <- ifelse(seq_len(t) %in% ind_incld, "included", "excluded")
-
-  # Extend tail range
-  excl_vals <- RD[observation == "excluded"] * scale_factor
-  dens_excld <- density(excl_vals, from = 0)
-  peak_density <- max(dens_excld$y)
-
-  # Create data frames for plotting (single dataset, no "data" column needed)
-  df_RD <- data.frame(
-    distance = RD * scale_factor,
-    observation = observation
-  )
-
-  # Filter positive values
-  df_RD <- df_RD[df_RD$distance > 0, ]
-
-  # Factor the observation column
-  df_RD$observation <- factor(df_RD$observation, levels = c("included", "excluded"))
-
-  # Add all thresholds into a single dataframe
-  threshold_df <- data.frame(
-    threshold = sapply(methods, function(m) {
-      if (m == "F") {
-        RD_result$thresholds[[m]]$threshold * RD_result$thresholds[[m]]$scale
-      } else {
-        RD_result$thresholds[[m]]$threshold
-      }
-    }),
-    method = methods
-  )
-  # Create the plot (no faceting for single dataset)
-  p <- ggplot(df_RD, aes(x = .data$distance)) +
-    geom_histogram(aes(y = after_stat(density), fill = observation, color = observation),
-                   binwidth = binwidth, alpha = 0.5) +
-    geom_vline(
-      data = threshold_df,
-      aes(xintercept = threshold, color = method),
-      linewidth = 0.8
-    ) +
-
-    scale_fill_manual(values = c("included" = "#009E73", "excluded" = "#D55E00")) +
-    scale_color_manual(values = c(
-      "SI" = "#1b9e77",
-      "SI_boot" = "#2166ac",
-      "MI" = "#7570b3",
-      "MI_boot" = "#e7298a",
-      "F" = "#666666"
-    )) +
-    scale_x_log10() +
-    ylab("Density") +
-    xlab("log10(Squared robust distances)") +
-    theme_minimal(base_size = 14) +
-    theme(
-      legend.position = "bottom",
-      legend.title = element_text(size = 12),
-      panel.grid.major = element_blank(),
-      panel.grid.minor = element_blank(),
-      axis.title = element_text(size = 14),
-      axis.text = element_text(size = 12),
-      strip.text = element_text(size = 13),
-      strip.text.y = element_text(angle = 0),
-      legend.key = element_blank()
-    )
 
   return(p)
 }
@@ -315,7 +248,6 @@ plot_RD_histogram <- function(thresh_result, RD_obj, alpha = 0.01, binwidth = 0.
 #' @inheritParams RD_obj
 #' @inheritParams alpha
 #' @param binwidth Histogram bin width (default = 0.1).
-#' @param log Logical. Apply log10 transformation to x-axis (default = TRUE).
 #' @param show_f_density Logical. Show F-distribution curve overlay (default = TRUE).
 #' @inheritParams ...
 #' @return A ggplot object.
@@ -457,8 +389,8 @@ plot_univOut <- function(
 #' and multiple imputation results with outlier locations highlighted.
 #'
 #' @param x An object of class "RD" from RD() or threshold_RD().
-#' @param ... Additional arguments (unused).
 #'
+#' @importFrom ggplot2 geom_point labs
 #' @return Prints ggplot objects for each variable showing imputation results.
 #' @keywords internal
 plot_imputations <- function(x) {

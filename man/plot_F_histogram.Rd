@@ -25,8 +25,6 @@ plot_F_histogram(
 \item{show_f_density}{Logical. Show F-distribution curve overlay (default = TRUE).}
 
 \item{...}{Additional arguments to to method-specific functions.}
-
-\item{log}{Logical. Apply log10 transformation to x-axis (default = TRUE).}
 }
 \value{
 A ggplot object.

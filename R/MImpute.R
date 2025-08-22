@@ -9,6 +9,7 @@
 #' @param tol optional early-stop tolerance on per-cycle max change (NA to disable).
 #' @return list(imp_datasets, outlier_matrix)
 #' @importFrom MASS mvrnorm ginv
+#' @importFrom stats var rnorm
 #' @export
 MImpute <- function(x, w, outlier_matrix, M = 50, k = 5, ridge_eps = 1e-8, tol = NA_real_) {
   stopifnot(is.matrix(x), is.matrix(w), is.logical(outlier_matrix))
