@@ -390,7 +390,6 @@ plot_univOut <- function(
 #'
 #' @param x An object of class "RD" from RD() or threshold_RD().
 #'
-#' @importFrom ggplot2 geom_point labs
 #' @return Prints ggplot objects for each variable showing imputation results.
 #' @keywords internal
 plot_imputations <- function(x) {

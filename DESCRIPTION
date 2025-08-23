@@ -19,6 +19,10 @@ Authors@R: c(
     person(given = "Fatma",
            family = "Parlak",
            email = "fparlakstat@gmail.com",
+           role = c("ctb")),
+    person(given = "Zeshawn",
+           family = "Zahid",
+           email = "zeshawn.zahid@gmail.com",
            role = c("ctb")))
 Maintainer: Amanda Mejia <mandy.mejia@gmail.com>
 Description: Provides robust outlier detection techniques for identifying anomalies in multivariate data, 
@@ -38,8 +42,8 @@ Imports:
     isotree,
     ggplot2,
     tidyr,
-    rlang,
-    reshape2
+    reshape2,
+    rlang
 Remotes:
 Suggests: knitr, rmarkdown, testthat (>= 3.0.0)
 VignetteBuilder: knitr
