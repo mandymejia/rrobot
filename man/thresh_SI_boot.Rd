@@ -29,7 +29,7 @@ thresh_SI_boot(
 \value{
 A list with:
 \describe{
-\item{quant99}{Vector of 99th quantiles of RD for each bootstrap sample.}
+\item{thresholds}{Vector of 99th quantiles of RD for each bootstrap sample.}
 \item{threshold}{Threshold based on lower bound of the confidence interval.}
 \item{UB_CI}{Upper bound of the confidence interval for the 99th quantiles.}
 \item{call}{The matched function call.}

@@ -63,7 +63,7 @@ test_that("SI_boot method gives consistent results", {
   # Use looser tolerances for bootstrap methods (inherently variable)
   expect_equal(result$threshold, reference$LB_CI, tolerance = 5)
   expect_equal(result$UB_CI, reference$UB_CI, tolerance = 5)
-  expect_length(result$quant99, 50)
+  expect_length(result$thresholds, 50)
 
   # Test that confidence intervals are reasonable
   expect_lt(result$threshold, result$UB_CI)
@@ -137,7 +137,7 @@ test_that("threshold_RD 'all' method gives consistent results", {
   # Test SI_boot method (looser tolerance due to bootstrap)
   expect_equal(result$thresholds$SI_boot$threshold, SI_boot_ref$LB_CI, tolerance = 5)
   expect_equal(result$thresholds$SI_boot$UB_CI, SI_boot_ref$UB_CI, tolerance = 5)
-  expect_length(result$thresholds$SI_boot$quant99, 50)
+  expect_length(result$thresholds$SI_boot$thresholds, 50)
 
   # Test MI method (looser tolerance due to stochastic nature)
   expect_length(result$thresholds$MI$thresholds, 3)  # Should have 3 thresholds (M=3)
