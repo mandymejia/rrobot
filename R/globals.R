@@ -1,3 +1,11 @@
+#' @importFrom ggplot2 ggplot aes geom_histogram geom_line geom_vline geom_text geom_point
+#' @importFrom ggplot2 scale_fill_manual scale_color_manual scale_x_log10 theme_minimal theme
+#' @importFrom ggplot2 element_text element_blank after_stat ylab xlab labs geom_tile
+#' @importFrom stats density df
+#' @importFrom reshape2 melt
+#' @importFrom rlang .data
+NULL
+
 # ==========================================================================
 # Global Variables Declaration for R CMD Check
 # ==========================================================================
@@ -53,3 +61,4 @@ if(getRversion() >= "2.15.1") {
     ".data"           # rlang pronoun (if using .data$ syntax)
   ))
 }
+
