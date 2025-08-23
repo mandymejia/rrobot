@@ -26,7 +26,7 @@ summary.SI_result <- function(object, ...) {
 summary.SI_boot_result <- function(object, ...) {
   cat("Single Imputation Bootstrap (SI_boot) Results\n")
   cat("=============================================\n")
-  cat("Bootstrap samples:", length(object$quant99), "\n")
+  cat("Bootstrap samples:", length(object$thresholds), "\n")
   cat("Confidence Interval:\n")
   cat("  Lower bound (threshold):", round(object$threshold, 4), "\n")
   cat("  Upper bound:", round(object$UB_CI, 4), "\n")
@@ -60,7 +60,7 @@ summary.MI_boot_result <- function(object, ...) {
   cat("Multiple Imputation Bootstrap (MI_boot) Results\n")
   cat("===============================================\n")
 
-  total_bootstraps <- length(object$thresholds_all)
+  total_bootstraps <- length(object$thresholds)
   cat("Total bootstrap samples:", total_bootstraps, "\n")
   cat("Final threshold:", round(object$threshold, 4), "\n")
 
