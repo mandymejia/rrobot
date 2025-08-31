@@ -85,9 +85,9 @@ threshold_RD <- function(x, w = NULL, method = c("SI_boot", "MI", "MI_boot", "SI
                    "MI_boot" = thresh_MI_boot(RD_org_obj = RD_obj, imp_datasets = multiple_imp$imp_datasets,
                                               B = B, alpha = alpha, boot_quant = boot_quant, verbose = verbose),
 
-                   "F" = thresh_F(p = ncol(x), n = nrow(x), h = RD_obj$h, quantile = quantile, verbose = verbose),
+                   "F" = thresh_F(p = ncol(x), n = nrow(x), h = RD_obj$h, quantile = quantile, RD_obj = RD_obj, verbose = verbose),
 
-                   "SHASH" = thresh_F(p = ncol(x), n = nrow(x), h = RD_obj_shash$h, quantile = quantile, verbose = verbose),
+                   "SHASH" = thresh_F(p = ncol(x), n = nrow(x), h = RD_obj_shash$h, quantile = quantile,  RD_obj = RD_obj_shash, SHASH = TRUE, verbose = verbose),
 
                    "all" = list(
                      SI = thresh_SI(RD_org_obj = RD_obj, imp_data = imp_result$imp_data, alpha = alpha, verbose = verbose),
@@ -96,8 +96,8 @@ threshold_RD <- function(x, w = NULL, method = c("SI_boot", "MI", "MI_boot", "SI
                      MI = thresh_MI(RD_org_obj = RD_obj, imp_datasets = multiple_imp$imp_datasets, alpha = alpha, verbose = verbose),
                      MI_boot = thresh_MI_boot(RD_org_obj = RD_obj, imp_datasets = multiple_imp$imp_datasets,
                                               B = B, alpha = alpha, boot_quant = boot_quant, verbose = verbose),
-                     F = thresh_F(p = ncol(x), n = nrow(x), h = RD_obj$h, quantile = quantile, verbose = verbose),
-                     SHASH = thresh_F(p = ncol(x), n = nrow(x), h = RD_obj_shash$h, quantile = quantile, SHASH = TRUE, verbose = verbose)
+                     F = thresh_F(p = ncol(x), n = nrow(x), h = RD_obj$h,  quantile = quantile, RD_obj = RD_obj, verbose = verbose),
+                     SHASH = thresh_F(p = ncol(x), n = nrow(x), h = RD_obj_shash$h, quantile = quantile, RD_obj = RD_obj_shash, SHASH = TRUE, verbose = verbose)
                    )
   )
 

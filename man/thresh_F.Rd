@@ -4,7 +4,7 @@
 \alias{thresh_F}
 \title{Fit F-distribution Parameters for MCD-based Robust Distances}
 \usage{
-thresh_F(p, n, h, quantile, SHASH = FALSE, verbose = FALSE)
+thresh_F(p, n, h, quantile, RD_obj, SHASH = FALSE, verbose = FALSE)
 }
 \arguments{
 \item{p}{Integer. The number of variables (dimension of the data).}
@@ -14,6 +14,8 @@ thresh_F(p, n, h, quantile, SHASH = FALSE, verbose = FALSE)
 \item{h}{Integer. The number of observations retained in the MCD subset.}
 
 \item{quantile}{Numeric in (0,1) specifying the upper quantile for thresholding; the expected False Positive Rate for the chosen threshold.}
+
+\item{RD_obj}{Pre-computed RD_result object from \code{\link{compute_RD}}.}
 
 \item{SHASH}{Boolean. If running SHASH variant.}
 
@@ -27,6 +29,7 @@ A list with the following elements:
 \item{df}{A numeric vector of degrees of freedom: \code{c(df1, df2)}.}
 \item{scale}{Scale factor for the threshold.}
 \item{threshold}{Threshold for squared robust distances.}
+\item{flagged_outliers}{Integer vector of row indices from original data matrix that exceed the threshold.}
 \item{call}{The matched function call.}
 }
 }

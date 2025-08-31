@@ -37,7 +37,7 @@ test_that("Hardin-Rocke method gives consistent results", {
 
   result <- thresh_F(p = ncol(setup_data$hk_data),
                   n = nrow(setup_data$hk_data),
-                  h = setup_data$RD_org_obj$h,
+                  h = setup_data$RD_org_obj$h, RD_obj = setup_data$RD_org_obj,
                   quantile = 0.01)
 
   expect_equal(result$threshold, reference$threshold, tolerance = 1e-10)
@@ -145,8 +145,7 @@ test_that("threshold_RD 'all' method gives consistent results", {
   # Test MI_boot method
   expect_type(result$thresholds$MI_boot$threshold, "double")
   expect_length(result$thresholds$MI_boot$threshold, 1)
-  expect_type(result$thresholds$MI_boot$flagged_outliers, "logical")
-  expect_length(result$thresholds$MI_boot$flagged_outliers, length(setup_data$hk_data[,1]))
+  expect_type(result$thresholds$MI_boot$flagged_outliers, "integer")
 
   # Test that all methods return reasonable positive thresholds
   expect_gt(result$thresholds$SI$threshold, 0)

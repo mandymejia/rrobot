@@ -20,6 +20,7 @@ A list with:
 \describe{
 \item{SI_obj}{A list from \code{\link{compute_RD}} containing robust distances.}
 \item{threshold}{Numeric threshold based on the (1 - alpha) quantile of RD.}
+\item{flagged_outliers}{Integer vector of row indices from original data matrix that exceed the threshold.}
 \item{call}{The matched function call.}
 }
 }

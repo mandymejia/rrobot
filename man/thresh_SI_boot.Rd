@@ -31,6 +31,7 @@ A list with:
 \describe{
 \item{thresholds}{Vector of 99th quantiles of RD for each bootstrap sample.}
 \item{threshold}{Threshold based on lower bound of the confidence interval.}
+\item{flagged_outliers}{Integer vector of row indices from original data matrix that exceed the threshold.}
 \item{UB_CI}{Upper bound of the confidence interval for the 99th quantiles.}
 \item{call}{The matched function call.}
 }

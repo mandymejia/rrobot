@@ -31,7 +31,7 @@ A list with:
 \describe{
 \item{thresholds}{Vector of M×B thresholds from each bootstrap sample.}
 \item{threshold}{Lower bound of CI across thresholds.}
-\item{flagged_outliers}{Logical vector of outliers based on final threshold.}
+\item{flagged_outliers}{Integer vector of row indices from original data matrix that exceed the threshold.}
 \item{call}{The matched function call.}
 }
 }

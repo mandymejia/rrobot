@@ -86,12 +86,10 @@ MI_boot_results <- thresh_MI_boot(
 # Print the final threshold
 MI_boot_results$threshold
 
-# See which time points were flagged as outliers
-which(MI_boot_results$flagged_outliers)
 summary(MI_boot_results)
 
 #----Hardin and Rocke-----------------------------------------------------------
-HR_result <- thresh_F(p = ncol(hk_data), n = nrow(hk_data), h = RD_org_obj$h, quantile = 0.01)
+HR_result <- thresh_F(p = ncol(hk_data), n = nrow(hk_data), h = RD_org_obj$h, RD_obj = RD_org_obj, quantile = 0.01)
 
 HR_result$threshold
 summary(HR_result)

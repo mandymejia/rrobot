@@ -13,6 +13,7 @@
 #' \describe{
 #'   \item{SI_obj}{A list from \code{\link{compute_RD}} containing robust distances.}
 #'   \item{threshold}{Numeric threshold based on the (1 - alpha) quantile of RD.}
+#'   \item{flagged_outliers}{Integer vector of row indices from original data matrix that exceed the threshold.}
 #'   \item{call}{The matched function call.}
 #' }
 #' @export
@@ -34,9 +35,12 @@ thresh_SI <- function(RD_org_obj, imp_data, alpha = 0.01, verbose = FALSE) {
   # Threshold = (1 - alpha) quantile of RD
   threshold <- quantile(SI_obj$RD, 1 - alpha, na.rm = TRUE)
 
+  flagged_outliers <- which(RD_org_obj$RD > threshold)
+
   result <- list(
     SI_obj = SI_obj,
     threshold = threshold,
+    flagged_outliers = flagged_outliers,
     call = call
   )
 
