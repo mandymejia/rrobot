@@ -15,6 +15,7 @@
 #'   \item{thresholds}{Numeric vector of length M; (1 - alpha) quantiles of RD per imputed dataset.}
 #'   \item{threshold}{Lower bound of the confidence interval of thresholds.}
 #'   \item{call}{The matched function call.}
+#'   \item{flagged_outliers}{Integer vector of row indices from original data matrix that exceed the threshold.}
 #' }
 #'
 #' @importFrom stats quantile
@@ -55,9 +56,12 @@ thresh_MI <- function(RD_org_obj, imp_datasets, alpha = 0.01, boot_quant = 0.95,
 
   LB_CI <- stats::quantile(thresholds, probs = (1 - boot_quant)/2, na.rm = TRUE)
 
+  flagged_outliers <- which(RD_orig > LB_CI)
+
   result <- list(
     thresholds = thresholds,
     threshold  = LB_CI,
+    flagged_outliers = flagged_outliers,
     call       = call
   )
 

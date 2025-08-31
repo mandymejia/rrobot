@@ -14,6 +14,7 @@
 #' @param n Integer. The total sample size.
 #' @param h Integer. The number of observations retained in the MCD subset.
 #' @inheritParams quantile
+#' @inheritParams RD_obj
 #' @param SHASH Boolean. If running SHASH variant.
 #' @inheritParams verbose
 #'
@@ -24,12 +25,13 @@
 #'   \item{df}{A numeric vector of degrees of freedom: \code{c(df1, df2)}.}
 #'   \item{scale}{Scale factor for the threshold.}
 #'   \item{threshold}{Threshold for squared robust distances.}
+#'   \item{flagged_outliers}{Integer vector of row indices from original data matrix that exceed the threshold.}
 #'   \item{call}{The matched function call.}
 #' }
 #'
 #' @importFrom stats pchisq qchisq qf
 #' @export
-thresh_F <- function(p, n, h, quantile, SHASH = FALSE, verbose = FALSE) {
+thresh_F <- function(p, n, h, quantile, RD_obj, SHASH = FALSE, verbose = FALSE) {
   if (verbose) message("Running ", if (SHASH) "SHASH" else "F", " method: F-distribution threshold...")
   call <- match.call()
 
@@ -67,12 +69,15 @@ thresh_F <- function(p, n, h, quantile, SHASH = FALSE, verbose = FALSE) {
   # threshold inverse scaling due to the scaled RD stated in Hardin&Rocke(2005)
   q_sHR <- qf(p = 1 - quantile, df1 = df[1], df2 = df[2]) / scale
 
+  flagged_outliers <- which(RD_obj$RD > q_sHR)
+
   result <- list(
     c = c,
     m = m,
     df = df,
     scale = scale,
     threshold = q_sHR,
+    flagged_outliers = flagged_outliers,
     call = call
   )
 

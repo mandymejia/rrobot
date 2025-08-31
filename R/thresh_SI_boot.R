@@ -15,6 +15,7 @@
 #' \describe{
 #'   \item{thresholds}{Vector of 99th quantiles of RD for each bootstrap sample.}
 #'   \item{threshold}{Threshold based on lower bound of the confidence interval.}
+#'   \item{flagged_outliers}{Integer vector of row indices from original data matrix that exceed the threshold.}
 #'   \item{UB_CI}{Upper bound of the confidence interval for the 99th quantiles.}
 #'   \item{call}{The matched function call.}
 #' }
@@ -55,9 +56,12 @@ thresh_SI_boot <- function(RD_org_obj, imp_data,
   LB_CI <- stats::quantile(quant99, probs = lower_p, na.rm = TRUE)
   UB_CI <- stats::quantile(quant99, probs = upper_p, na.rm = TRUE)
 
+  flagged_outliers <- which(RD_org_obj$RD > LB_CI)
+
   result <- list(
     thresholds   = quant99,
     threshold = LB_CI,
+    flagged_outliers = flagged_outliers,
     UB_CI     = UB_CI,
     call      = call
   )

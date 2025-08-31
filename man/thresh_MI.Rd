@@ -29,6 +29,7 @@ A list with:
 \item{thresholds}{Numeric vector of length M; (1 - alpha) quantiles of RD per imputed dataset.}
 \item{threshold}{Lower bound of the confidence interval of thresholds.}
 \item{call}{The matched function call.}
+\item{flagged_outliers}{Integer vector of row indices from original data matrix that exceed the threshold.}
 }
 }
 \description{
