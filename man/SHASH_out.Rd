@@ -7,6 +7,7 @@
 SHASH_out(
   x,
   thr0 = 2.58,
+  thr1 = 2.58,
   thr = 4,
   symmetric = TRUE,
   use_huber = FALSE,
@@ -21,7 +22,9 @@ SHASH_out(
 \arguments{
 \item{x}{A numeric matrix or data frame of dimensions T × p (observations × variables).}
 
-\item{thr0}{Threshold for iterative convergence (default: 2.58).}
+\item{thr0}{Threshold for SHASH-z initial outlier flagging (default: 2.58).}
+
+\item{thr1}{Threshold for iterative convergence (default: 2.58).}
 
 \item{thr}{Threshold multiplier for outlier detection (default = 4).}
 
