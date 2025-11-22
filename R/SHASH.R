@@ -46,7 +46,8 @@ normal_to_SHASH <- function(x, mu, sigma, nu, tau){
 #' Detect univariate outliers using an iterative SHASH fitting process with optional pre-flagging strategies.
 #'
 #' @inheritParams x
-#' @param thr0 Threshold for iterative convergence (default: 2.58).
+#' @param thr0 Threshold for SHASH-z initial outlier flagging (default: 2.58).
+#' @param thr1 Threshold for iterative convergence (default: 2.58).
 #' @inheritParams thr
 #' @inheritParams symmetric
 #' @inheritParams use_huber
@@ -64,6 +65,7 @@ normal_to_SHASH <- function(x, mu, sigma, nu, tau){
 #' @export
 SHASH_out <- function(x,
                       thr0         = 2.58,
+                      thr1         = 2.58,
                       thr          = 4,
                       symmetric    = TRUE,
                       use_huber    = FALSE,
@@ -86,6 +88,7 @@ SHASH_out <- function(x,
   params <- list(
     orig_values  = x,
     thr0         = thr0,
+    thr1         = thr1,
     thr          = thr,
     symmetric    = symmetric,
     use_huber    = use_huber,
@@ -163,9 +166,9 @@ SHASH_out <- function(x,
     norm_iters_clean[, iter] <- x_norm_clean
 
     weight_new <- if (upper_only) {
-      x_norm_clean <= thr0
+      x_norm_clean <= thr1
     } else {
-      abs(x_norm_clean) <= thr0
+      abs(x_norm_clean) <= thr1
     }
     indx_iters_clean[, iter] <- as.integer(!weight_new)
 

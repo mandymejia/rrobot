@@ -4,15 +4,7 @@
 \alias{MImpute}
 \title{Multiple Imputation with Per-Cycle Updates (OLS + MICE-style)}
 \usage{
-MImpute(
-  x,
-  w,
-  outlier_matrix,
-  M = 50,
-  k = 5,
-  ridge_eps = 0.00000001,
-  tol = NA_real_
-)
+MImpute(x, w, outlier_matrix, M = 50, k = 5, ridge_eps = 1e-08, tol = NA_real_)
 }
 \arguments{
 \item{x}{(T × p) high-kurtosis ICA matrix to impute.}
