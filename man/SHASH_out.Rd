@@ -9,8 +9,6 @@ SHASH_out(
   thr0 = 2.58,
   thr1 = 2.58,
   thr = 4,
-  symmetric = TRUE,
-  use_huber = FALSE,
   upper_only = FALSE,
   use_isotree = FALSE,
   use_isoplus = FALSE,
@@ -27,10 +25,6 @@ SHASH_out(
 \item{thr1}{Threshold for iterative convergence (default: 2.58).}
 
 \item{thr}{Threshold multiplier for outlier detection (default = 4).}
-
-\item{symmetric}{Logical. Use symmetric bounds for empirical rule.}
-
-\item{use_huber}{Logical. If TRUE, apply Huber-like soft rejection.}
 
 \item{upper_only}{Logical. If TRUE, use right-tail only.}
 

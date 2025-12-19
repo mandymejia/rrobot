@@ -67,8 +67,6 @@ SHASH_out <- function(x,
                       thr0         = 2.58,
                       thr1         = 2.58,
                       thr          = 4,
-                      symmetric    = TRUE,
-                      use_huber    = FALSE,
                       upper_only   = FALSE,
                       use_isotree  = FALSE,
                       use_isoplus  = FALSE,
@@ -90,8 +88,6 @@ SHASH_out <- function(x,
     thr0         = thr0,
     thr1         = thr1,
     thr          = thr,
-    symmetric    = symmetric,
-    use_huber    = use_huber,
     upper_only   = upper_only,
     use_isotree  = use_isotree,
     use_isoplus  = use_isoplus,
@@ -129,14 +125,13 @@ SHASH_out <- function(x,
     iso_model  <- isolation.forest(data.frame(x_clean), ntrees=200)
     iso_scores <- predict(iso_model, data.frame(x_clean), type="score")
     weight_new <- iso_scores <= thr_isotree
-  } else {
+  }
+  else {
     # --- Default Initialization Using Robust Empirical Rule ---
     # Inverts output of emprule_rob() so TRUE = inlier
     iso_scores <- rep(NA_real_, n_clean)
     W <- tryCatch(
       1 - emprule_rob(x_clean, thr = thr0,
-                      symmetric = symmetric,
-                      use_huber = use_huber,
                       upper_only = upper_only),
       error = function(e) rep(TRUE, n_clean)
     )
@@ -234,21 +229,21 @@ SHASH_out <- function(x,
 #'
 #' @return Logical vector: TRUE = outlier, FALSE = inlier.
 #' @keywords internal
-emprule_rob <- function(x, thr = 4, symmetric = TRUE, use_huber = FALSE, upper_only = FALSE) {
+emprule_rob <- function(x, thr = 4, upper_only = FALSE) {
+
   x_med <- median(x, na.rm = TRUE)
   mad_val <- 1.4826 * median(abs(x - x_med), na.rm = TRUE)
 
   z <- (x - x_med) / mad_val
-  if (use_huber) {
-    z <- pmin(pmax(z, -thr), thr)  # shrink extreme z-scores
+
+  if (mad_val == 0 || is.na(mad_val)) {
+    return(rep(FALSE, length(x)))
   }
 
   if (upper_only) {
     out <- z > thr
-  } else if (symmetric) {
-    out <- abs(z) > thr
   } else {
-    out <- z < -thr | z > thr
+    out <- abs(z) > thr
   }
 
   out

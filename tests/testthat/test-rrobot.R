@@ -4,7 +4,7 @@ test_that("emprule_rob flags correct outliers", {
   x <- c(10, 12, 11, 10, 13, 11, 100)  # 100 is an outlier
 
   # Call the function
-  result <- rrobot:::emprule_rob(x, thr = 3, use_huber = FALSE, upper_only = TRUE)
+  result <- rrobot:::emprule_rob(x, thr = 3)
 
   # Check output type and length
   expect_type(result, "logical")
