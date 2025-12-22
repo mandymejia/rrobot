@@ -45,10 +45,10 @@ normal_to_SHASH <- function(x, mu, sigma, nu, tau){
 #'
 #' Detect univariate outliers using an iterative SHASH fitting process with optional pre-flagging strategies.
 #'
-#' @inheritParams x
+#' @param x Numeric vector.
 #' @param thr0 Threshold for SHASH-z initial outlier flagging (default: 2.58).
 #' @param thr1 Threshold for iterative convergence (default: 2.58).
-#' @inheritParams thr
+#' @param thr Final threshold to flag outliers.
 #' @param tail character string specifying which tail(s) to check for outliers.
 #'   Must be one of \code{"upper"}, \code{"lower"}, or \code{"both"}.
 #'   \itemize{
@@ -240,11 +240,15 @@ SHASH_out <- function(x,
 #'
 #' Detects outliers using the median ± threshold × MAD rule.
 #'
-#' @inheritParams x
-#' @inheritParams thr
-#' @inheritParams symmetric
-#' @inheritParams use_huber
-#' @inheritParams tail
+#' @param x Numeric vector.
+#' @param thr Final threshold to flag outliers.
+#' @param tail character string specifying which tail(s) to check for outliers.
+#'   Must be one of \code{"upper"}, \code{"lower"}, or \code{"both"}.
+#'   \itemize{
+#'     \item \code{"upper"}: detect upper-tail outliers only.
+#'     \item \code{"lower"}: detect lower-tail outliers only.
+#'     \item \code{"both"}: detect two-sided outliers (default).
+#'   }
 #'
 #' @return Logical vector: TRUE = outlier, FALSE = inlier.
 #' @keywords internal

@@ -4,14 +4,20 @@
 \alias{emprule_rob}
 \title{Robust Empirical Rule Outlier Detection}
 \usage{
-emprule_rob(x, thr = 4, upper_only = FALSE)
+emprule_rob(x, thr = 4, tail = c("both", "upper", "lower"))
 }
 \arguments{
-\item{x}{A numeric matrix or data frame of dimensions T × p (observations × variables).}
+\item{x}{Numeric vector.}
 
-\item{thr}{Threshold multiplier for outlier detection (default = 4).}
+\item{thr}{Final threshold to flag outliers.}
 
-\item{upper_only}{Logical. If TRUE, use right-tail only.}
+\item{tail}{character string specifying which tail(s) to check for outliers.
+Must be one of \code{"upper"}, \code{"lower"}, or \code{"both"}.
+\itemize{
+\item \code{"upper"}: detect upper-tail outliers only.
+\item \code{"lower"}: detect lower-tail outliers only.
+\item \code{"both"}: detect two-sided outliers (default).
+}}
 }
 \value{
 Logical vector: TRUE = outlier, FALSE = inlier.

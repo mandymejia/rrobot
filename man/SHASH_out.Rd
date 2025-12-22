@@ -9,7 +9,7 @@ SHASH_out(
   thr0 = 2.58,
   thr1 = 2.58,
   thr = 4,
-  upper_only = FALSE,
+  tail = c("both", "upper", "lower"),
   use_isotree = FALSE,
   use_isoplus = FALSE,
   thr_isotree = 0.55,
@@ -18,15 +18,21 @@ SHASH_out(
 )
 }
 \arguments{
-\item{x}{A numeric matrix or data frame of dimensions T × p (observations × variables).}
+\item{x}{Numeric vector.}
 
 \item{thr0}{Threshold for SHASH-z initial outlier flagging (default: 2.58).}
 
 \item{thr1}{Threshold for iterative convergence (default: 2.58).}
 
-\item{thr}{Threshold multiplier for outlier detection (default = 4).}
+\item{thr}{Final threshold to flag outliers.}
 
-\item{upper_only}{Logical. If TRUE, use right-tail only.}
+\item{tail}{character string specifying which tail(s) to check for outliers.
+Must be one of \code{"upper"}, \code{"lower"}, or \code{"both"}.
+\itemize{
+\item \code{"upper"}: detect upper-tail outliers only.
+\item \code{"lower"}: detect lower-tail outliers only.
+\item \code{"both"}: detect two-sided outliers (default).
+}}
 
 \item{use_isotree}{Logical. Use isolation forest scores.}
 
