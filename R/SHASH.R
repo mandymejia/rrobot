@@ -45,13 +45,17 @@ normal_to_SHASH <- function(x, mu, sigma, nu, tau){
 #'
 #' Detect univariate outliers using an iterative SHASH fitting process with optional pre-flagging strategies.
 #'
-#' @inheritParams x
+#' @param x Numeric vector.
 #' @param thr0 Threshold for SHASH-z initial outlier flagging (default: 2.58).
 #' @param thr1 Threshold for iterative convergence (default: 2.58).
-#' @inheritParams thr
-#' @inheritParams symmetric
-#' @inheritParams use_huber
-#' @inheritParams upper_only
+#' @param thr Final threshold to flag outliers.
+#' @param tail character string specifying which tail(s) to check for outliers.
+#'   Must be one of \code{"upper"}, \code{"lower"}, or \code{"both"}.
+#'   \itemize{
+#'     \item \code{"upper"}: detect upper-tail outliers only.
+#'     \item \code{"lower"}: detect lower-tail outliers only.
+#'     \item \code{"both"}: detect two-sided outliers (default).
+#'   }
 #' @param use_isotree Logical. Use isolation forest scores.
 #' @param use_isoplus Logical. Use isolation forest with directional split.
 #' @param thr_isotree Score threshold for isolation forest.
@@ -67,15 +71,14 @@ SHASH_out <- function(x,
                       thr0         = 2.58,
                       thr1         = 2.58,
                       thr          = 4,
-                      symmetric    = TRUE,
-                      use_huber    = FALSE,
-                      upper_only   = FALSE,
+                      tail         = c("both", "upper", "lower"),
                       use_isotree  = FALSE,
                       use_isoplus  = FALSE,
                       thr_isotree  = 0.55,
                       maxit        = 100,
                       weight_init  = NULL) {
   stopifnot("Input 'x' must be a numeric vector, not a matrix" = !is.matrix(x))
+  tail <- match.arg(tail)
 
   if ((use_isotree || use_isoplus) && (thr_isotree < 0 || thr_isotree > 1)) {
     warning("`thr_isotree` should be between 0 and 1 when using isolation forest.")
@@ -83,22 +86,42 @@ SHASH_out <- function(x,
   if (use_isoplus && use_isotree) {
     stop("Cannot use `use_isoplus = TRUE` when `use_isotree = TRUE`. Set `use_isotree = FALSE`.")
   }
-  if (!is.numeric(thr_isotree) || length(thr_isotree) != 1 || thr_isotree < 0 || thr_isotree > 1) stop("Threshold Isolation Forest 'thr_isotree' must be a positive numeric value between 0 and 1.")
+  if (!is.numeric(thr_isotree) || length(thr_isotree) != 1 || thr_isotree < 0 || thr_isotree > 1) {
+    stop("Threshold Isolation Forest 'thr_isotree' must be a positive numeric value between 0 and 1.")
+  }
 
   params <- list(
     orig_values  = x,
     thr0         = thr0,
     thr1         = thr1,
     thr          = thr,
-    symmetric    = symmetric,
-    use_huber    = use_huber,
-    upper_only   = upper_only,
+    tail         = tail,
     use_isotree  = use_isotree,
     use_isoplus  = use_isoplus,
     thr_isotree  = thr_isotree,
     maxit        = maxit,
     weight_init  = weight_init
   )
+
+  # helpers for tail logic
+  inlier_by_tail <- function(z, thr, tail) {
+    if (tail == "upper") {
+      z <= thr
+    } else if (tail == "lower") {
+      z >= -thr
+    } else {
+      abs(z) <= thr
+    }
+  }
+  outlier_idx_by_tail <- function(z, thr, tail) {
+    if (tail == "upper") {
+      which(z > thr)
+    } else if (tail == "lower") {
+      which(z < -thr)
+    } else {
+      which(abs(z) > thr)
+    }
+  }
 
   na_locs   <- is.na(x)
   x_clean   <- x[!na_locs]
@@ -109,35 +132,33 @@ SHASH_out <- function(x,
     weight_new <- as.logical(weight_init[!na_locs])
     iso_scores <- rep(NA_real_, n_clean)
   } else if (use_isoplus) {
-    iso_model  <- isolation.forest(data.frame(x_clean), ntrees=200)
-    iso_scores <- predict(iso_model, data.frame(x_clean), type="score")
+    iso_model  <- isolation.forest(data.frame(x_clean), ntrees = 200)
+    iso_scores <- predict(iso_model, data.frame(x_clean), type = "score")
     idx_out0   <- which(iso_scores >= thr_isotree)
     if (length(idx_out0) == 0) {
       weight_new <- rep(TRUE, n_clean)
     } else {
       upp <- idx_out0[x_clean[idx_out0] >= x_med]
       low <- idx_out0[x_clean[idx_out0] <= x_med]
-      if (upper_only) {
-        weight_new <- if (length(upp) == 0) rep(TRUE, n_clean) else x_clean < min(x_clean[upp], na.rm=TRUE)
+      if (tail == "upper") {
+        weight_new <- if (length(upp) == 0) rep(TRUE, n_clean) else x_clean < min(x_clean[upp], na.rm = TRUE)
+      } else if (tail == "lower") {
+        weight_new <- if (length(low) == 0) rep(TRUE, n_clean) else x_clean > max(x_clean[low], na.rm = TRUE)
       } else {
-        cutoff_upper <- if (length(upp) == 0) Inf else min(x_clean[upp], na.rm=TRUE)
-        cutoff_lower <- if (length(low) == 0) -Inf else max(x_clean[low], na.rm=TRUE)
+        cutoff_upper <- if (length(upp) == 0) Inf  else min(x_clean[upp], na.rm = TRUE)
+        cutoff_lower <- if (length(low) == 0) -Inf else max(x_clean[low], na.rm = TRUE)
         weight_new <- (x_clean > cutoff_lower) & (x_clean < cutoff_upper)
       }
     }
   } else if (use_isotree) {
-    iso_model  <- isolation.forest(data.frame(x_clean), ntrees=200)
-    iso_scores <- predict(iso_model, data.frame(x_clean), type="score")
+    iso_model  <- isolation.forest(data.frame(x_clean), ntrees = 200)
+    iso_scores <- predict(iso_model, data.frame(x_clean), type = "score")
     weight_new <- iso_scores <= thr_isotree
   } else {
     # --- Default Initialization Using Robust Empirical Rule ---
-    # Inverts output of emprule_rob() so TRUE = inlier
     iso_scores <- rep(NA_real_, n_clean)
     W <- tryCatch(
-      1 - emprule_rob(x_clean, thr = thr0,
-                      symmetric = symmetric,
-                      use_huber = use_huber,
-                      upper_only = upper_only),
+      1 - emprule_rob(x_clean, thr = thr0, tail = tail),
       error = function(e) rep(TRUE, n_clean)
     )
     weight_new <- as.logical(W)
@@ -145,8 +166,8 @@ SHASH_out <- function(x,
 
   initial_weights_clean <- weight_new
 
-  norm_iters_clean <- matrix(NA_real_,    nrow=n_clean, ncol=maxit)
-  indx_iters_clean <- matrix(NA_integer_, nrow=n_clean, ncol=maxit)
+  norm_iters_clean <- matrix(NA_real_,    nrow = n_clean, ncol = maxit)
+  indx_iters_clean <- matrix(NA_integer_, nrow = n_clean, ncol = maxit)
   iter <- 0
   success <- FALSE
 
@@ -154,22 +175,18 @@ SHASH_out <- function(x,
     iter <- iter + 1
     weight_old <- weight_new
     mod <- gamlss::gamlssML(
-      x_clean ~ 1, family="SHASHo2", maxit=1e4,
-      weights=as.numeric(weight_new)
+      x_clean ~ 1, family = "SHASHo2", maxit = 1e4,
+      weights = as.numeric(weight_new)
     )
     est <- gamlss::coefAll(mod)
 
     x_norm_clean <- SHASH_to_normal(
-      x_clean, mu=est$mu, sigma=est$sigma,
-      nu=est$nu, tau=est$tau
+      x_clean, mu = est$mu, sigma = est$sigma,
+      nu = est$nu, tau = est$tau
     )
     norm_iters_clean[, iter] <- x_norm_clean
 
-    weight_new <- if (upper_only) {
-      x_norm_clean <= thr1
-    } else {
-      abs(x_norm_clean) <= thr1
-    }
+    weight_new <- inlier_by_tail(x_norm_clean, thr1, tail)
     indx_iters_clean[, iter] <- as.integer(!weight_new)
 
     if (isTRUE(all.equal(weight_old, weight_new))) {
@@ -179,14 +196,10 @@ SHASH_out <- function(x,
     if (iter >= maxit) break
   }
 
-  norm_iters_clean <- norm_iters_clean[, seq_len(iter), drop=FALSE]
-  indx_iters_clean <- indx_iters_clean[, seq_len(iter), drop=FALSE]
+  norm_iters_clean <- norm_iters_clean[, seq_len(iter), drop = FALSE]
+  indx_iters_clean <- indx_iters_clean[, seq_len(iter), drop = FALSE]
 
-  final_idx_clean <- if (upper_only) {
-    which(x_norm_clean > thr)
-  } else {
-    which(abs(x_norm_clean) > thr)
-  }
+  final_idx_clean <- outlier_idx_by_tail(x_norm_clean, thr, tail)
 
   n_orig <- length(x)
   pad_vec <- function(v) {
@@ -194,12 +207,12 @@ SHASH_out <- function(x,
     v_full[!na_locs] <- v
     v_full
   }
-  x_norm_full         <- pad_vec(x_norm_clean)
-  initial_weights_full<- pad_vec(initial_weights_clean)
-  isotree_scores_full <- pad_vec(iso_scores)
-  norm_iters_full     <- matrix(NA_real_,    nrow=n_orig, ncol=iter)
+  x_norm_full          <- pad_vec(x_norm_clean)
+  initial_weights_full <- pad_vec(initial_weights_clean)
+  isotree_scores_full  <- pad_vec(iso_scores)
+  norm_iters_full      <- matrix(NA_real_,    nrow = n_orig, ncol = iter)
   norm_iters_full[!na_locs, ] <- norm_iters_clean
-  indx_iters_full     <- matrix(NA_integer_, nrow=n_orig, ncol=iter)
+  indx_iters_full      <- matrix(NA_integer_, nrow = n_orig, ncol = iter)
   indx_iters_full[!na_locs, ] <- indx_iters_clean
 
   out_flag_full <- rep(FALSE, n_orig)
@@ -222,33 +235,42 @@ SHASH_out <- function(x,
   out
 }
 
+
 #' Robust Empirical Rule Outlier Detection
 #'
 #' Detects outliers using the median ± threshold × MAD rule.
 #'
-#' @inheritParams x
-#' @inheritParams thr
-#' @inheritParams symmetric
-#' @inheritParams use_huber
-#' @inheritParams upper_only
+#' @param x Numeric vector.
+#' @param thr Final threshold to flag outliers.
+#' @param tail character string specifying which tail(s) to check for outliers.
+#'   Must be one of \code{"upper"}, \code{"lower"}, or \code{"both"}.
+#'   \itemize{
+#'     \item \code{"upper"}: detect upper-tail outliers only.
+#'     \item \code{"lower"}: detect lower-tail outliers only.
+#'     \item \code{"both"}: detect two-sided outliers (default).
+#'   }
 #'
 #' @return Logical vector: TRUE = outlier, FALSE = inlier.
 #' @keywords internal
-emprule_rob <- function(x, thr = 4, symmetric = TRUE, use_huber = FALSE, upper_only = FALSE) {
-  x_med <- median(x, na.rm = TRUE)
+emprule_rob <- function(x, thr = 4, tail = c("both", "upper", "lower")) {
+
+  tail <- match.arg(tail)
+
+  x_med  <- median(x, na.rm = TRUE)
   mad_val <- 1.4826 * median(abs(x - x_med), na.rm = TRUE)
 
-  z <- (x - x_med) / mad_val
-  if (use_huber) {
-    z <- pmin(pmax(z, -thr), thr)  # shrink extreme z-scores
+  if (mad_val == 0 || is.na(mad_val)) {
+    return(rep(FALSE, length(x)))
   }
 
-  if (upper_only) {
+  z <- (x - x_med) / mad_val
+
+  if (tail == "upper") {
     out <- z > thr
-  } else if (symmetric) {
-    out <- abs(z) > thr
+  } else if (tail == "lower") {
+    out <- z < -thr
   } else {
-    out <- z < -thr | z > thr
+    out <- abs(z) > thr
   }
 
   out
