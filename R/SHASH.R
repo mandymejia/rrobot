@@ -6,7 +6,7 @@
 #' @param mu Parameter controlling location (mean) of the SHASH distribution.
 #' @param sigma Parameter controlling spread (variance); must be positive (on log scale).
 #' @param nu Parameter controlling skewness.
-#' @param tau Parameter controlling tailweight (kurtosis); must be positive (on log scale).
+#' @param tau Parameter controlling tail weight (kurtosis); must be positive (on log scale).
 #'
 #' @return A numeric vector of transformed values.
 #' @keywords internal

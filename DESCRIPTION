@@ -25,8 +25,9 @@ Authors@R: c(
            email = "zeshawn.zahid@gmail.com",
            role = c("ctb")))
 Maintainer: Amanda Mejia <mandy.mejia@gmail.com>
-Description: Provides robust outlier detection techniques for identifying anomalies in multivariate data, 
-    with a focus on methods that remain effective under non-Gaussian distributions.
+Description: Provides robust outlier detection techniques for identifying
+    anomalies in multivariate data, with a focus on methods that remain 
+    effective under non-Gaussian distributions.
 License: GPL-3
 URL: https://github.com/mandymejia/rrobot
 BugReports: https://github.com/mandymejia/rrobot/issues

@@ -27,3 +27,4 @@ A list with:
 \description{
 Performs multiple imputation using perturbed robust regression models.
 }
+\keyword{internal}

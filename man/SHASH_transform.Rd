@@ -18,7 +18,7 @@ normal_to_SHASH(x, mu, sigma, nu, tau)
 
 \item{nu}{Parameter controlling skewness.}
 
-\item{tau}{Parameter controlling tailweight (kurtosis); must be positive (on log scale).}
+\item{tau}{Parameter controlling tail weight (kurtosis); must be positive (on log scale).}
 }
 \value{
 A numeric vector of transformed values.

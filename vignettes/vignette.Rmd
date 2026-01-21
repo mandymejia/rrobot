@@ -17,7 +17,7 @@ library(knitr)
 knitr::opts_chunk$set(autodep = TRUE, cache = FALSE)
 ```
 
-Describe ``robot` here.
+The `rrobot` R package has functions for robust outlier detection.
 
 ```{r}
 library(rrobot)

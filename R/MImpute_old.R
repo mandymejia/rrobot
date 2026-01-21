@@ -17,7 +17,7 @@
 #' @importFrom MASS mvrnorm
 #' @importFrom robustbase lmrob
 #' @importFrom stats coef vcov
-#' @export
+#' @keywords internal
 MImpute_old <- function(x, w, outlier_matrix, M = 50, k = 100) {
   stopifnot(is.matrix(x), is.matrix(w), is.logical(outlier_matrix))
   stopifnot(all(dim(x) == dim(outlier_matrix)))
