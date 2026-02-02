@@ -10,7 +10,7 @@
 #' @return list(imp_datasets, outlier_matrix)
 #' @importFrom MASS mvrnorm ginv
 #' @importFrom stats var rnorm
-#' @export
+#' @keywords internal
 MImpute <- function(x, w, outlier_matrix, M = 50, k = 5, ridge_eps = 1e-8, tol = NA_real_) {
   stopifnot(is.matrix(x), is.matrix(w), is.logical(outlier_matrix))
   stopifnot(all(dim(x) == dim(outlier_matrix)))

@@ -17,7 +17,7 @@
 #'   \item{call}{The matched function call.}
 #' }
 #'
-#' @export
+#' @keywords internal
 #' @importFrom stats median
 #' @importFrom cellWise transfo
 univOut <- function(x, cutoff = 4, method = c("SHASH", "robZ")) {

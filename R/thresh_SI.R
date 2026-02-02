@@ -16,7 +16,7 @@
 #'   \item{flagged_outliers}{Integer vector of row indices from original data matrix that exceed the threshold.}
 #'   \item{call}{The matched function call.}
 #' }
-#' @export
+#' @keywords internal
 thresh_SI <- function(RD_org_obj, imp_data, alpha = 0.01, verbose = FALSE) {
   if (verbose) message("Running SI method: computing single imputation threshold...")
   call <- match.call()

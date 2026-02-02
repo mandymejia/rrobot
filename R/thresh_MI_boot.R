@@ -22,7 +22,7 @@
 #'   \item{flagged_outliers}{Integer vector of row indices from original data matrix that exceed the threshold.}
 #'   \item{call}{The matched function call.}
 #' }
-#' @export
+#' @keywords internal
 thresh_MI_boot <- function(RD_org_obj, imp_datasets,
                            B = 1000, alpha = 0.01, boot_quant = 0.95,
                            verbose = FALSE) {

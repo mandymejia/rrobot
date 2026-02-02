@@ -1,6 +1,6 @@
 Type: Package
 Package: rrobot
-Title: Robust Outlier Detection That's Robust to Non-Gaussian Data
+Title: Robust Outlier Detection for Diverse Distributions
 Version: 0.1.0
 Authors@R: c(
     person(given = "Amanda",

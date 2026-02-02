@@ -20,7 +20,7 @@
 #'
 #' @importFrom stats quantile
 #' @importFrom expm sqrtm
-#' @export
+#' @keywords internal
 thresh_MI <- function(RD_org_obj, imp_datasets, alpha = 0.01, boot_quant = 0.95, verbose = FALSE) {
   stopifnot(is.list(RD_org_obj), !is.null(RD_org_obj$RD), !is.null(RD_org_obj$S_star), !is.null(RD_org_obj$ind_incld))
   stopifnot(is.list(imp_datasets), length(imp_datasets) > 1)

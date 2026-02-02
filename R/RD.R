@@ -28,7 +28,7 @@
 #'   \item{call}{The matched function call.}
 #' }
 #'
-#' @export
+#' @keywords internal
 RD <- function(x, w = NULL, method = c("SI_boot", "MI", "MI_boot", "SI","F", "SHASH"),
                          # RD parameters
                          mode = "auto", cov_mcd = NULL, ind_incld = NULL, dist = TRUE,

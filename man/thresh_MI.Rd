@@ -37,3 +37,4 @@ Applies robust distance (RD) computation to multiply imputed datasets, derives t
 and flags outliers via majority voting. Also computes the lower bound of the 95\% confidence interval
 of the (1 - alpha) quantiles across imputations.
 }
+\keyword{internal}

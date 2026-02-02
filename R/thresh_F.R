@@ -30,7 +30,7 @@
 #' }
 #'
 #' @importFrom stats pchisq qchisq qf
-#' @export
+#' @keywords internal
 thresh_F <- function(p, n, h, quantile, RD_obj, SHASH = FALSE, verbose = FALSE) {
   if (verbose) message("Running ", if (SHASH) "SHASH" else "F", " method: F-distribution threshold...")
   call <- match.call()

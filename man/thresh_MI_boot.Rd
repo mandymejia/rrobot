@@ -47,3 +47,4 @@ Extends single imputation bootstrapping by using multiple imputation. For each o
 This yields M × B threshold candidates. The lower bound of their (1 - boot_quant) confidence interval
 is used as the final threshold. This is applied to the RD of the original data.
 }
+\keyword{internal}

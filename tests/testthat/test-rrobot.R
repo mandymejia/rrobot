@@ -21,7 +21,7 @@ test_that("SI method gives consistent results", {
   reference <- readRDS(system.file("fixtures", "SI_reference.rds", package = "rrobot"))
 
   # Run SI method
-  result <- thresh_SI(RD_org_obj = setup_data$RD_org_obj,
+  result <- rrobot:::thresh_SI(RD_org_obj = setup_data$RD_org_obj,
                imp_data = setup_data$imp_result$imp_data,
                alpha = 0.01)
 
@@ -35,7 +35,7 @@ test_that("Hardin-Rocke method gives consistent results", {
   setup_data <- readRDS(system.file("fixtures", "test_setup_data.rds", package = "rrobot"))
   reference <- readRDS(system.file("fixtures", "HR_reference.rds", package = "rrobot"))
 
-  result <- thresh_F(p = ncol(setup_data$hk_data),
+  result <- rrobot:::thresh_F(p = ncol(setup_data$hk_data),
                   n = nrow(setup_data$hk_data),
                   h = setup_data$RD_org_obj$h, RD_obj = setup_data$RD_org_obj,
                   quantile = 0.01)
@@ -55,7 +55,7 @@ test_that("SI_boot method gives consistent results", {
 
   # Set seed for reproducible bootstrap
   set.seed(2025)
-  result <- thresh_SI_boot(RD_org_obj = setup_data$RD_org_obj,
+  result <- rrobot:::thresh_SI_boot(RD_org_obj = setup_data$RD_org_obj,
                     imp_data = setup_data$imp_result$imp_data,
                     B = 50, alpha = 0.01, boot_quant = 0.95,
                     verbose = FALSE)
@@ -80,13 +80,13 @@ test_that("MI method gives consistent results", {
 
   # Suppress convergence warnings for small test data
   suppressWarnings({
-    multiple_imp <- MImpute(x = setup_data$imp_result$imp_data,
+    multiple_imp <- rrobot:::MImpute(x = setup_data$imp_result$imp_data,
                             w = setup_data$kurt_data$lk,
                             outlier_matrix = setup_data$out_result$outliers,
                             M = 3, k = 5)
   })
 
-  result <- thresh_MI(RD_org_obj = setup_data$RD_org_obj,
+  result <- rrobot:::thresh_MI(RD_org_obj = setup_data$RD_org_obj,
                imp_datasets = multiple_imp$imp_datasets,
                alpha = 0.01)
 
@@ -171,7 +171,7 @@ test_that("RD method gives consistent results", {
   setup_data <- readRDS(system.file("fixtures", "test_setup_data.rds", package = "rrobot"))
   set.seed(2025)
   suppressWarnings({
-    result <- RD(x = setup_data$hk_data,
+    result <- rrobot:::RD(x = setup_data$hk_data,
                  w = setup_data$kurt_data$lk,
                  method = "SI",
                  alpha = 0.01,

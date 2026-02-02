@@ -19,7 +19,7 @@
 #'
 #' @importFrom tidyr as_tibble
 #' @importFrom imputeTS na_interpolation
-#' @export
+#' @keywords internal
 impute_univOut <- function(x, outlier_mask, method = c("mean", "interp")) {
   stopifnot(is.matrix(x), is.logical(outlier_mask), all(dim(x) == dim(outlier_mask)))
 

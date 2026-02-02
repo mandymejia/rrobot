@@ -28,3 +28,4 @@ A list with elements:
 Takes a high-kurtosis data matrix and a precomputed outlier mask,
 replaces the outliers with NA, and applies temporal interpolation using \code{imputeTS::na_interpolation}.
 }
+\keyword{internal}

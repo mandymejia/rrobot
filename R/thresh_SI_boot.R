@@ -19,7 +19,7 @@
 #'   \item{UB_CI}{Upper bound of the confidence interval for the 99th quantiles.}
 #'   \item{call}{The matched function call.}
 #' }
-#' @export
+#' @keywords internal
 thresh_SI_boot <- function(RD_org_obj, imp_data,
                            B = 1000, alpha = 0.01, boot_quant = 0.95,
                            verbose = FALSE) {

@@ -28,3 +28,4 @@ Detects univariate outliers across time for each variable (column) using one of 
 \item \code{"robZ"}: Applies robust z-score outlier detection using median and MAD.
 }
 }
+\keyword{internal}

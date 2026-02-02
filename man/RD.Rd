@@ -71,3 +71,4 @@ Depends on method:
 \description{
 Performs univariate outlier detection + imputation, robust distance, and multiple thresholding methods.
 }
+\keyword{internal}

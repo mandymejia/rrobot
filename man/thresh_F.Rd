@@ -43,3 +43,4 @@ of Hardin & Rocke (2005).
 This function is useful for deriving robust outlier detection thresholds
 in high-dimensional multivariate data contaminated by outliers.
 }
+\keyword{internal}

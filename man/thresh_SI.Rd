@@ -29,3 +29,4 @@ Computes a robust distance (RD) threshold based on single imputation (SI),
 using the robust covariance from the original data (via RD_org_obj) and
 recomputed mean from the imputed data.
 }
+\keyword{internal}

@@ -41,3 +41,4 @@ Computes a robust distance (RD)–based threshold using single-imputed data
 followed by bootstrap resampling over clean (included) indices. Returns the confidence interval
 bounds of the bootstrapped 99th percentiles.
 }
+\keyword{internal}
