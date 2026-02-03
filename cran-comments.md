@@ -14,6 +14,9 @@ None.
 
 Passes all the tests in `tests/testthat.R`.
 
-## First submission
+## Previous submission
 
-This is the first submission of `rrobot` to CRAN.
+   Unknown, possibly misspelled, fields in DESCRIPTION:
+     'Remotes'
+
+* We've removed this empty field from the DESCRIPTION.

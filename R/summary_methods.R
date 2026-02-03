@@ -76,6 +76,8 @@ summary.MI_boot_result <- function(object, ...) {
 #' Summary method for Hardin & Rocke F results
 #' @param object An object of class "F_result" or "HR_result"
 #' @inheritParams ...
+#' @method summary F_result
+
 #' @export
 summary.F_result <- function(object, ...) {
   cat("Hardin & Rocke F-Distribution Results\n")

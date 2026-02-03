@@ -1,7 +1,7 @@
 Type: Package
 Package: rrobot
 Title: Robust Outlier Detection for Diverse Distributions
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(
     person(given = "Amanda",
            family = "Mejia",
@@ -45,7 +45,6 @@ Imports:
     tidyr,
     reshape2,
     rlang
-Remotes:
 Suggests: knitr, rmarkdown, testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Encoding: UTF-8
