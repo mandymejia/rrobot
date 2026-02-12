@@ -83,11 +83,6 @@ NULL
 #' @name RD_org_obj
 NULL
 
-#' Symmetric parameter documentation
-#' @param symmetric Logical. Use symmetric bounds for empirical rule.
-#' @name symmetric
-NULL
-
 #' Thr parameter documentation
 #' @param thr Threshold multiplier for outlier detection (default = 4).
 #' @name thr
@@ -101,16 +96,6 @@ NULL
 #' Trans parameter documentation
 #' @param trans Character string; transformation method, one of "SHASH" or "robZ".
 #' @name trans
-NULL
-
-#' Upper_only parameter documentation
-#' @param upper_only Logical. If TRUE, use right-tail only.
-#' @name upper_only
-NULL
-
-#' Use_huber parameter documentation
-#' @param use_huber Logical. If TRUE, apply Huber-like soft rejection.
-#' @name use_huber
 NULL
 
 #' Verbose parameter documentation

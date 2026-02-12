@@ -1,3 +1,4 @@
+
 #' SHASH Data Transformation
 #'
 #' Transforms data between the SHASH (Sinh-Arcsinh) distribution and the standard normal distribution.
@@ -56,9 +57,8 @@ normal_to_SHASH <- function(x, mu, sigma, nu, tau){
 #'     \item \code{"lower"}: detect lower-tail outliers only.
 #'     \item \code{"both"}: detect two-sided outliers (default).
 #'   }
-#' @param use_isotree Logical. Use isolation forest scores.
-#' @param use_isoplus Logical. Use isolation forest with directional split.
-#' @param thr_isotree Score threshold for isolation forest.
+#' @param use_iso Logical. Use isolation forest with directional split.
+#' @param thr_iso Score threshold for isolation forest.
 #' @param maxit Max iterations.
 #' @param weight_init Optional logical vector of initial weights.
 #'
@@ -72,22 +72,19 @@ SHASH_out <- function(x,
                       thr1         = 2.58,
                       thr          = 4,
                       tail         = c("both", "upper", "lower"),
-                      use_isotree  = FALSE,
-                      use_isoplus  = FALSE,
-                      thr_isotree  = 0.55,
+                      use_iso      = TRUE,
+                      thr_iso      = 0.6,
                       maxit        = 100,
                       weight_init  = NULL) {
+
   stopifnot("Input 'x' must be a numeric vector, not a matrix" = !is.matrix(x))
   tail <- match.arg(tail)
 
-  if ((use_isotree || use_isoplus) && (thr_isotree < 0 || thr_isotree > 1)) {
-    warning("`thr_isotree` should be between 0 and 1 when using isolation forest.")
+  if (use_iso && (thr_iso < 0 || thr_iso > 1)) {
+    warning("`thr_iso` should be between 0 and 1 when using isolation forest.")
   }
-  if (use_isoplus && use_isotree) {
-    stop("Cannot use `use_isoplus = TRUE` when `use_isotree = TRUE`. Set `use_isotree = FALSE`.")
-  }
-  if (!is.numeric(thr_isotree) || length(thr_isotree) != 1 || thr_isotree < 0 || thr_isotree > 1) {
-    stop("Threshold Isolation Forest 'thr_isotree' must be a positive numeric value between 0 and 1.")
+  if (!is.numeric(thr_iso) || length(thr_iso) != 1 || thr_iso < 0 || thr_iso > 1) {
+    stop("Threshold Isolation Forest 'thr_iso' must be a positive numeric value between 0 and 1.")
   }
 
   params <- list(
@@ -96,9 +93,8 @@ SHASH_out <- function(x,
     thr1         = thr1,
     thr          = thr,
     tail         = tail,
-    use_isotree  = use_isotree,
-    use_isoplus  = use_isoplus,
-    thr_isotree  = thr_isotree,
+    use_iso  = use_iso,
+    thr_iso  = thr_iso,
     maxit        = maxit,
     weight_init  = weight_init
   )
@@ -131,10 +127,10 @@ SHASH_out <- function(x,
   if (!is.null(weight_init)) {
     weight_new <- as.logical(weight_init[!na_locs])
     iso_scores <- rep(NA_real_, n_clean)
-  } else if (use_isoplus) {
-    iso_model  <- isolation.forest(data.frame(x_clean), ntrees = 200)
+  } else if (use_iso) {
+    iso_model  <- isotree::isolation.forest(data.frame(x_clean), ntrees = 200)
     iso_scores <- predict(iso_model, data.frame(x_clean), type = "score")
-    idx_out0   <- which(iso_scores >= thr_isotree)
+    idx_out0   <- which(iso_scores >= thr_iso)
     if (length(idx_out0) == 0) {
       weight_new <- rep(TRUE, n_clean)
     } else {
@@ -150,16 +146,14 @@ SHASH_out <- function(x,
         weight_new <- (x_clean > cutoff_lower) & (x_clean < cutoff_upper)
       }
     }
-  } else if (use_isotree) {
-    iso_model  <- isolation.forest(data.frame(x_clean), ntrees = 200)
-    iso_scores <- predict(iso_model, data.frame(x_clean), type = "score")
-    weight_new <- iso_scores <= thr_isotree
   } else {
-    # --- Default Initialization Using Robust Empirical Rule ---
     iso_scores <- rep(NA_real_, n_clean)
     W <- tryCatch(
       1 - emprule_rob(x_clean, thr = thr0, tail = tail),
-      error = function(e) rep(TRUE, n_clean)
+      error = function(e) {
+        warning("Empirical rule failed. Defaulting to all TRUE weights.")
+        rep(TRUE, n_clean)
+      }
     )
     weight_new <- as.logical(W)
   }

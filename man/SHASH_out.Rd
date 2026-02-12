@@ -10,9 +10,8 @@ SHASH_out(
   thr1 = 2.58,
   thr = 4,
   tail = c("both", "upper", "lower"),
-  use_isotree = FALSE,
-  use_isoplus = FALSE,
-  thr_isotree = 0.55,
+  use_iso = TRUE,
+  thr_iso = 0.6,
   maxit = 100,
   weight_init = NULL
 )
@@ -34,11 +33,9 @@ Must be one of \code{"upper"}, \code{"lower"}, or \code{"both"}.
 \item \code{"both"}: detect two-sided outliers (default).
 }}
 
-\item{use_isotree}{Logical. Use isolation forest scores.}
+\item{use_iso}{Logical. Use isolation forest with directional split.}
 
-\item{use_isoplus}{Logical. Use isolation forest with directional split.}
-
-\item{thr_isotree}{Score threshold for isolation forest.}
+\item{thr_iso}{Score threshold for isolation forest.}
 
 \item{maxit}{Max iterations.}
 
