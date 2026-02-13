@@ -4,17 +4,12 @@
 \alias{plot.RD}
 \title{Plot Method for RD Analysis Results}
 \usage{
-\method{plot}{RD}(
-  x,
-  type = c("histogram", "thresholds", "imputations", "univOut"),
-  method = NULL,
-  ...
-)
+\method{plot}{RD}(x, type = c("histogram", "imputations", "univOut"), method = NULL, ...)
 }
 \arguments{
 \item{x}{An object of class "RD" from RD() or threshold_RD().}
 
-\item{type}{Character string specifying plot type: "histogram" (default), "thresholds", "imputation", or "univOut".}
+\item{type}{Character string specifying plot type: "histogram" (default), "imputations", or "univOut".}
 
 \item{method}{Character string specifying threshold method. Auto-detected if NULL.}
 

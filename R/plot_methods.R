@@ -3,13 +3,13 @@
 #' Creates diagnostic plots for robust distance analysis results.
 #'
 #' @param x An object of class "RD" from RD() or threshold_RD().
-#' @param type Character string specifying plot type: "histogram" (default), "thresholds", "imputation", or "univOut".
+#' @param type Character string specifying plot type: "histogram" (default), "imputations", or "univOut".
 #' @param method Character string specifying threshold method. Auto-detected if NULL.
 #' @param ... Additional arguments passed to plotting functions.
 #' @return A ggplot object.
 #' @method plot RD
 #' @export
-plot.RD <- function(x, type = c("histogram", "thresholds", "imputations", "univOut"), method = NULL, ...) {
+plot.RD <- function(x, type = c("histogram", "imputations", "univOut"), method = NULL, ...) {
   type <- match.arg(type)
   if (type == "univOut") {
     return(plot_univOut(x, ...))
@@ -17,10 +17,6 @@ plot.RD <- function(x, type = c("histogram", "thresholds", "imputations", "univO
 
   if (type == "imputations") {
     return(plot_imputations(x, ...))
-  }
-
-  if (type == "thresholds") {
-    return(plot_thresholds(x, ...))
   }
 
   # type == "histogram" (default) - auto-detect method and show histogram
@@ -56,30 +52,6 @@ plot.RD <- function(x, type = c("histogram", "thresholds", "imputations", "univO
          "SHASH" = plot_RD_histogram(thresh_obj, x$RD_obj, ...),
          stop("Unsupported method: ", method)
   )
-}
-
-#' Plot Thresholds Comparison (Not Yet Implemented)
-#'
-#' Creates a comparison plot of different threshold methods for robust distance analysis.
-#' This function is a placeholder and will be implemented in a future version.
-#'
-#' @param x An object of class "RD" from RD() or threshold_RD().
-#' @param methods Character vector of threshold methods to compare (default: all available).
-#' @param ... Additional arguments (currently unused).
-#'
-#' @return Currently returns NULL and prints a message. Will return a ggplot object in future versions.
-#'
-#' @export
-plot_thresholds <- function(x, methods = NULL, ...) {
-  # Input validation
-  stopifnot(inherits(x, "RD"))
-
-  # Placeholder implementation
-  message("plot_thresholds() is not yet implemented.")
-  message("This function will create threshold comparison visualizations in a future version.")
-
-  # Return NULL for now
-  invisible(NULL)
 }
 
 #' Plot Multiple Threshold Methods on Robust Distance Histogram
