@@ -9,20 +9,19 @@ emprule_rob(x, thr = 4, tail = c("both", "upper", "lower"))
 \arguments{
 \item{x}{Numeric vector.}
 
-\item{thr}{Final threshold to flag outliers.}
+\item{thr}{Positive numeric scalar. Threshold multiplier for the MAD rule
+(default: 4).}
 
-\item{tail}{character string specifying which tail(s) to check for outliers.
-Must be one of \code{"upper"}, \code{"lower"}, or \code{"both"}.
-\itemize{
-\item \code{"upper"}: detect upper-tail outliers only.
-\item \code{"lower"}: detect lower-tail outliers only.
-\item \code{"both"}: detect two-sided outliers (default).
-}}
+\item{tail}{Character string: one of \code{"both"} (default),
+\code{"upper"}, or \code{"lower"}, indicating which tail(s) to flag.}
 }
 \value{
-Logical vector: TRUE = outlier, FALSE = inlier.
+A logical vector the same length as \code{x}. \code{TRUE} indicates
+an outlier, \code{FALSE} indicates an inlier.
 }
 \description{
-Detects outliers using the median ± threshold × MAD rule.
+Detects outliers using the median ± \code{thr} × MAD rule, where MAD is
+normalised by 1.4826 to be consistent with the standard deviation under
+normality.
 }
 \keyword{internal}
