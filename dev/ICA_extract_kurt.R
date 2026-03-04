@@ -20,7 +20,6 @@
 #' \dontrun{
 #' result <- ICA_extract_kurt(time_series = fMRIscrub::Dat1)
 #' }
-
 ICA_extract_kurt <- function(time_series) {
   stopifnot(is.matrix(time_series))
 

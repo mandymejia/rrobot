@@ -11,6 +11,9 @@
 
 \item{...}{Additional arguments to to method-specific functions.}
 }
+\value{
+NULL, invisibly
+}
 \description{
 Summary method for SI_boot results
 }

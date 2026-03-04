@@ -2,6 +2,7 @@
 #' @param object An object of class "SI_result"
 #' @inheritParams ...
 #' @method summary SI_result
+#' @return NULL, invisibly
 #' @export
 summary.SI_result <- function(object, ...) {
   cat("Single Imputation (SI) Results\n")
@@ -17,13 +18,14 @@ summary.SI_result <- function(object, ...) {
   cat("Outliers detected:", paste0(n_outliers, " (", pct_outliers, "%)"), "\n")
   cat("\n")
 
-  invisible(object)
+  invisible(NULL)
 }
 
 #' Summary method for SI_boot results
 #' @param object An object of class "SI_boot_result"
 #' @inheritParams ...
 #' @method summary SI_boot_result
+#' @return NULL, invisibly
 #' @export
 summary.SI_boot_result <- function(object, ...) {
   cat("Single Imputation Bootstrap (SI_boot) Results\n")
@@ -34,13 +36,14 @@ summary.SI_boot_result <- function(object, ...) {
   cat("  Upper bound:", round(object$UB_CI, 4), "\n")
   cat("\n")
 
-  invisible(object)
+  invisible(NULL)
 }
 
 #' Summary method for MI results
 #' @param object An object of class "MI_result"
 #' @inheritParams ...
 #' @method summary MI_result
+#' @return NULL, invisibly
 #' @export
 summary.MI_result <- function(object, ...) {
   cat("Multiple Imputation (MI) Results\n")
@@ -52,13 +55,14 @@ summary.MI_result <- function(object, ...) {
   cat("  Max:", round(max(object$thresholds), 4), "\n")
   cat("Final threshold:", round(object$threshold, 4), "\n")
   cat("\n")
-  invisible(object)
+  invisible(NULL)
 }
 
 #' Summary method for MI_boot results
 #' @param object An object of class "MI_boot_result"
 #' @inheritParams ...
 #' @method summary MI_boot_result
+#' @return NULL, invisibly
 #' @export
 summary.MI_boot_result <- function(object, ...) {
   cat("Multiple Imputation Bootstrap (MI_boot) Results\n")
@@ -74,13 +78,14 @@ summary.MI_boot_result <- function(object, ...) {
   cat("Flagged outliers:", paste0(n_outliers, " (", pct_outliers, "%)"), "\n")
   cat("\n")
 
-  invisible(object)
+  invisible(NULL)
 }
 
 #' Summary method for Hardin & Rocke F results
 #' @param object An object of class "F_result" or "HR_result"
 #' @inheritParams ...
 #' @method summary F_result
+#' @return NULL, invisibly
 #' @export
 summary.F_result <- function(object, ...) {
   cat("Hardin & Rocke F-Distribution Results\n")
@@ -92,6 +97,6 @@ summary.F_result <- function(object, ...) {
   cat("Estimated m parameter:", round(object$m, 2), "\n")
   cat("\n")
 
-  invisible(object)
+  invisible(NULL)
 }
 
