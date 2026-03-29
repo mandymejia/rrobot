@@ -10,138 +10,93 @@ SHASH_out(
   thr1 = 2.58,
   thr = 4,
   tail = c("both", "upper", "lower"),
-  use_iso = TRUE,
+  method_init = c("isoplus", "emprule", "fifty"),
   thr_iso = 0.6,
+  iso_seed = NULL,
   maxit = 100,
   weight_init = NULL
 )
 }
 \arguments{
-\item{x}{Numeric vector. May contain \code{NA} values; they are excluded
-from fitting and propagated as \code{NA} in all output vectors.}
+\item{x}{Numeric vector. May contain \code{NA} values.}
 
-\item{thr0}{Positive numeric scalar. Threshold for initial outlier
-pre-flagging when \code{use_iso = FALSE} (default: 2.58).}
+\item{thr0}{Positive numeric scalar. Threshold passed to
+\code{outlier_init} for empirical rule initialization (default: 2.58).}
 
-\item{thr1}{Positive numeric scalar. Threshold used to classify observations
-as inliers during iterative convergence (default: 2.58).}
+\item{thr1}{Positive numeric scalar. Threshold for iterative convergence
+(default: 2.58).}
 
-\item{thr}{Positive numeric scalar. Final threshold applied to the converged
-SHASH-normalised scores to declare outliers in the returned output
+\item{thr}{Positive numeric scalar. Final outlier detection threshold
 (default: 4).}
 
-\item{tail}{Character string specifying which tail(s) to check for outliers.
-Must be one of \code{"both"} (default), \code{"upper"}, or
-\code{"lower"}.
-\itemize{
-\item \code{"upper"}: detect upper-tail outliers only.
-\item \code{"lower"}: detect lower-tail outliers only.
-\item \code{"both"}: detect two-sided outliers.
-}}
+\item{tail}{Character. One of \code{"both"}, \code{"upper"},
+or \code{"lower"}.}
 
-\item{use_iso}{Logical. If \code{TRUE} (default), uses an isolation forest
-(via \code{isotree}) to pre-screen candidate outliers before the iterative
-fitting loop begins.}
+\item{method_init}{Character. Initialization method. One of
+\code{"isoplus"} (default), \code{"emprule"}, or \code{"fifty"}.}
 
-\item{thr_iso}{Numeric scalar in [0, 1]. Isolation forest anomaly score
-threshold above which observations are treated as candidate outliers
-during pre-screening (default: 0.6). Only used when \code{use_iso = TRUE}.}
+\item{thr_iso}{Numeric scalar in [0, 1]. Isolation forest threshold
+(default: 0.6). Only used when \code{method_init = "isoplus"}.}
 
-\item{maxit}{Positive integer. Maximum number of fitting iterations before
-the algorithm stops regardless of convergence (default: 100).}
+\item{iso_seed}{Integer or NULL. Seed for isolation forest. Only used
+when \code{method_init = "isoplus"}.}
 
-\item{weight_init}{Optional logical vector of length \code{length(x)}.
-If supplied, these weights initialise the iterative fit directly,
-bypassing both the isolation forest and empirical-rule pre-screening.
-\code{TRUE} means the observation is treated as an inlier in the first
-iteration.}
+\item{maxit}{Positive integer. Maximum iterations (default: 100).}
+
+\item{weight_init}{Optional logical vector. Bypasses initialization
+if supplied.}
 }
 \value{
-A list of class \code{"SHASH_out"} with the following elements:
+A list of class \code{"SHASH_out"} with elements:
 \describe{
-\item{\code{out_idx}}{Integer vector. Indices of observations in
-\code{x} that were flagged as outliers at the final threshold
-\code{thr}.}
-\item{\code{x_norm}}{Numeric vector. SHASH-normalised scores for every
-observation (same length as \code{x}; \code{NA} where \code{x} was
-\code{NA}).}
-\item{\code{SHASH_coef}}{Named list with elements \code{mu},
-\code{sigma}, \code{nu}, and \code{tau}: the fitted SHASH parameter
-estimates from the final iteration (sigma and tau are on the log
-scale, as returned by \code{gamlssML}).}
-\item{\code{isotree_scores}}{Numeric vector of isolation forest anomaly
-scores (same length as \code{x}). \code{NA} when \code{use_iso =
-      FALSE} or \code{weight_init} was supplied.}
-\item{\code{initial_weights}}{Logical vector. Inlier weights used for
-the very first fitting iteration (same length as \code{x}).}
-\item{\code{indx_iters}}{Integer matrix of dimensions
-\code{length(x)} × \code{last_iter}. Each column records which
-observations were flagged as outliers (value 1) during that iteration.}
-\item{\code{norm_iters}}{Numeric matrix of dimensions
-\code{length(x)} × \code{last_iter}. Each column records the
-SHASH-normalised scores from that iteration.}
-\item{\code{last_iter}}{Integer. The number of iterations completed
-before convergence or hitting \code{maxit}.}
-\item{\code{converged}}{Logical. \code{TRUE} if the inlier weight
-vector stabilised before reaching \code{maxit}.}
-\item{\code{params}}{List. A record of all input parameters, stored
-for reproducibility.}
+\item{\code{out_idx}}{Integer vector of outlier indices.}
+\item{\code{x_norm}}{Numeric vector of SHASH-normalised scores.}
+\item{\code{SHASH_coef}}{Named list of fitted SHASH parameters.}
+\item{\code{isotree_scores}}{Isolation forest scores, or NA.}
+\item{\code{initial_weights}}{Logical vector of initialization weights.}
+\item{\code{init_cutoff_upper}}{Upper initialization cutoff on original scale.}
+\item{\code{init_cutoff_lower}}{Lower initialization cutoff on original scale.}
+\item{\code{iter_thr1_upper}}{thr1 back-transformed per iteration (upper).}
+\item{\code{iter_thr1_lower}}{thr1 back-transformed per iteration (lower).}
+\item{\code{final_thr_upper}}{Final thr back-transformed (upper).}
+\item{\code{final_thr_lower}}{Final thr back-transformed (lower).}
+\item{\code{indx_iters}}{Integer matrix of outlier flags per iteration.}
+\item{\code{norm_iters}}{Numeric matrix of normalised scores per iteration.}
+\item{\code{last_iter}}{Number of iterations completed.}
+\item{\code{converged}}{Logical. TRUE if converged before maxit.}
+\item{\code{params}}{List of input parameters.}
 }
 }
 \description{
-Detects univariate outliers using an iterative SHASH fitting process with
-optional pre-flagging strategies. A SHASH (Sinh-Arcsinh) distribution is
-fitted to the data iteratively, each time excluding candidate outliers from
-the fit, until the set of flagged observations converges or \code{maxit}
-is reached.
+Detects univariate outliers using an iterative SHASH fitting process.
+The initialization method is controlled via \code{method_init}.
 }
 \examples{
-# --- Example 1: Synthetic data with known injected outliers ---------------
-# Using rnorm lets us inject outliers at known positions so we can verify
-# the function finds exactly what we planted.
+# --- Example 1: SHASH-i (isoplus initialization) ---
 set.seed(42)
 x <- rnorm(200, mean = 10, sd = 2)
+x[c(17, 77)] <- x[c(17, 77)] + 10
 
-# Shift a handful of observations far into the upper tail
-outlier_positions <- c(17, 77, seq(190, 200))
-x[outlier_positions] <- x[outlier_positions] + 10
+res <- SHASH_out(x, thr0 = 2.58, thr1 = 2.58, thr = 3,
+                 tail = "both", method_init = "isoplus")
+res$out_idx
+res$converged
 
-result_sim <- SHASH_out(
-  x,
-  thr0    = 2.58,
-  thr1    = 2.58,
-  thr     = 4,
-  tail    = "both",
-  use_iso = FALSE   # skip isolation forest to keep the example fast
-)
+# --- Example 2: SHASH-z (emprule initialization) ---
+res_z <- SHASH_out(x, thr0 = 2.58, thr1 = 2.58, thr = 3,
+                   tail = "both", method_init = "emprule")
+res_z$out_idx
 
-result_sim$out_idx    # should recover positions near outlier_positions
-result_sim$converged  # did the iterative fit stabilise?
+# --- Example 3: SHASH-50 (fifty initialization) ---
+res_50 <- SHASH_out(x, thr0 = 2.58, thr1 = 2.58, thr = 3,
+                    tail = "both", method_init = "fifty")
+res_50$out_idx
 
-# --- Example 2: Real benchmark data (Hawkins-Bradu-Kass) ------------------
-# hbk is a classic outlier detection benchmark shipped with robustbase,
-# which this package already imports, so it is always available.
+# --- Example 4: Real benchmark data (HBK) ---
 data("hbk", package = "robustbase")
-
-result_hbk <- SHASH_out(
-  hbk$X1,
-  thr0    = 2.58,
-  thr1    = 2.58,
-  thr     = 4,
-  tail    = "both",
-  use_iso = FALSE
-)
-
-result_hbk$out_idx   # flagged observations in the X1 column
-result_hbk$SHASH_coef  # fitted SHASH parameters; sigma and tau are log-scale
-
-# Which positions were flagged as outliers?
-result_hbk$out_idx
-
-# Did the algorithm converge before hitting maxit?
-result_hbk$converged
-
-# How many iterations did it take?
-result_hbk$last_iter
+res_hbk <- SHASH_out(hbk$X1, thr0 = 2.58, thr1 = 2.58, thr = 3,
+                     tail = "both", method_init = "isoplus")
+res_hbk$out_idx
+res_hbk$converged
 
 }
