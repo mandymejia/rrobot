@@ -242,6 +242,12 @@ outlier_init <- function(x,
 #' @param maxit Positive integer. Maximum iterations (default: 100).
 #' @param weight_init Optional logical vector. Bypasses initialization
 #'   if supplied.
+#'@param start.from Named numeric vector or NULL. Optional custom starting
+#'   values for gamlssML optimization. Must contain elements named
+#'   \code{mu}, \code{sigma}, \code{nu}, \code{tau}. If gamlssML fails,
+#'   try different starting values. Example:
+#'   \code{start.from = c(mu = 0, sigma = 0, nu = 1, tau = 0)}.
+#'   Default is \code{NULL}.
 #'
 #' @return A list of class \code{"SHASH_out"} with elements:
 #'   \describe{
@@ -301,6 +307,7 @@ SHASH_out <- function(x,
                       method_init = c("isoplus", "emprule", "fifty"),
                       thr_iso     = 0.6,
                       iso_seed    = NULL,
+                      start.from  = NULL,
                       maxit       = 100,
                       weight_init = NULL) {
 
@@ -318,6 +325,12 @@ SHASH_out <- function(x,
     stop("'weight_init' must have the same length as 'x'.")
   }
 
+  if (!is.null(start.from)) {
+    if (!is.vector(start.from) || !all(c("mu", "sigma", "nu", "tau") %in% names(start.from))) {
+      stop("'start.from' must be a named numeric vector with elements: mu, sigma, nu, tau")
+    }
+  }
+
   params <- list(
     orig_values  = x,
     thr0         = thr0,
@@ -327,6 +340,7 @@ SHASH_out <- function(x,
     method_init  = method_init,
     thr_iso      = thr_iso,
     iso_seed     = iso_seed,
+    start.from  = start.from,
     maxit        = maxit,
     weight_init  = weight_init
   )
@@ -393,10 +407,23 @@ SHASH_out <- function(x,
     iter       <- iter + 1
     weight_old <- weight_new
 
-    mod <- gamlss::gamlssML(
-      x_clean ~ 1, family = "SHASHo2", maxit = 1e4,
-      weights = as.numeric(weight_new)
-    )
+    mod <- tryCatch({
+      gamlss::gamlssML(
+        x_clean ~ 1, family = "SHASHo2", maxit = 1e4,
+        weights = as.numeric(weight_new),
+        mu.start    = if (!is.null(start.from)) start.from[["mu"]] else NULL,
+        sigma.start = if (!is.null(start.from)) start.from[["sigma"]] else NULL,
+        nu.start    = if (!is.null(start.from)) start.from[["nu"]] else NULL,
+        tau.start   = if (!is.null(start.from)) start.from[["tau"]] else NULL
+      )
+    }, error = function(e) {
+      stop(
+        "gamlssML estimation failed: ", e$message, "\n",
+        "Try providing different starting values via start.from argument.\n",
+        "Example: start.from = c(mu=0, sigma=0, nu=1, tau=0)"
+      )
+    })
+
     est <- gamlss::coefAll(mod)
 
     x_norm_clean <- SHASH_to_normal(

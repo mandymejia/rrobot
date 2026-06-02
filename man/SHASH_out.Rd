@@ -13,6 +13,7 @@ SHASH_out(
   method_init = c("isoplus", "emprule", "fifty"),
   thr_iso = 0.6,
   iso_seed = NULL,
+  start.from = NULL,
   maxit = 100,
   weight_init = NULL
 )
@@ -40,6 +41,13 @@ or \code{"lower"}.}
 
 \item{iso_seed}{Integer or NULL. Seed for isolation forest. Only used
 when \code{method_init = "isoplus"}.}
+
+\item{start.from}{Named numeric vector or NULL. Optional custom starting
+values for gamlssML optimization. Must contain elements named
+\code{mu}, \code{sigma}, \code{nu}, \code{tau}. If gamlssML fails,
+try different starting values. Example:
+\code{start.from = c(mu = 0, sigma = 0, nu = 1, tau = 0)}.
+Default is \code{NULL}.}
 
 \item{maxit}{Positive integer. Maximum iterations (default: 100).}
 
