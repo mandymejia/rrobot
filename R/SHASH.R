@@ -503,7 +503,11 @@ SHASH_out <- function(x,
   indx_iters_full[!na_locs, ] <- indx_iters_clean
 
   out_flag_full <- rep(FALSE, n_orig)
-  out_flag_full[!na_locs][outlier_idx_by_tail(x_norm_clean, thr, tail)] <- TRUE
+
+  clean_idx <- which(!na_locs)
+  out_clean_idx <- outlier_idx_by_tail(x_norm_clean, thr, tail)
+
+  out_flag_full[clean_idx[out_clean_idx]] <- TRUE
   final_out_idx_full <- which(out_flag_full)
 
   out <- list(
