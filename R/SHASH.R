@@ -174,24 +174,12 @@ outlier_init <- function(x,
     dist_from_med <- abs(x - x_med)
 
     if (tail == "upper") {
-      candidates <- which(x > x_med)
-      n_remove   <- floor(length(candidates) * 0.5)
-      ranked     <- candidates[order(dist_from_med[candidates], decreasing = TRUE)]
-      remove_idx <- ranked[seq_len(n_remove)]
-      weight_new <- rep(TRUE, length(x))
-      weight_new[remove_idx] <- FALSE
-      kept         <- setdiff(candidates, remove_idx)
-      cutoff_upper <- if (length(kept) > 0) max(x[kept], na.rm = TRUE) else x_med
+      weight_new   <- x <= x_med
+      cutoff_upper <- x_med
 
     } else if (tail == "lower") {
-      candidates <- which(x < x_med)
-      n_remove   <- floor(length(candidates) * 0.5)
-      ranked     <- candidates[order(dist_from_med[candidates], decreasing = TRUE)]
-      remove_idx <- ranked[seq_len(n_remove)]
-      weight_new <- rep(TRUE, length(x))
-      weight_new[remove_idx] <- FALSE
-      kept         <- setdiff(candidates, remove_idx)
-      cutoff_lower <- if (length(kept) > 0) min(x[kept], na.rm = TRUE) else x_med
+      weight_new   <- x >= x_med
+      cutoff_lower <- x_med
 
     } else {
       n_total    <- length(x)
