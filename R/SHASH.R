@@ -143,9 +143,23 @@ outlier_init <- function(x,
         cutoff_lower <- if (length(low) == 0) -Inf else max(x[low], na.rm = TRUE)
         weight_new   <- x > cutoff_lower
       } else {
-        cutoff_upper <- if (length(upp) == 0) Inf  else min(x[upp], na.rm = TRUE)
-        cutoff_lower <- if (length(low) == 0) -Inf else max(x[low], na.rm = TRUE)
-        weight_new   <- (x > cutoff_lower) & (x < cutoff_upper)
+        x_upper <- if (length(upp) == 0) Inf  else min(x[upp], na.rm = TRUE)
+        x_lower <- if (length(low) == 0) -Inf else max(x[low], na.rm = TRUE)
+
+        dist_upper   <- x_upper - x_med
+        dist_lower   <- x_med  - x_lower
+        dist_smaller <- min(dist_upper, dist_lower)
+
+        if (!is.finite(dist_smaller) || dist_smaller <= 0) {
+          # no usable flagged point on one/both sides, or degenerate tie at median
+          cutoff_upper <- Inf
+          cutoff_lower <- -Inf
+          weight_new   <- rep(TRUE, length(x))
+        } else {
+          cutoff_upper <- x_med + dist_smaller
+          cutoff_lower <- x_med - dist_smaller
+          weight_new   <- (x > cutoff_lower) & (x < cutoff_upper)
+        }
       }
     }
 
