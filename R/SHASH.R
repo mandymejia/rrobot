@@ -68,6 +68,61 @@ normal_to_SHASH <- function(x, mu, sigma, nu, tau){
   tau   <- exp(tau)
   (sigma * tau * sinh((asinh(x) + nu) / tau)) + mu
 }
+#' Check a fitted SHASH transform for degeneracy
+#'
+#' A SHASH fit is degenerate when the fitted distribution places effectively no
+#' mass where observed data still lie: the standardized values of some
+#' observations become implausibly extreme (e.g. |z| in the hundreds). This
+#' happens when the reweighting step trims too much of a skewed tail, so the
+#' weighted fit becomes extremely light-tailed and the trimmed observations can
+#' never re-enter.
+#'
+#' A single extreme observation is not enough to call a fit degenerate, since
+#' genuine gross outliers exist in real data. The check therefore requires more
+#' than `min_frac` of the observations (and at least two) to exceed the cutoff.
+#'
+#' @param x_norm Numeric vector of standardized (normal-scale) values.
+#' @param max_abs_z Positive scalar; values above this are considered
+#'   implausible under a standard normal.
+#' @param min_frac Scalar in \[0, 1\]; the fraction of observations that must
+#'   exceed `max_abs_z` before the fit is called degenerate.
+#'
+#' @return A list with `degenerate` (logical), `max_abs_z` (largest absolute
+#'   standardized value observed), `n_extreme` (count exceeding the cutoff) and
+#'   `reason` (character, `NA` if not degenerate).
+#'
+#' @keywords internal
+#' @noRd
+check_degenerate_fit <- function(x_norm, max_abs_z = 20, min_frac = 0.01) {
+
+  out <- list(degenerate = FALSE, max_abs_z = NA_real_,
+              n_extreme = 0L, reason = NA_character_)
+
+  if (is.null(x_norm) || !length(x_norm)) return(out)
+
+  finite <- is.finite(x_norm)
+  out$max_abs_z <- if (any(finite)) max(abs(x_norm[finite])) else Inf
+
+  if (!all(finite)) {
+    out$degenerate <- TRUE
+    out$reason <- "non-finite standardized values"
+    return(out)
+  }
+
+  n             <- length(x_norm)
+  out$n_extreme <- sum(abs(x_norm) > max_abs_z)
+  floor_n       <- max(1L, ceiling(min_frac * n))
+
+  if (out$n_extreme > floor_n) {
+    out$degenerate <- TRUE
+    out$reason <- sprintf(
+      "%d values (%.1f%% of n) exceed |z| = %g; maximum |z| = %.3g",
+      out$n_extreme, 100 * out$n_extreme / n, max_abs_z, out$max_abs_z
+    )
+  }
+
+  out
+}
 
 #' Outlier Initialization
 #'
@@ -216,7 +271,6 @@ outlier_init <- function(x,
   )
 }
 
-
 # =============================================================
 # SHASH_out
 # =============================================================
@@ -244,12 +298,23 @@ outlier_init <- function(x,
 #' @param maxit Positive integer. Maximum iterations (default: 100).
 #' @param weight_init Optional logical vector. Bypasses initialization
 #'   if supplied.
-#'@param start.from Named numeric vector or NULL. Optional custom starting
-#'   values for gamlssML optimization. Must contain elements named
-#'   \code{mu}, \code{sigma}, \code{nu}, \code{tau}. If gamlssML fails,
-#'   try different starting values. Example:
-#'   \code{start.from = c(mu = 0, sigma = 0, nu = 1, tau = 0)}.
+#' @param start.from Named numeric vector or NULL. Optional custom starting
+#'   values for gamlssML optimization, on the natural scale. Must contain
+#'   elements named \code{mu}, \code{sigma}, \code{nu}, \code{tau}. If
+#'   gamlssML fails, try different starting values. Example:
+#'   \code{start.from = c(mu = 0, sigma = 1, nu = 1, tau = 1)}.
 #'   Default is \code{NULL}.
+#' @param max_abs_z Positive numeric scalar (default: 20). Absolute normalised
+#'   score above which an observation is considered implausible under a
+#'   standard normal. Set to \code{Inf} to disable the degeneracy check.
+#' @param min_frac Numeric scalar in \[0, 1\] (default: 0.01). After the final
+#'   iteration the fitted transform is checked for degeneracy: a warning of
+#'   class \code{"SHASH_degenerate_fit"} is issued if more than \code{min_frac}
+#'   of the observations exceed \code{max_abs_z} in absolute value, or if any
+#'   normalised score is non-finite. Such a fit assigns negligible density to
+#'   observations present in the data, which typically indicates that the
+#'   reweighting removed part of the data's tail. The fraction keeps a single
+#'   genuine gross outlier from triggering the warning.
 #'
 #' @return A list of class \code{"SHASH_out"} with elements:
 #'   \describe{
@@ -268,6 +333,10 @@ outlier_init <- function(x,
 #'     \item{\code{norm_iters}}{Numeric matrix of normalised scores per iteration.}
 #'     \item{\code{last_iter}}{Number of iterations completed.}
 #'     \item{\code{converged}}{Logical. TRUE if converged before maxit.}
+#'     \item{\code{degenerate}}{Logical. TRUE if the fitted transform failed the
+#'       degeneracy check (see \code{max_abs_z} and \code{min_frac}).}
+#'     \item{\code{max_abs_z}}{Largest absolute normalised score observed.}
+#'     \item{\code{n_extreme}}{Number of observations exceeding \code{max_abs_z}.}
 #'     \item{\code{params}}{List of input parameters.}
 #'   }
 #'
@@ -311,7 +380,9 @@ SHASH_out <- function(x,
                       iso_seed    = NULL,
                       start.from  = NULL,
                       maxit       = 100,
-                      weight_init = NULL) {
+                      weight_init = NULL,
+                      max_abs_z   = 20,
+                      min_frac    = 0.01) {
 
   stopifnot("Input 'x' must be a numeric vector, not a matrix" = !is.matrix(x))
   tail        <- match.arg(tail)
@@ -325,6 +396,13 @@ SHASH_out <- function(x,
   }
   if (!is.null(weight_init) && length(weight_init) != length(x)) {
     stop("'weight_init' must have the same length as 'x'.")
+  }
+  if (!is.numeric(max_abs_z) || length(max_abs_z) != 1 || is.na(max_abs_z) || max_abs_z <= 0) {
+    stop("'max_abs_z' must be a single positive number (use Inf to disable the check).")
+  }
+  if (!is.numeric(min_frac) || length(min_frac) != 1 || is.na(min_frac) ||
+      min_frac < 0 || min_frac > 1) {
+    stop("'min_frac' must be a single number between 0 and 1.")
   }
 
   if (!is.null(start.from)) {
@@ -342,9 +420,11 @@ SHASH_out <- function(x,
     method_init  = method_init,
     thr_iso      = thr_iso,
     iso_seed     = iso_seed,
-    start.from  = start.from,
+    start.from   = start.from,
     maxit        = maxit,
-    weight_init  = weight_init
+    weight_init  = weight_init,
+    max_abs_z    = max_abs_z,
+    min_frac     = min_frac
   )
 
   # helpers for tail logic
@@ -422,7 +502,7 @@ SHASH_out <- function(x,
       stop(
         "gamlssML estimation failed: ", e$message, "\n",
         "Try providing different starting values via start.from argument.\n",
-        "Example: start.from = c(mu=0, sigma=0, nu=1, tau=0)"
+        "Example: start.from = c(mu=0, sigma=1, nu=1, tau=1)"
       )
     })
 
@@ -464,6 +544,32 @@ SHASH_out <- function(x,
   indx_iters_clean <- indx_iters_clean[, seq_len(iter), drop = FALSE]
   iter_thr1_upper  <- iter_thr1_upper[seq_len(iter)]
   iter_thr1_lower  <- iter_thr1_lower[seq_len(iter)]
+
+  # ---------------------------------------------------------
+  # Degeneracy check on the fitted transform
+  # ---------------------------------------------------------
+
+  degen <- check_degenerate_fit(x_norm_clean, max_abs_z = max_abs_z,
+                                min_frac = min_frac)
+
+  if (isTRUE(degen$degenerate)) {
+    warning(structure(
+      class = c("SHASH_degenerate_fit", "warning", "condition"),
+      list(
+        message = paste0(
+          "SHASH_out() reported convergence, but the fitted transform is ",
+          "degenerate (", degen$reason, "). The fitted distribution assigns ",
+          "negligible density to observations present in the data, which ",
+          "typically means the reweighting removed part of the data's tail. ",
+          "`converged = TRUE` here only means the weights stopped changing, ",
+          "not that the fit is usable. Consider a less aggressive ",
+          "initialization (larger `thr_iso`) or supplying `start.from`, and ",
+          "inspect the results before use."
+        ),
+        call = sys.call(-1L)
+      )
+    ))
+  }
 
   # ---------------------------------------------------------
   # Final threshold back-transformed
@@ -528,6 +634,379 @@ SHASH_out <- function(x,
     norm_iters        = norm_iters_full,
     last_iter         = iter,
     converged         = success,
+    degenerate        = degen$degenerate,
+    max_abs_z         = degen$max_abs_z,
+    n_extreme         = degen$n_extreme,
+    params            = params
+  )
+  class(out) <- "SHASH_out"
+  out
+}# =============================================================
+# SHASH_out
+# =============================================================
+
+#' SHASH-based Outlier Detection (Extended)
+#'
+#' Detects univariate outliers using an iterative SHASH fitting process.
+#' The initialization method is controlled via \code{method_init}.
+#'
+#' @param x Numeric vector. May contain \code{NA} values.
+#' @param thr0 Positive numeric scalar. Threshold passed to
+#'   \code{outlier_init} for empirical rule initialization (default: 2.58).
+#' @param thr1 Positive numeric scalar. Threshold for iterative convergence
+#'   (default: 2.58).
+#' @param thr Positive numeric scalar. Final outlier detection threshold
+#'   (default: 4).
+#' @param tail Character. One of \code{"both"}, \code{"upper"},
+#'   or \code{"lower"}.
+#' @param method_init Character. Initialization method. One of
+#'   \code{"isoplus"} (default), \code{"emprule"}, or \code{"fifty"}.
+#' @param thr_iso Numeric scalar in \[0, 1\]. Isolation forest threshold
+#'   (default: 0.6). Only used when \code{method_init = "isoplus"}.
+#' @param iso_seed Integer or NULL. Seed for isolation forest. Only used
+#'   when \code{method_init = "isoplus"}.
+#' @param maxit Positive integer. Maximum iterations (default: 100).
+#' @param weight_init Optional logical vector. Bypasses initialization
+#'   if supplied.
+#' @param start.from Named numeric vector or NULL. Optional custom starting
+#'   values for gamlssML optimization, on the natural scale. Must contain
+#'   elements named \code{mu}, \code{sigma}, \code{nu}, \code{tau}. If
+#'   gamlssML fails, try different starting values. Example:
+#'   \code{start.from = c(mu = 0, sigma = 1, nu = 1, tau = 1)}.
+#'   Default is \code{NULL}.
+#' @param max_abs_z Positive numeric scalar (default: 20). Absolute normalised
+#'   score above which an observation is considered implausible under a
+#'   standard normal. Set to \code{Inf} to disable the degeneracy check.
+#' @param min_frac Numeric scalar in \[0, 1\] (default: 0.01). After the final
+#'   iteration the fitted transform is checked for degeneracy: a warning of
+#'   class \code{"SHASH_degenerate_fit"} is issued if more than \code{min_frac}
+#'   of the observations exceed \code{max_abs_z} in absolute value, or if any
+#'   normalised score is non-finite. Such a fit assigns negligible density to
+#'   observations present in the data, which typically indicates that the
+#'   reweighting removed part of the data's tail. The fraction keeps a single
+#'   genuine gross outlier from triggering the warning.
+#'
+#' @return A list of class \code{"SHASH_out"} with elements:
+#'   \describe{
+#'     \item{\code{out_idx}}{Integer vector of outlier indices.}
+#'     \item{\code{x_norm}}{Numeric vector of SHASH-normalised scores.}
+#'     \item{\code{SHASH_coef}}{Named list of fitted SHASH parameters.}
+#'     \item{\code{isotree_scores}}{Isolation forest scores, or NA.}
+#'     \item{\code{initial_weights}}{Logical vector of initialization weights.}
+#'     \item{\code{init_cutoff_upper}}{Upper initialization cutoff on original scale.}
+#'     \item{\code{init_cutoff_lower}}{Lower initialization cutoff on original scale.}
+#'     \item{\code{iter_thr1_upper}}{thr1 back-transformed per iteration (upper).}
+#'     \item{\code{iter_thr1_lower}}{thr1 back-transformed per iteration (lower).}
+#'     \item{\code{final_thr_upper}}{Final thr back-transformed (upper).}
+#'     \item{\code{final_thr_lower}}{Final thr back-transformed (lower).}
+#'     \item{\code{indx_iters}}{Integer matrix of outlier flags per iteration.}
+#'     \item{\code{norm_iters}}{Numeric matrix of normalised scores per iteration.}
+#'     \item{\code{last_iter}}{Number of iterations completed.}
+#'     \item{\code{converged}}{Logical. TRUE if converged before maxit.}
+#'     \item{\code{degenerate}}{Logical. TRUE if the fitted transform failed the
+#'       degeneracy check (see \code{max_abs_z} and \code{min_frac}).}
+#'     \item{\code{max_abs_z}}{Largest absolute normalised score observed.}
+#'     \item{\code{n_extreme}}{Number of observations exceeding \code{max_abs_z}.}
+#'     \item{\code{params}}{List of input parameters.}
+#'   }
+#'
+#' @examples
+#' # --- Example 1: SHASH-i (isoplus initialization) ---
+#' set.seed(42)
+#' x <- rnorm(200, mean = 10, sd = 2)
+#' x[c(17, 77)] <- x[c(17, 77)] + 10
+#'
+#' res <- SHASH_out(x, thr0 = 2.58, thr1 = 2.58, thr = 3,
+#'                  tail = "both", method_init = "isoplus")
+#' res$out_idx
+#' res$converged
+#'
+#' # --- Example 2: SHASH-z (emprule initialization) ---
+#' res_z <- SHASH_out(x, thr0 = 2.58, thr1 = 2.58, thr = 3,
+#'                    tail = "both", method_init = "emprule")
+#' res_z$out_idx
+#'
+#' # --- Example 3: SHASH-50 (fifty initialization) ---
+#' res_50 <- SHASH_out(x, thr0 = 2.58, thr1 = 2.58, thr = 3,
+#'                     tail = "both", method_init = "fifty")
+#' res_50$out_idx
+#'
+#' # --- Example 4: Real benchmark data (HBK) ---
+#' data("hbk", package = "robustbase")
+#' res_hbk <- SHASH_out(hbk$X1, thr0 = 2.58, thr1 = 2.58, thr = 3,
+#'                      tail = "both", method_init = "isoplus")
+#' res_hbk$out_idx
+#' res_hbk$converged
+#'
+#' @importFrom gamlss gamlssML coefAll
+#' @export
+SHASH_out <- function(x,
+                      thr0        = 2.58,
+                      thr1        = 2.58,
+                      thr         = 4,
+                      tail        = c("both", "upper", "lower"),
+                      method_init = c("isoplus", "emprule", "fifty"),
+                      thr_iso     = 0.6,
+                      iso_seed    = NULL,
+                      start.from  = NULL,
+                      maxit       = 100,
+                      weight_init = NULL,
+                      max_abs_z   = 20,
+                      min_frac    = 0.01) {
+
+  stopifnot("Input 'x' must be a numeric vector, not a matrix" = !is.matrix(x))
+  tail        <- match.arg(tail)
+  method_init <- match.arg(method_init)
+
+  if (method_init == "isoplus" && (thr_iso < 0 || thr_iso > 1)) {
+    warning("`thr_iso` should be between 0 and 1 when using isolation forest.")
+  }
+  if (!is.numeric(thr_iso) || length(thr_iso) != 1 || thr_iso < 0 || thr_iso > 1) {
+    stop("'thr_iso' must be a numeric value between 0 and 1.")
+  }
+  if (!is.null(weight_init) && length(weight_init) != length(x)) {
+    stop("'weight_init' must have the same length as 'x'.")
+  }
+  if (!is.numeric(max_abs_z) || length(max_abs_z) != 1 || is.na(max_abs_z) || max_abs_z <= 0) {
+    stop("'max_abs_z' must be a single positive number (use Inf to disable the check).")
+  }
+  if (!is.numeric(min_frac) || length(min_frac) != 1 || is.na(min_frac) ||
+      min_frac < 0 || min_frac > 1) {
+    stop("'min_frac' must be a single number between 0 and 1.")
+  }
+
+  if (!is.null(start.from)) {
+    if (!is.vector(start.from) || !all(c("mu", "sigma", "nu", "tau") %in% names(start.from))) {
+      stop("'start.from' must be a named numeric vector with elements: mu, sigma, nu, tau")
+    }
+  }
+
+  params <- list(
+    orig_values  = x,
+    thr0         = thr0,
+    thr1         = thr1,
+    thr          = thr,
+    tail         = tail,
+    method_init  = method_init,
+    thr_iso      = thr_iso,
+    iso_seed     = iso_seed,
+    start.from   = start.from,
+    maxit        = maxit,
+    weight_init  = weight_init,
+    max_abs_z    = max_abs_z,
+    min_frac     = min_frac
+  )
+
+  # helpers for tail logic
+  inlier_by_tail <- function(z, thr, tail) {
+    if (tail == "upper")      z <= thr
+    else if (tail == "lower") z >= -thr
+    else                      abs(z) <= thr
+  }
+
+  outlier_idx_by_tail <- function(z, thr, tail) {
+    if (tail == "upper")      which(z > thr)
+    else if (tail == "lower") which(z < -thr)
+    else                      which(abs(z) > thr)
+  }
+
+  na_locs <- is.na(x)
+  x_clean <- x[!na_locs]
+  n_clean <- length(x_clean)
+
+  # ---------------------------------------------------------
+  # Initialization
+  # ---------------------------------------------------------
+
+  iso_scores        <- rep(NA_real_, n_clean)
+  init_cutoff_upper <- NA_real_
+  init_cutoff_lower <- NA_real_
+
+  if (!is.null(weight_init)) {
+    weight_new <- as.logical(weight_init[!na_locs])
+
+  } else {
+    init_result       <- outlier_init(
+      x_clean,
+      method  = method_init,
+      thr     = thr0,
+      thr_iso = thr_iso,
+      tail    = tail,
+      seed    = iso_seed
+    )
+    weight_new        <- init_result$weight_new
+    iso_scores        <- init_result$iso_scores
+    init_cutoff_upper <- init_result$cutoff_upper
+    init_cutoff_lower <- init_result$cutoff_lower
+  }
+
+  initial_weights_clean <- weight_new
+
+  # ---------------------------------------------------------
+  # Iteration loop
+  # ---------------------------------------------------------
+
+  norm_iters_clean <- matrix(NA_real_,    nrow = n_clean, ncol = maxit)
+  indx_iters_clean <- matrix(NA_integer_, nrow = n_clean, ncol = maxit)
+  iter_thr1_upper  <- rep(NA_real_, maxit)
+  iter_thr1_lower  <- rep(NA_real_, maxit)
+
+  iter    <- 0
+  success <- FALSE
+  est     <- NULL
+
+  repeat {
+    iter       <- iter + 1
+    weight_old <- weight_new
+
+    mod <- tryCatch({
+      gamlss::gamlssML(
+        x_clean ~ 1, family = "SHASHo2", maxit = 1e4,
+        weights = as.numeric(weight_new),
+        mu.start    = if (!is.null(start.from)) start.from[["mu"]] else NULL,
+        sigma.start = if (!is.null(start.from)) start.from[["sigma"]] else NULL,
+        nu.start    = if (!is.null(start.from)) start.from[["nu"]] else NULL,
+        tau.start   = if (!is.null(start.from)) start.from[["tau"]] else NULL
+      )
+    }, error = function(e) {
+      stop(
+        "gamlssML estimation failed: ", e$message, "\n",
+        "Try providing different starting values via start.from argument.\n",
+        "Example: start.from = c(mu=0, sigma=1, nu=1, tau=1)"
+      )
+    })
+
+    est <- gamlss::coefAll(mod)
+
+    x_norm_clean <- SHASH_to_normal(
+      x_clean,
+      mu = est$mu, sigma = est$sigma,
+      nu = est$nu, tau   = est$tau
+    )
+    norm_iters_clean[, iter] <- x_norm_clean
+
+    if (tail %in% c("both", "upper")) {
+      iter_thr1_upper[iter] <- tryCatch(
+        normal_to_SHASH(thr1,  mu = est$mu, sigma = est$sigma,
+                        nu = est$nu, tau   = est$tau),
+        error = function(e) NA_real_
+      )
+    }
+    if (tail %in% c("both", "lower")) {
+      iter_thr1_lower[iter] <- tryCatch(
+        normal_to_SHASH(-thr1, mu = est$mu, sigma = est$sigma,
+                        nu = est$nu, tau   = est$tau),
+        error = function(e) NA_real_
+      )
+    }
+
+    weight_new               <- inlier_by_tail(x_norm_clean, thr1, tail)
+    indx_iters_clean[, iter] <- as.integer(!weight_new)
+
+    if (isTRUE(all.equal(weight_old, weight_new))) {
+      success <- TRUE
+      break
+    }
+    if (iter >= maxit) break
+  }
+
+  norm_iters_clean <- norm_iters_clean[, seq_len(iter), drop = FALSE]
+  indx_iters_clean <- indx_iters_clean[, seq_len(iter), drop = FALSE]
+  iter_thr1_upper  <- iter_thr1_upper[seq_len(iter)]
+  iter_thr1_lower  <- iter_thr1_lower[seq_len(iter)]
+
+  # ---------------------------------------------------------
+  # Degeneracy check on the fitted transform
+  # ---------------------------------------------------------
+
+  degen <- check_degenerate_fit(x_norm_clean, max_abs_z = max_abs_z,
+                                min_frac = min_frac)
+
+  if (isTRUE(degen$degenerate)) {
+    warning(structure(
+      class = c("SHASH_degenerate_fit", "warning", "condition"),
+      list(
+        message = paste0(
+          "SHASH_out() reported convergence, but the fitted transform is ",
+          "degenerate (", degen$reason, "). The fitted distribution assigns ",
+          "negligible density to observations present in the data, which ",
+          "typically means the reweighting removed part of the data's tail. ",
+          "`converged = TRUE` here only means the weights stopped changing, ",
+          "not that the fit is usable. Consider a less aggressive ",
+          "initialization (larger `thr_iso`) or supplying `start.from`, and ",
+          "inspect the results before use."
+        ),
+        call = sys.call(-1L)
+      )
+    ))
+  }
+
+  # ---------------------------------------------------------
+  # Final threshold back-transformed
+  # ---------------------------------------------------------
+
+  final_thr_upper <- if (tail %in% c("both", "upper")) {
+    tryCatch(
+      normal_to_SHASH(thr,  mu = est$mu, sigma = est$sigma,
+                      nu = est$nu, tau   = est$tau),
+      error = function(e) NA_real_
+    )
+  } else NA_real_
+
+  final_thr_lower <- if (tail %in% c("both", "lower")) {
+    tryCatch(
+      normal_to_SHASH(-thr, mu = est$mu, sigma = est$sigma,
+                      nu = est$nu, tau   = est$tau),
+      error = function(e) NA_real_
+    )
+  } else NA_real_
+
+  # ---------------------------------------------------------
+  # Pad back to original length
+  # ---------------------------------------------------------
+
+  n_orig  <- length(x)
+  pad_vec <- function(v) {
+    v_full <- rep(NA, n_orig)
+    v_full[!na_locs] <- v
+    v_full
+  }
+
+  x_norm_full          <- pad_vec(x_norm_clean)
+  initial_weights_full <- pad_vec(initial_weights_clean)
+  isotree_scores_full  <- pad_vec(iso_scores)
+  norm_iters_full      <- matrix(NA_real_,    nrow = n_orig, ncol = iter)
+  norm_iters_full[!na_locs, ] <- norm_iters_clean
+  indx_iters_full      <- matrix(NA_integer_, nrow = n_orig, ncol = iter)
+  indx_iters_full[!na_locs, ] <- indx_iters_clean
+
+  out_flag_full <- rep(FALSE, n_orig)
+
+  clean_idx <- which(!na_locs)
+  out_clean_idx <- outlier_idx_by_tail(x_norm_clean, thr, tail)
+
+  out_flag_full[clean_idx[out_clean_idx]] <- TRUE
+  final_out_idx_full <- which(out_flag_full)
+
+  out <- list(
+    out_idx           = final_out_idx_full,
+    x_norm            = x_norm_full,
+    SHASH_coef        = est[c("mu", "sigma", "nu", "tau")],
+    isotree_scores    = isotree_scores_full,
+    initial_weights   = initial_weights_full,
+    init_cutoff_upper = init_cutoff_upper,
+    init_cutoff_lower = init_cutoff_lower,
+    iter_thr1_upper   = iter_thr1_upper,
+    iter_thr1_lower   = iter_thr1_lower,
+    final_thr_upper   = final_thr_upper,
+    final_thr_lower   = final_thr_lower,
+    indx_iters        = indx_iters_full,
+    norm_iters        = norm_iters_full,
+    last_iter         = iter,
+    converged         = success,
+    degenerate        = degen$degenerate,
+    max_abs_z         = degen$max_abs_z,
+    n_extreme         = degen$n_extreme,
     params            = params
   )
   class(out) <- "SHASH_out"

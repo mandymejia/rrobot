@@ -15,7 +15,25 @@ SHASH_out(
   iso_seed = NULL,
   start.from = NULL,
   maxit = 100,
-  weight_init = NULL
+  weight_init = NULL,
+  max_abs_z = 20,
+  min_frac = 0.01
+)
+
+SHASH_out(
+  x,
+  thr0 = 2.58,
+  thr1 = 2.58,
+  thr = 4,
+  tail = c("both", "upper", "lower"),
+  method_init = c("isoplus", "emprule", "fifty"),
+  thr_iso = 0.6,
+  iso_seed = NULL,
+  start.from = NULL,
+  maxit = 100,
+  weight_init = NULL,
+  max_abs_z = 20,
+  min_frac = 0.01
 )
 }
 \arguments{
@@ -43,16 +61,29 @@ or \code{"lower"}.}
 when \code{method_init = "isoplus"}.}
 
 \item{start.from}{Named numeric vector or NULL. Optional custom starting
-values for gamlssML optimization. Must contain elements named
-\code{mu}, \code{sigma}, \code{nu}, \code{tau}. If gamlssML fails,
-try different starting values. Example:
-\code{start.from = c(mu = 0, sigma = 0, nu = 1, tau = 0)}.
+values for gamlssML optimization, on the natural scale. Must contain
+elements named \code{mu}, \code{sigma}, \code{nu}, \code{tau}. If
+gamlssML fails, try different starting values. Example:
+\code{start.from = c(mu = 0, sigma = 1, nu = 1, tau = 1)}.
 Default is \code{NULL}.}
 
 \item{maxit}{Positive integer. Maximum iterations (default: 100).}
 
 \item{weight_init}{Optional logical vector. Bypasses initialization
 if supplied.}
+
+\item{max_abs_z}{Positive numeric scalar (default: 20). Absolute normalised
+score above which an observation is considered implausible under a
+standard normal. Set to \code{Inf} to disable the degeneracy check.}
+
+\item{min_frac}{Numeric scalar in [0, 1] (default: 0.01). After the final
+iteration the fitted transform is checked for degeneracy: a warning of
+class \code{"SHASH_degenerate_fit"} is issued if more than \code{min_frac}
+of the observations exceed \code{max_abs_z} in absolute value, or if any
+normalised score is non-finite. Such a fit assigns negligible density to
+observations present in the data, which typically indicates that the
+reweighting removed part of the data's tail. The fraction keeps a single
+genuine gross outlier from triggering the warning.}
 }
 \value{
 A list of class \code{"SHASH_out"} with elements:
@@ -72,14 +103,72 @@ A list of class \code{"SHASH_out"} with elements:
 \item{\code{norm_iters}}{Numeric matrix of normalised scores per iteration.}
 \item{\code{last_iter}}{Number of iterations completed.}
 \item{\code{converged}}{Logical. TRUE if converged before maxit.}
+\item{\code{degenerate}}{Logical. TRUE if the fitted transform failed the
+degeneracy check (see \code{max_abs_z} and \code{min_frac}).}
+\item{\code{max_abs_z}}{Largest absolute normalised score observed.}
+\item{\code{n_extreme}}{Number of observations exceeding \code{max_abs_z}.}
+\item{\code{params}}{List of input parameters.}
+}
+
+A list of class \code{"SHASH_out"} with elements:
+\describe{
+\item{\code{out_idx}}{Integer vector of outlier indices.}
+\item{\code{x_norm}}{Numeric vector of SHASH-normalised scores.}
+\item{\code{SHASH_coef}}{Named list of fitted SHASH parameters.}
+\item{\code{isotree_scores}}{Isolation forest scores, or NA.}
+\item{\code{initial_weights}}{Logical vector of initialization weights.}
+\item{\code{init_cutoff_upper}}{Upper initialization cutoff on original scale.}
+\item{\code{init_cutoff_lower}}{Lower initialization cutoff on original scale.}
+\item{\code{iter_thr1_upper}}{thr1 back-transformed per iteration (upper).}
+\item{\code{iter_thr1_lower}}{thr1 back-transformed per iteration (lower).}
+\item{\code{final_thr_upper}}{Final thr back-transformed (upper).}
+\item{\code{final_thr_lower}}{Final thr back-transformed (lower).}
+\item{\code{indx_iters}}{Integer matrix of outlier flags per iteration.}
+\item{\code{norm_iters}}{Numeric matrix of normalised scores per iteration.}
+\item{\code{last_iter}}{Number of iterations completed.}
+\item{\code{converged}}{Logical. TRUE if converged before maxit.}
+\item{\code{degenerate}}{Logical. TRUE if the fitted transform failed the
+degeneracy check (see \code{max_abs_z} and \code{min_frac}).}
+\item{\code{max_abs_z}}{Largest absolute normalised score observed.}
+\item{\code{n_extreme}}{Number of observations exceeding \code{max_abs_z}.}
 \item{\code{params}}{List of input parameters.}
 }
 }
 \description{
 Detects univariate outliers using an iterative SHASH fitting process.
 The initialization method is controlled via \code{method_init}.
+
+Detects univariate outliers using an iterative SHASH fitting process.
+The initialization method is controlled via \code{method_init}.
 }
 \examples{
+# --- Example 1: SHASH-i (isoplus initialization) ---
+set.seed(42)
+x <- rnorm(200, mean = 10, sd = 2)
+x[c(17, 77)] <- x[c(17, 77)] + 10
+
+res <- SHASH_out(x, thr0 = 2.58, thr1 = 2.58, thr = 3,
+                 tail = "both", method_init = "isoplus")
+res$out_idx
+res$converged
+
+# --- Example 2: SHASH-z (emprule initialization) ---
+res_z <- SHASH_out(x, thr0 = 2.58, thr1 = 2.58, thr = 3,
+                   tail = "both", method_init = "emprule")
+res_z$out_idx
+
+# --- Example 3: SHASH-50 (fifty initialization) ---
+res_50 <- SHASH_out(x, thr0 = 2.58, thr1 = 2.58, thr = 3,
+                    tail = "both", method_init = "fifty")
+res_50$out_idx
+
+# --- Example 4: Real benchmark data (HBK) ---
+data("hbk", package = "robustbase")
+res_hbk <- SHASH_out(hbk$X1, thr0 = 2.58, thr1 = 2.58, thr = 3,
+                     tail = "both", method_init = "isoplus")
+res_hbk$out_idx
+res_hbk$converged
+
 # --- Example 1: SHASH-i (isoplus initialization) ---
 set.seed(42)
 x <- rnorm(200, mean = 10, sd = 2)
