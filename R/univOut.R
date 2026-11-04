@@ -7,7 +7,6 @@
 #' }
 #'
 #' @inheritParams params_doc
-#' @inheritParams params_doc
 #' @inheritParams method_univOut_doc
 #'
 #' @return A list with elements:

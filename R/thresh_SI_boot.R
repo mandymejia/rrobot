@@ -5,11 +5,6 @@
 #' bounds of the bootstrapped 99th percentiles.
 #'
 #' @inheritParams params_doc
-#' @inheritParams params_doc
-#' @inheritParams params_doc
-#' @inheritParams params_doc
-#' @inheritParams params_doc
-#' @inheritParams params_doc
 #'
 #' @return A list with:
 #' \describe{

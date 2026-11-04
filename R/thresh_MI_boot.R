@@ -9,11 +9,6 @@
 #' is used as the final threshold. This is applied to the RD of the original data.
 #'
 #' @inheritParams params_doc
-#' @inheritParams params_doc
-#' @inheritParams params_doc
-#' @inheritParams params_doc
-#' @inheritParams params_doc
-#' @inheritParams params_doc
 #'
 #' @return A list with:
 #' \describe{

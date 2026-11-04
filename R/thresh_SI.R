@@ -5,9 +5,6 @@
 #' recomputed mean from the imputed data.
 #'
 #' @inheritParams params_doc
-#' @inheritParams params_doc
-#' @inheritParams params_doc
-#' @inheritParams params_doc
 #'
 #' @return A list with:
 #' \describe{

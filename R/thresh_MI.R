@@ -5,10 +5,6 @@
 #' of the (1 - alpha) quantiles across imputations.
 #'
 #' @inheritParams params_doc
-#' @inheritParams params_doc
-#' @inheritParams params_doc
-#' @inheritParams params_doc
-#' @inheritParams params_doc
 #'
 #' @return A list with:
 #' \describe{

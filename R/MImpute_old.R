@@ -6,7 +6,6 @@
 #' @inheritParams params_doc
 #' @param outlier_matrix A logical matrix (same dim as x) indicating univariate outliers to be imputed.
 #' @inheritParams params_doc
-#' @inheritParams params_doc
 #'
 #' @return A list with:
 #' \describe{

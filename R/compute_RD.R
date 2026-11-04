@@ -6,10 +6,6 @@
 #' - "manual" mode: uses provided robust covariance matrix and subset indices
 #'
 #' @inheritParams params_doc
-#' @inheritParams params_doc
-#' @inheritParams params_doc
-#' @inheritParams params_doc
-#' @inheritParams params_doc
 #'
 #' @return A list with elements:
 #' \describe{

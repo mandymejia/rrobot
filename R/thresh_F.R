@@ -14,7 +14,6 @@
 #' @param n Integer. The total sample size.
 #' @param h Integer. The number of observations retained in the MCD subset.
 #' @inheritParams params_doc
-#' @inheritParams params_doc
 #' @param SHASH Boolean. If running SHASH variant.
 #' @inheritParams params_doc
 #'

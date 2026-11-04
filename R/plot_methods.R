@@ -64,8 +64,6 @@ plot.RD <- function(x, type = c("histogram", "imputations", "univOut"), method =
 #' @inheritParams params_doc
 #' @param methods Character vector of threshold methods to display (default: c("SI", "SI_boot", "MI", "MI_boot")).
 #' @inheritParams params_doc
-#' @inheritParams params_doc
-#' @inheritParams params_doc
 #'
 #' @return A ggplot object with histogram colored by inclusion status and multiple
 #'   colored threshold lines for comparison of different methods.
@@ -129,10 +127,6 @@ plot_RD_histogram_multi <- function(RD_result, RD_obj, methods = c("SI", "SI_boo
 #'
 #' Creates a histogram of robust distances with threshold line for outlier detection.
 #'
-#' @inheritParams params_doc
-#' @inheritParams params_doc
-#' @inheritParams params_doc
-#' @inheritParams params_doc
 #' @inheritParams params_doc
 #'
 #' @return A ggplot object with histogram colored by inclusion status and threshold line.
@@ -217,7 +211,6 @@ plot_RD_histogram <- function(thresh_result, RD_obj, alpha = 0.01, binwidth = 0.
 #' Creates histogram of robust distances with F-distribution overlay and threshold.
 #'
 #' @param F_result F_result object from thresh_F().
-#' @inheritParams params_doc
 #' @inheritParams params_doc
 #' @param binwidth Histogram bin width (default = 0.1).
 #' @param show_f_density Logical. Show F-distribution curve overlay (default = TRUE).
