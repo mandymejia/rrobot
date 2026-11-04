@@ -1,129 +1,51 @@
-#' Dots parameter documentation
-#' @param ... Additional arguments to to method-specific functions.
-#' @name ...
-NULL
-
-#' Alpha parameter documentation
+#' Shared parameter documentation
+#'
+#' Internal; used only via \code{@inheritParams params_doc}.
+#'
+#' @param ... Additional arguments to method-specific functions.
 #' @param alpha Significance level used to compute RD threshold (default = 0.01 for 99th percentile).
-#' @name alpha
-NULL
-
-#' B parameter documentation
 #' @param B Integer; number of bootstrap samples per imputed dataset (default = 1000).
-#' @name B
-NULL
-
-#' Boot_quant parameter documentation
 #' @param boot_quant Numeric; confidence level for bootstrap confidence intervals (default = 0.95, for 95% CI).
-#' @name boot_quant
-NULL
-
-#' Cov_mcd parameter documentation
 #' @param cov_mcd Optional covariance matrix (p × p); required in "manual" mode.
-#' @name cov_mcd
-NULL
-
-#' Cutoff parameter documentation
 #' @param cutoff A numeric value indicating how many MADs away from the median to flag as outliers. The default value is set to be 4.
-#' @name cutoff
-NULL
-
-#' Dist parameter documentation
 #' @param dist Logical; if TRUE, compute squared robust Mahalanobis distances for all observations.
-#' @name dist
-NULL
-
-#' Imp_data parameter documentation
 #' @param imp_data A numeric matrix (T × p) of single-imputed data.
-#' @name imp_data
-NULL
-
-#' Imp_datasets parameter documentation
 #' @param imp_datasets A list of M numeric matrices (T × p); multiply imputed datasets.
-#' @name imp_datasets
-NULL
-
-#' Impute_method parameter documentation
 #' @param impute_method Character string; imputation method for univariate outliers.
-#' @name impute_method
-NULL
-
-#' Ind_incld parameter documentation
 #' @param ind_incld Optional vector of row indices used to compute the robust mean; required in "manual" mode.
-#' @name ind_incld
-NULL
-
-#' K parameter documentation
 #' @param k Integer; number of perturbation cycles per imputation (default = 10).
-#' @name k
-NULL
-
-#' Quantile parameter documentation
 #' @param quantile Numeric in (0,1) specifying the upper quantile for thresholding; the expected False Positive Rate for the chosen threshold.
-#' @name quantile
-NULL
-
-#' M parameter documentation
 #' @param M Integer; number of multiply imputed datasets (default = 5).
-#' @name M
-NULL
-
-#' Mode parameter documentation
 #' @param mode Character string; either "auto" (default) to compute MCD internally or "manual" to use user-supplied values.
-#' @name mode
-NULL
-
-#' RD_obj parameter documentation
 #' @param RD_obj Pre-computed RD_result object from \code{\link{compute_RD}}.
-#' @name RD_obj
-NULL
-
-#' RD_org_obj parameter documentation
 #' @param RD_org_obj Output list from \code{\link{compute_RD}} on the original data. Must contain $RD, $S_star, and $ind_incld.
-#' @name RD_org_obj
-NULL
-
-#' Thr parameter documentation
 #' @param thr Threshold multiplier for outlier detection (default = 4).
-#' @name thr
-NULL
-
-#' Threshold_method parameter documentation
-#' @param method Character string; one of "all","SI","SI_boot","MI","MI_boot","F", "SHASH".
-#' @name method
-NULL
-
-#' Trans parameter documentation
 #' @param trans Character string; transformation method, one of "SHASH" or "robZ".
-#' @name trans
-NULL
-
-#' Verbose parameter documentation
 #' @param verbose Logical; if TRUE, print progress messages.
-#' @name verbose
-NULL
-
-#' W parameter documentation
 #' @param w A numeric matrix (n_time × L) of low-kurtosis ICA components used as predictors (required for MI).
-#' @name w
-NULL
-
-#' X parameter documentation
 #' @param x A numeric matrix or data frame of dimensions T × p (observations × variables).
-#' @name x
-NULL
+#' @param thresh_result A threshold result object from any threshold method containing threshold information.
+#' @param binwidth Histogram bin width (default = 0.1).
+#' @keywords internal
+#' @name params_doc
+params_doc <- function(..., alpha, B, boot_quant, cov_mcd, cutoff, dist,
+                       imp_data, imp_datasets, impute_method, ind_incld, k,
+                       quantile, M, mode, RD_obj, RD_org_obj, thr,
+                       trans, verbose, w, x, thresh_result, binwidth) NULL
+
 
 #' Method_univOut parameter documentation
+#' 
 #' @param method Character string. One of \code{"SHASH"} or \code{"robZ"}.
-#' @name method_univOut
-NULL
+#' 
+#' @keywords internal
+#' @name method_univOut_doc
+method_univOut_doc <- function(method) NULL
 
-#' Thresh_result parameter documentation
-#' @param thresh_result A threshold result object from any threshold method containing threshold information.
-#' @name thresh_result
-NULL
-
-#' Binwidth parameter documentation
-#' @param binwidth Histogram bin width (default = 0.1).
-#' @name binwidth
-NULL
+#' Threshold_method parameter documentation
+#' 
+#' @param method Character string; one of "all","SI","SI_boot","MI","MI_boot","F", "SHASH".
+#' 
+#' @keywords internal
+#' @name Threshold_method_doc
+Threshold_method_doc <- function(method) NULL

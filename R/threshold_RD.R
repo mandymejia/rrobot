@@ -2,20 +2,20 @@
 #'
 #' Performs univariate outlier detection + imputation, robust distance, and multiple thresholding methods.
 #'
-#' @inheritParams x
-#' @inheritParams w
-#' @inheritParams method
-#' @inheritParams RD_obj
-#' @inheritParams impute_method
-#' @inheritParams cutoff
-#' @inheritParams trans
-#' @inheritParams M
-#' @inheritParams k
-#' @inheritParams alpha
-#' @inheritParams quantile
-#' @inheritParams verbose
-#' @inheritParams boot_quant
-#' @inheritParams B
+#' @inheritParams params_doc
+#' @inheritParams params_doc
+#' @inheritParams Threshold_method_doc
+#' @inheritParams params_doc
+#' @inheritParams params_doc
+#' @inheritParams params_doc
+#' @inheritParams params_doc
+#' @inheritParams params_doc
+#' @inheritParams params_doc
+#' @inheritParams params_doc
+#' @inheritParams params_doc
+#' @inheritParams params_doc
+#' @inheritParams params_doc
+#' @inheritParams params_doc
 #'
 #' @return A list with:
 #' \describe{

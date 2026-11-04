@@ -13,10 +13,10 @@
 #' @param p Integer. The number of variables (dimension of the data).
 #' @param n Integer. The total sample size.
 #' @param h Integer. The number of observations retained in the MCD subset.
-#' @inheritParams quantile
-#' @inheritParams RD_obj
+#' @inheritParams params_doc
+#' @inheritParams params_doc
 #' @param SHASH Boolean. If running SHASH variant.
-#' @inheritParams verbose
+#' @inheritParams params_doc
 #'
 #' @return A list with the following elements:
 #' \describe{

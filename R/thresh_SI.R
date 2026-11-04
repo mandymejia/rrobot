@@ -4,10 +4,10 @@
 #' using the robust covariance from the original data (via RD_org_obj) and
 #' recomputed mean from the imputed data.
 #'
-#' @inheritParams RD_org_obj
-#' @inheritParams imp_data
-#' @inheritParams alpha
-#' @inheritParams verbose
+#' @inheritParams params_doc
+#' @inheritParams params_doc
+#' @inheritParams params_doc
+#' @inheritParams params_doc
 #'
 #' @return A list with:
 #' \describe{

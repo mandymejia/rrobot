@@ -25,7 +25,7 @@ multiple threshold results in a list.}
 
 \item{binwidth}{Histogram bin width (default = 0.1).}
 
-\item{...}{Additional arguments to to method-specific functions.}
+\item{...}{Additional arguments to method-specific functions.}
 }
 \value{
 A ggplot object with histogram colored by inclusion status and multiple

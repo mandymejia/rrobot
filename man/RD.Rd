@@ -29,8 +29,6 @@ RD(
 
 \item{w}{A numeric matrix (n_time × L) of low-kurtosis ICA components used as predictors (required for MI).}
 
-\item{method}{Character string; one of "all","SI","SI_boot","MI","MI_boot","F", "SHASH".}
-
 \item{mode}{Character string; either "auto" (default) to compute MCD internally or "manual" to use user-supplied values.}
 
 \item{cov_mcd}{Optional covariance matrix (p × p); required in "manual" mode.}

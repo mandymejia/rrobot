@@ -61,11 +61,11 @@ plot.RD <- function(x, type = c("histogram", "imputations", "univOut"), method =
 #'
 #' @param RD_result An RD result object from threshold_RD() with method="all" containing
 #'   multiple threshold results in a list.
-#' @inheritParams RD_obj
+#' @inheritParams params_doc
 #' @param methods Character vector of threshold methods to display (default: c("SI", "SI_boot", "MI", "MI_boot")).
-#' @inheritParams alpha
-#' @inheritParams binwidth
-#' @inheritParams ...
+#' @inheritParams params_doc
+#' @inheritParams params_doc
+#' @inheritParams params_doc
 #'
 #' @return A ggplot object with histogram colored by inclusion status and multiple
 #'   colored threshold lines for comparison of different methods.
@@ -129,11 +129,11 @@ plot_RD_histogram_multi <- function(RD_result, RD_obj, methods = c("SI", "SI_boo
 #'
 #' Creates a histogram of robust distances with threshold line for outlier detection.
 #'
-#' @inheritParams thresh_result
-#' @inheritParams RD_obj
-#' @inheritParams alpha
-#' @inheritParams binwidth
-#' @inheritParams ...
+#' @inheritParams params_doc
+#' @inheritParams params_doc
+#' @inheritParams params_doc
+#' @inheritParams params_doc
+#' @inheritParams params_doc
 #'
 #' @return A ggplot object with histogram colored by inclusion status and threshold line.
 #' @keywords internal
@@ -217,11 +217,11 @@ plot_RD_histogram <- function(thresh_result, RD_obj, alpha = 0.01, binwidth = 0.
 #' Creates histogram of robust distances with F-distribution overlay and threshold.
 #'
 #' @param F_result F_result object from thresh_F().
-#' @inheritParams RD_obj
-#' @inheritParams alpha
+#' @inheritParams params_doc
+#' @inheritParams params_doc
 #' @param binwidth Histogram bin width (default = 0.1).
 #' @param show_f_density Logical. Show F-distribution curve overlay (default = TRUE).
-#' @inheritParams ...
+#' @inheritParams params_doc
 #' @return A ggplot object.
 #' @keywords internal
 plot_F_histogram <- function(F_result, RD_obj, alpha = 0.01, binwidth = 0.1, show_f_density = TRUE, ...) {
@@ -307,8 +307,8 @@ plot_F_histogram <- function(F_result, RD_obj, alpha = 0.01, binwidth = 0.1, sho
 #' Creates a heatmap visualization of univariate outliers detected in high-kurtosis components.
 #'
 #' @param x An object of class "RD" from RD() or threshold_RD().
-#' @inheritParams cutoff
-#' @inheritParams method_univOut
+#' @inheritParams params_doc
+#' @inheritParams method_univOut_doc
 #'
 #' @return A ggplot object showing a heatmap of outlier locations.
 #' @keywords internal

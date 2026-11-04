@@ -4,12 +4,12 @@
 #' followed by bootstrap resampling over clean (included) indices. Returns the confidence interval
 #' bounds of the bootstrapped 99th percentiles.
 #'
-#' @inheritParams RD_org_obj
-#' @inheritParams imp_data
-#' @inheritParams B
-#' @inheritParams alpha
-#' @inheritParams boot_quant
-#' @inheritParams verbose
+#' @inheritParams params_doc
+#' @inheritParams params_doc
+#' @inheritParams params_doc
+#' @inheritParams params_doc
+#' @inheritParams params_doc
+#' @inheritParams params_doc
 #'
 #' @return A list with:
 #' \describe{

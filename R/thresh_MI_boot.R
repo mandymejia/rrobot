@@ -8,12 +8,12 @@
 #' This yields M × B threshold candidates. The lower bound of their (1 - boot_quant) confidence interval
 #' is used as the final threshold. This is applied to the RD of the original data.
 #'
-#' @inheritParams RD_org_obj
-#' @inheritParams imp_datasets
-#' @inheritParams B
-#' @inheritParams alpha
-#' @inheritParams boot_quant
-#' @inheritParams verbose
+#' @inheritParams params_doc
+#' @inheritParams params_doc
+#' @inheritParams params_doc
+#' @inheritParams params_doc
+#' @inheritParams params_doc
+#' @inheritParams params_doc
 #'
 #' @return A list with:
 #' \describe{

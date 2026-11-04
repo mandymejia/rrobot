@@ -24,7 +24,7 @@ plot_F_histogram(
 
 \item{show_f_density}{Logical. Show F-distribution curve overlay (default = TRUE).}
 
-\item{...}{Additional arguments to to method-specific functions.}
+\item{...}{Additional arguments to method-specific functions.}
 }
 \value{
 A ggplot object.
