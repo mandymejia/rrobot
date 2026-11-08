@@ -6,9 +6,8 @@
 #'   \item \code{"robZ"}: Applies robust z-score outlier detection using median and MAD.
 #' }
 #'
-#' @inheritParams x
-#' @inheritParams cutoff
-#' @inheritParams method_univOut
+#' @inheritParams params_doc
+#' @inheritParams method_univOut_doc
 #'
 #' @return A list with elements:
 #' \describe{

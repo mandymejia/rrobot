@@ -15,7 +15,7 @@ plot_RD_histogram(thresh_result, RD_obj, alpha = 0.01, binwidth = 0.1, ...)
 
 \item{binwidth}{Histogram bin width (default = 0.1).}
 
-\item{...}{Additional arguments to to method-specific functions.}
+\item{...}{Additional arguments to method-specific functions.}
 }
 \value{
 A ggplot object with histogram colored by inclusion status and threshold line.

@@ -4,11 +4,7 @@
 #' and flags outliers via majority voting. Also computes the lower bound of the 95% confidence interval
 #' of the (1 - alpha) quantiles across imputations.
 #'
-#' @inheritParams RD_org_obj
-#' @inheritParams imp_datasets
-#' @inheritParams alpha
-#' @inheritParams boot_quant
-#' @inheritParams verbose
+#' @inheritParams params_doc
 #'
 #' @return A list with:
 #' \describe{

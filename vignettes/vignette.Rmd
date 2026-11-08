@@ -4,8 +4,8 @@ author: "Saranjeet Singh Saluja"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
-  toc: true
-  keep_md: true
+    toc: true
+    keep_md: true
 vignette: >
   %\VignetteIndexEntry{Robust outlier detection with `rrobot`}
   %\VignetteEngine{knitr::rmarkdown}

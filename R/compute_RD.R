@@ -5,11 +5,7 @@
 #' - "auto" mode: automatically selects the best robust subset using covMcd
 #' - "manual" mode: uses provided robust covariance matrix and subset indices
 #'
-#' @inheritParams x
-#' @inheritParams mode
-#' @inheritParams cov_mcd
-#' @inheritParams ind_incld
-#' @inheritParams dist
+#' @inheritParams params_doc
 #'
 #' @return A list with elements:
 #' \describe{

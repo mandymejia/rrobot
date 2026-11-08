@@ -3,7 +3,7 @@
 #' Takes a high-kurtosis data matrix and a precomputed outlier mask,
 #' replaces the outliers with NA, and applies temporal interpolation using `imputeTS::na_interpolation`.
 #'
-#' @inheritParams x
+#' @inheritParams params_doc
 #' @param outlier_mask A logical matrix (same dimensions as x) with TRUE at outlier positions.
 #' @param method One of \code{"mean"} or \code{"interp"}; \code{"interp"} uses \code{imputeTS::na_interpolation},
 #'   \code{"mean"} fills NAs with column means.

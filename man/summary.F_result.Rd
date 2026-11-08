@@ -9,7 +9,7 @@
 \arguments{
 \item{object}{An object of class "F_result" or "HR_result"}
 
-\item{...}{Additional arguments to to method-specific functions.}
+\item{...}{Additional arguments to method-specific functions.}
 }
 \value{
 NULL, invisibly

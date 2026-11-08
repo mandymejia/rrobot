@@ -1,6 +1,6 @@
 #' Summary method for SI results
 #' @param object An object of class "SI_result"
-#' @inheritParams ...
+#' @inheritParams params_doc
 #' @method summary SI_result
 #' @return NULL, invisibly
 #' @export
@@ -23,7 +23,7 @@ summary.SI_result <- function(object, ...) {
 
 #' Summary method for SI_boot results
 #' @param object An object of class "SI_boot_result"
-#' @inheritParams ...
+#' @inheritParams params_doc
 #' @method summary SI_boot_result
 #' @return NULL, invisibly
 #' @export
@@ -41,7 +41,7 @@ summary.SI_boot_result <- function(object, ...) {
 
 #' Summary method for MI results
 #' @param object An object of class "MI_result"
-#' @inheritParams ...
+#' @inheritParams params_doc
 #' @method summary MI_result
 #' @return NULL, invisibly
 #' @export
@@ -60,7 +60,7 @@ summary.MI_result <- function(object, ...) {
 
 #' Summary method for MI_boot results
 #' @param object An object of class "MI_boot_result"
-#' @inheritParams ...
+#' @inheritParams params_doc
 #' @method summary MI_boot_result
 #' @return NULL, invisibly
 #' @export
@@ -83,7 +83,7 @@ summary.MI_boot_result <- function(object, ...) {
 
 #' Summary method for Hardin & Rocke F results
 #' @param object An object of class "F_result" or "HR_result"
-#' @inheritParams ...
+#' @inheritParams params_doc
 #' @method summary F_result
 #' @return NULL, invisibly
 #' @export
