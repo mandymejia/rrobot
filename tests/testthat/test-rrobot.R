@@ -47,6 +47,15 @@ test_that("Hardin-Rocke method gives consistent results", {
   expect_equal(result$df, reference$df, tolerance = 1e-10)
 })
 
+test_that("compute_RD records the call", {
+  x <- matrix(rnorm(40), ncol = 2)
+
+  result <- compute_RD(x, dist = FALSE)
+
+  expect_true(is.call(result$call))
+  expect_identical(result$call[[1]], quote(compute_RD))
+})
+
 
 test_that("SI_boot method gives consistent results", {
   # skip_on_ci()  # Skip on CI due to bootstrap randomness

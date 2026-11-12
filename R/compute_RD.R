@@ -25,6 +25,7 @@
 #' @export
 compute_RD <- function(x, mode = c("auto", "manual"),
                        cov_mcd = NULL, ind_incld = NULL, dist = TRUE) {
+  call <- match.call()
   mode <- match.arg(mode)
   x <- as.matrix(x)
   stopifnot(is.numeric(x))
