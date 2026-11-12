@@ -56,6 +56,23 @@ test_that("compute_RD records the call", {
   expect_identical(result$call[[1]], quote(compute_RD))
 })
 
+test_that("histogram plots handle fewer than two excluded observations", {
+  for (n_excluded in 0:1) {
+    RD_obj <- list(
+      RD = c(0.5, 0.8, 1, 1.2, 1.5, 2),
+      ind_incld = seq_len(6 - n_excluded)
+    )
+    threshold_result <- list(threshold = 1.1)
+    F_result <- list(threshold = 1.1, scale = 1, df = c(2, 8))
+
+    p <- rrobot:::plot_RD_histogram(threshold_result, RD_obj)
+    expect_no_error(ggplot2::ggplot_build(p))
+
+    p_f <- rrobot:::plot_F_histogram(F_result, RD_obj)
+    expect_no_error(ggplot2::ggplot_build(p_f))
+  }
+})
+
 
 test_that("SI_boot method gives consistent results", {
   # skip_on_ci()  # Skip on CI due to bootstrap randomness

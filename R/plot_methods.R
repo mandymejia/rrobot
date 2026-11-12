@@ -123,6 +123,16 @@ plot_RD_histogram_multi <- function(RD_result, RD_obj, methods = c("SI", "SI_boo
   return(p)
 }
 
+plot_peak_density <- function(values, fallback_values) {
+  values <- values[is.finite(values)]
+  if (length(values) < 2L) {
+    values <- fallback_values[is.finite(fallback_values)]
+  }
+  if (length(values) < 2L) return(0)
+
+  max(density(values, from = 0)$y)
+}
+
 #' Plot Robust Distance Histogram with Threshold
 #'
 #' Creates a histogram of robust distances with threshold line for outlier detection.
@@ -150,9 +160,8 @@ plot_RD_histogram <- function(thresh_result, RD_obj, alpha = 0.01, binwidth = 0.
 
   # Extend tail range
   excl_vals <- RD[observation == "excluded"] * scale_factor
-  dens_excld <- density(excl_vals, from = 0)
-  peak_density <- max(dens_excld$y)
-  xvals <- seq(0, max(c(excl_vals, q_HR), na.rm = TRUE) * 1.1, length.out = 512)
+  peak_density <- plot_peak_density(excl_vals, RD * scale_factor)
+  xvals <- seq(.Machine$double.eps, max(c(excl_vals, q_HR), na.rm = TRUE) * 1.1, length.out = 512)
 
   # Create data frames for plotting (single dataset, no "data" column needed)
   df_RD <- data.frame(
@@ -234,9 +243,8 @@ plot_F_histogram <- function(F_result, RD_obj, alpha = 0.01, binwidth = 0.1, sho
 
   # Extend tail range
   excl_vals <- RD[observation == "excluded"] * scale_factor
-  dens_excld <- density(excl_vals, from = 0)
-  peak_density <- max(dens_excld$y)
-  xvals <- seq(0, max(c(excl_vals, q_HR), na.rm = TRUE) * 1.1, length.out = 512)
+  peak_density <- plot_peak_density(excl_vals, RD * scale_factor)
+  xvals <- seq(.Machine$double.eps, max(c(excl_vals, q_HR), na.rm = TRUE) * 1.1, length.out = 512)
 
   # F-distribution curve scaled to match empirical peak
   f_density <- df(xvals, df1 = df1, df2 = df2)
