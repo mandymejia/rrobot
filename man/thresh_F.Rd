@@ -22,7 +22,8 @@ thresh_F(p, n, h, quantile, RD_obj, SHASH = FALSE, verbose = FALSE)
 \item{verbose}{Logical; if TRUE, print progress messages.}
 }
 \value{
-A list with the following elements:
+A list of class \code{"F_result"} (or \code{"SHASH_result"} when
+\code{SHASH = TRUE}) with the following elements:
 \describe{
 \item{c}{Consistency correction factor for robust distances.}
 \item{m}{Estimated degrees of freedom parameter used in the F-distribution.}

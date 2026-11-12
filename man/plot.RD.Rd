@@ -16,7 +16,8 @@
 \item{...}{Additional arguments passed to plotting functions.}
 }
 \value{
-A ggplot object.
+A ggplot object for \code{type = "histogram"} and \code{type = "univOut"};
+for \code{type = "imputations"} the plots are printed and returned invisibly as a list.
 }
 \description{
 Creates diagnostic plots for robust distance analysis results.

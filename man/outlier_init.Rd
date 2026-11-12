@@ -11,7 +11,8 @@ outlier_init(
   thr_iso = 0.6,
   tail = c("both", "upper", "lower"),
   seed = NULL,
-  ntrees = 200
+  ntrees = 200,
+  nthreads = 1
 )
 }
 \arguments{
@@ -34,6 +35,10 @@ or \code{"lower"}.}
 
 \item{ntrees}{Integer. Number of trees for isolation forest
 (only used when \code{method = "isoplus"}).}
+
+\item{nthreads}{Integer. Number of threads used by the isolation forest
+(default 1; keep at 1 for reproducible results and to respect CRAN's
+limit on CPU cores).}
 }
 \value{
 A list with:

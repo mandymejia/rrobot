@@ -6,8 +6,8 @@
 #' @param M  number of multiply-imputed datasets (default 50).
 #' @param k  number of chained-equation cycles per dataset (default 5–10 is common).
 #' @param ridge_eps tiny ridge added to X'X for stability (default 1e-8).
-#' @param tol optional early-stop tolerance on per-cycle max change (NA to disable).
-#' @return list(imp_datasets, outlier_matrix)
+#' @param tol optional early-stop tolerance on the largest change in imputed values over a cycle (NA, the default, disables early stopping and always runs all k cycles).
+#' @return A list with \code{imp_datasets} (list of M imputed matrices) and \code{outlier_matrix} (the input mask).
 #' @importFrom MASS mvrnorm ginv
 #' @importFrom stats var rnorm
 #' @keywords internal
@@ -16,7 +16,6 @@ MImpute <- function(x, w, outlier_matrix, M = 50, k = 5, ridge_eps = 1e-8, tol =
   stopifnot(all(dim(x) == dim(outlier_matrix)))
   stopifnot(nrow(w) == nrow(x))
 
-  Tn <- nrow(x)
   p  <- ncol(x)
   imp_datasets <- vector("list", M)
 
@@ -78,6 +77,9 @@ MImpute <- function(x, w, outlier_matrix, M = 50, k = 5, ridge_eps = 1e-8, tol =
         x_imp[idx_imp, j] <- y_draw
         max_change <- max(max_change, max(abs(y_draw - old_vals), na.rm = TRUE))
       }
+
+      # Optional early stop once a full cycle changes nothing by more than `tol`
+      if (!is.na(tol) && max_change < tol) break
     }
 
     imp_datasets[[m]] <- x_imp

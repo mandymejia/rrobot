@@ -25,15 +25,15 @@ RD(
 )
 }
 \arguments{
-\item{x}{A numeric matrix or data frame of dimensions T × p (observations × variables).}
+\item{x}{A numeric matrix or data frame of dimensions T x p (observations x variables).}
 
-\item{w}{A numeric matrix (n_time × L) of low-kurtosis ICA components used as predictors (required for MI).}
+\item{w}{A numeric matrix (n_time x L) of low-kurtosis ICA components used as predictors (required for MI).}
 
 \item{method}{Character string; one of "all","SI","SI_boot","MI","MI_boot","F", "SHASH".}
 
 \item{mode}{Character string; either "auto" (default) to compute MCD internally or "manual" to use user-supplied values.}
 
-\item{cov_mcd}{Optional covariance matrix (p × p); required in "manual" mode.}
+\item{cov_mcd}{Optional covariance matrix (p x p); required in "manual" mode.}
 
 \item{ind_incld}{Optional vector of row indices used to compute the robust mean; required in "manual" mode.}
 
@@ -45,9 +45,9 @@ RD(
 
 \item{trans}{Character string; transformation method, one of "SHASH" or "robZ".}
 
-\item{M}{Integer; number of multiply imputed datasets (default = 5).}
+\item{M}{Integer; number of multiply imputed datasets (default = 50 in threshold_RD()).}
 
-\item{k}{Integer; number of perturbation cycles per imputation (default = 10).}
+\item{k}{Integer; number of chained-equation cycles per imputed dataset (default = 100 in threshold_RD()).}
 
 \item{alpha}{Significance level used to compute RD threshold (default = 0.01 for 99th percentile).}
 
@@ -57,14 +57,16 @@ RD(
 
 \item{boot_quant}{Numeric; confidence level for bootstrap confidence intervals (default = 0.95, for 95\% CI).}
 
-\item{B}{Integer; number of bootstrap samples per imputed dataset (default = 1000).}
+\item{B}{Integer; number of bootstrap samples (per imputed dataset for the MI methods; default = 1000).}
 }
 \value{
-Depends on method:
+A list of class \code{"RD"} with:
 \describe{
-\item{Single method}{Returns the result from the specific threshold method.}
+\item{thresholds}{The result from the chosen threshold method.}
 \item{RD_obj}{The robust distance object from compute_RD().}
-\item{outliers}{Logical vector indicating which observations have RD greater than the threshold.}
+\item{RD_obj_shash}{Robust distances of the SHASH-normalised data (only for \code{method = "SHASH"}; otherwise NULL).}
+\item{outliers}{Logical vector indicating which observations have RD greater than the threshold.
+For \code{method = "SHASH"} the distances are those of the SHASH-normalised data.}
 \item{call}{The matched function call.}
 }
 }

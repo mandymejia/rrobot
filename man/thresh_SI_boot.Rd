@@ -16,9 +16,9 @@ thresh_SI_boot(
 \arguments{
 \item{RD_org_obj}{Output list from \code{\link{compute_RD}} on the original data. Must contain $RD, $S_star, and $ind_incld.}
 
-\item{imp_data}{A numeric matrix (T × p) of single-imputed data.}
+\item{imp_data}{A numeric matrix (T x p) of single-imputed data.}
 
-\item{B}{Integer; number of bootstrap samples per imputed dataset (default = 1000).}
+\item{B}{Integer; number of bootstrap samples (per imputed dataset for the MI methods; default = 1000).}
 
 \item{alpha}{Significance level used to compute RD threshold (default = 0.01 for 99th percentile).}
 
@@ -27,18 +27,19 @@ thresh_SI_boot(
 \item{verbose}{Logical; if TRUE, print progress messages.}
 }
 \value{
-A list with:
+A list of class \code{"SI_boot_result"} with:
 \describe{
-\item{thresholds}{Vector of 99th quantiles of RD for each bootstrap sample.}
-\item{threshold}{Threshold based on lower bound of the confidence interval.}
+\item{thresholds}{Vector of (1 - alpha) quantiles of RD for each bootstrap sample.}
+\item{threshold}{Threshold based on the lower bound of the confidence interval.}
 \item{flagged_outliers}{Integer vector of row indices from original data matrix that exceed the threshold.}
-\item{UB_CI}{Upper bound of the confidence interval for the 99th quantiles.}
+\item{UB_CI}{Upper bound of the confidence interval for the (1 - alpha) quantiles.}
 \item{call}{The matched function call.}
 }
 }
 \description{
-Computes a robust distance (RD)–based threshold using single-imputed data
-followed by bootstrap resampling over clean (included) indices. Returns the confidence interval
-bounds of the bootstrapped 99th percentiles.
+Computes a robust distance (RD)-based threshold using single-imputed data
+followed by bootstrap resampling. Included and excluded indices (from the
+robust subset) are resampled separately, with replacement. The lower bound of the
+confidence interval of the bootstrapped (1 - alpha) quantiles is the threshold.
 }
 \keyword{internal}

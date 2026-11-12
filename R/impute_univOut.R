@@ -1,7 +1,8 @@
 #' Temporally impute univariate outliers from external detection
 #'
 #' Takes a high-kurtosis data matrix and a precomputed outlier mask,
-#' replaces the outliers with NA, and applies temporal interpolation using `imputeTS::na_interpolation`.
+#' replaces the outliers with NA, and fills them using either column means or
+#' temporal interpolation (`imputeTS::na_interpolation`).
 #'
 #' @inheritParams params_doc
 #' @param outlier_mask A logical matrix (same dimensions as x) with TRUE at outlier positions.
@@ -14,10 +15,11 @@
 #'   \item{NA_data}{Matrix version of x with NAs at outlier positions.}
 #'   \item{imp_data}{Imputed matrix after temporal interpolation.}
 #'   \item{NA_locs}{Row-column indices of outliers (now NA).}
+#'   \item{method}{The imputation method used (\code{"mean"} or \code{"interp"}).}
 #'   \item{call}{The matched function call.}
 #' }
 #'
-#' @importFrom tidyr as_tibble
+#' @importFrom tibble as_tibble
 #' @importFrom imputeTS na_interpolation
 #' @keywords internal
 impute_univOut <- function(x, outlier_mask, method = c("mean", "interp")) {
@@ -31,23 +33,19 @@ impute_univOut <- function(x, outlier_mask, method = c("mean", "interp")) {
   # Step 1: Replace outliers with NA
   NA_x <- x
   NA_x[outlier_mask] <- NA
-  NA_x_locs <- which(is.na(NA_x), arr.ind = TRUE)
+  is_na <- is.na(NA_x)
+  NA_x_locs <- which(is_na, arr.ind = TRUE)
 
-  # Step 2: Apply temporal interpolation
+  # Step 2: Fill the NAs
   if (method == "interp") {
     # Temporal interpolation
     imp_x <- apply(NA_x, 2, imputeTS::na_interpolation)
     imp_x <- as.matrix(imp_x)
-  } else if (method == "mean") {
-    # compute mean of each column (colMeans with na.rm=TRUE)
+  } else {
+    # Replace every NA with its column mean (computed with na.rm = TRUE)
     col_means <- colMeans(NA_x, na.rm = TRUE)
     imp_x <- NA_x
-
-    # For each column replace all NAs with that value ^
-    for (j in seq_len(n_cols)) {
-      na_indices <- is.na(NA_x[, j])
-      imp_x[na_indices, j] <- col_means[j]
-    }
+    imp_x[is_na] <- col_means[col(NA_x)[is_na]]
   }
 
   # Step 3: Ensure correct dimensions
@@ -59,10 +57,11 @@ impute_univOut <- function(x, outlier_mask, method = c("mean", "interp")) {
 
   # Step 4: Return structured output
   list(
-    x_df = suppressMessages(as_tibble(NA_x, .name_repair = "unique")),
+    x_df     = suppressMessages(tibble::as_tibble(NA_x, .name_repair = "unique")),
     NA_data  = NA_x,
     imp_data = imp_x,
     NA_locs  = NA_x_locs,
-    call = call
+    method   = method,
+    call     = call
   )
 }

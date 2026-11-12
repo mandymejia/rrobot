@@ -4,21 +4,12 @@
 \alias{plot_F_histogram}
 \title{Plot F-Distribution Method Results}
 \usage{
-plot_F_histogram(
-  F_result,
-  RD_obj,
-  alpha = 0.01,
-  binwidth = 0.1,
-  show_f_density = TRUE,
-  ...
-)
+plot_F_histogram(F_result, RD_obj, binwidth = 0.1, show_f_density = TRUE, ...)
 }
 \arguments{
 \item{F_result}{F_result object from thresh_F().}
 
 \item{RD_obj}{Pre-computed RD_result object from \code{\link{compute_RD}}.}
-
-\item{alpha}{Significance level used to compute RD threshold (default = 0.01 for 99th percentile).}
 
 \item{binwidth}{Histogram bin width (default = 0.1).}
 

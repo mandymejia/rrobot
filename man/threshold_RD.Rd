@@ -22,9 +22,9 @@ threshold_RD(
 )
 }
 \arguments{
-\item{x}{A numeric matrix or data frame of dimensions T × p (observations × variables).}
+\item{x}{A numeric matrix or data frame of dimensions T x p (observations x variables).}
 
-\item{w}{A numeric matrix (n_time × L) of low-kurtosis ICA components used as predictors (required for MI).}
+\item{w}{A numeric matrix (n_time x L) of low-kurtosis ICA components used as predictors (required for MI).}
 
 \item{method}{Character string; one of "all","SI","SI_boot","MI","MI_boot","F", "SHASH".}
 
@@ -36,9 +36,9 @@ threshold_RD(
 
 \item{trans}{Character string; transformation method, one of "SHASH" or "robZ".}
 
-\item{M}{Integer; number of multiply imputed datasets (default = 5).}
+\item{M}{Integer; number of multiply imputed datasets (default = 50 in threshold_RD()).}
 
-\item{k}{Integer; number of perturbation cycles per imputation (default = 10).}
+\item{k}{Integer; number of chained-equation cycles per imputed dataset (default = 100 in threshold_RD()).}
 
 \item{alpha}{Significance level used to compute RD threshold (default = 0.01 for 99th percentile).}
 
@@ -48,16 +48,27 @@ threshold_RD(
 
 \item{boot_quant}{Numeric; confidence level for bootstrap confidence intervals (default = 0.95, for 95\% CI).}
 
-\item{B}{Integer; number of bootstrap samples per imputed dataset (default = 1000).}
+\item{B}{Integer; number of bootstrap samples (per imputed dataset for the MI methods; default = 1000).}
 }
 \value{
-A list with:
+A list of class \code{"RD"} with:
 \describe{
-\item{thresholds}{Result from the specific threshold method, or list of all methods if "all".}
+\item{thresholds}{Result from the specific threshold method, or a named list of all methods if \code{"all"}.}
 \item{RD_obj}{The robust distance object from compute_RD().}
+\item{RD_obj_shash}{Robust distance object computed on the SHASH-normalised data (only for \code{"SHASH"} and \code{"all"}; otherwise NULL).}
+\item{x_norm}{SHASH-normalised data matrix (only for \code{"SHASH"} and \code{"all"}; otherwise NULL).}
 \item{call}{The matched function call.}
 }
 }
 \description{
 Performs univariate outlier detection + imputation, robust distance, and multiple thresholding methods.
+}
+\examples{
+set.seed(1)
+x <- matrix(rnorm(300), ncol = 3)
+x[1:3, ] <- x[1:3, ] + 6
+rd <- compute_RD(x)
+res <- threshold_RD(x, method = "F", RD_obj = rd, trans = "robZ")
+res$thresholds$threshold
+
 }

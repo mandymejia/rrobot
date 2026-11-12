@@ -4,14 +4,12 @@
 \alias{plot_RD_histogram}
 \title{Plot Robust Distance Histogram with Threshold}
 \usage{
-plot_RD_histogram(thresh_result, RD_obj, alpha = 0.01, binwidth = 0.1, ...)
+plot_RD_histogram(thresh_result, RD_obj, binwidth = 0.1, ...)
 }
 \arguments{
 \item{thresh_result}{A threshold result object from any threshold method containing threshold information.}
 
 \item{RD_obj}{Pre-computed RD_result object from \code{\link{compute_RD}}.}
-
-\item{alpha}{Significance level used to compute RD threshold (default = 0.01 for 99th percentile).}
 
 \item{binwidth}{Histogram bin width (default = 0.1).}
 

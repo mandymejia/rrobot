@@ -13,11 +13,11 @@
 #' @param p Integer. The number of variables (dimension of the data).
 #' @param n Integer. The total sample size.
 #' @param h Integer. The number of observations retained in the MCD subset.
-#' @inheritParams params_doc
 #' @param SHASH Boolean. If running SHASH variant.
 #' @inheritParams params_doc
 #'
-#' @return A list with the following elements:
+#' @return A list of class \code{"F_result"} (or \code{"SHASH_result"} when
+#' \code{SHASH = TRUE}) with the following elements:
 #' \describe{
 #'   \item{c}{Consistency correction factor for robust distances.}
 #'   \item{m}{Estimated degrees of freedom parameter used in the F-distribution.}
@@ -31,28 +31,28 @@
 #' @importFrom stats pchisq qchisq qf
 #' @keywords internal
 thresh_F <- function(p, n, h, quantile, RD_obj, SHASH = FALSE, verbose = FALSE) {
-  if (verbose) message("Running ", if (SHASH) "SHASH" else "F", " method: F-distribution threshold...")
   call <- match.call()
+  if (verbose) message("Running ", if (SHASH) "SHASH" else "F", " method: F-distribution threshold...")
 
   # Step 1: consistency correction factor
-  c <- pchisq(q = qchisq(p = h / n, df = p), df = p + 2) / (h / n)
+  c_corr <- stats::pchisq(q = stats::qchisq(p = h / n, df = p), df = p + 2) / (h / n)
 
   # Step 2: asymptotic approximation for degrees of freedom
-  alpha <- (n - h) / n
-  q_alpha <- qchisq(p = 1 - alpha, df = p)
+  alpha_h <- (n - h) / n
+  q_alpha <- stats::qchisq(p = 1 - alpha_h, df = p)
 
-  c_alpha <- (1 - alpha) / pchisq(q = q_alpha, df = p + 2)
-  c2 <- -0.5 * pchisq(q = q_alpha, df = p + 2)
-  c3 <- -0.5 * pchisq(q = q_alpha, df = p + 4)
+  c_alpha <- (1 - alpha_h) / stats::pchisq(q = q_alpha, df = p + 2)
+  c2 <- -0.5 * stats::pchisq(q = q_alpha, df = p + 2)
+  c3 <- -0.5 * stats::pchisq(q = q_alpha, df = p + 4)
   c4 <- 3 * c3
 
-  b1 <- c_alpha * (c3 - c4) / (1 - alpha)
-  b2 <- 0.5 + c_alpha * (c3 - (q_alpha / p) * (c2 + (1 - alpha) / 2)) / (1 - alpha)
+  b1 <- c_alpha * (c3 - c4) / (1 - alpha_h)
+  b2 <- 0.5 + c_alpha * (c3 - (q_alpha / p) * (c2 + (1 - alpha_h) / 2)) / (1 - alpha_h)
 
-  v1 <- (1 - alpha) * b1^2 * (alpha * (c_alpha * q_alpha / p - 1)^2 - 1) -
+  v1 <- (1 - alpha_h) * b1^2 * (alpha_h * (c_alpha * q_alpha / p - 1)^2 - 1) -
     2 * c3 * c_alpha^2 * (3 * (b1 - p * b2)^2 + (p + 2) * b2 * (2 * b1 - p * b2))
 
-  v2 <- n * (b1 * (b1 - p * b2) * (1 - alpha))^2 * c_alpha^2
+  v2 <- n * (b1 * (b1 - p * b2) * (1 - alpha_h))^2 * c_alpha^2
   v <- v1 / v2
 
   m <- 2 / (c_alpha^2 * v)
@@ -60,31 +60,26 @@ thresh_F <- function(p, n, h, quantile, RD_obj, SHASH = FALSE, verbose = FALSE) 
   # Step 3: finite-sample correction
   m <- m * exp(0.725 - 0.00663 * p - 0.078 * log(n))
 
-  df <- c(p, m - p + 1)
+  df_F <- c(p, m - p + 1)
 
   # scale factor
-  scale <- c * (m - p + 1) / (p * m)
+  scale_F <- c_corr * (m - p + 1) / (p * m)
 
   # threshold inverse scaling due to the scaled RD stated in Hardin&Rocke(2005)
-  q_sHR <- qf(p = 1 - quantile, df1 = df[1], df2 = df[2]) / scale
+  q_sHR <- stats::qf(p = 1 - quantile, df1 = df_F[1], df2 = df_F[2]) / scale_F
 
   flagged_outliers <- which(RD_obj$RD > q_sHR)
 
   result <- list(
-    c = c,
+    c = c_corr,
     m = m,
-    df = df,
-    scale = scale,
+    df = df_F,
+    scale = scale_F,
     threshold = q_sHR,
     flagged_outliers = flagged_outliers,
     call = call
   )
 
-  if (SHASH) {
-    class(result) <- "SHASH_result"
-  } else {
-    class(result) <- "F_result"
-  }
-
+  class(result) <- if (SHASH) "SHASH_result" else "F_result"
   result
 }

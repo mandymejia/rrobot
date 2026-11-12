@@ -7,7 +7,7 @@
 impute_univOut(x, outlier_mask, method = c("mean", "interp"))
 }
 \arguments{
-\item{x}{A numeric matrix or data frame of dimensions T × p (observations × variables).}
+\item{x}{A numeric matrix or data frame of dimensions T x p (observations x variables).}
 
 \item{outlier_mask}{A logical matrix (same dimensions as x) with TRUE at outlier positions.}
 
@@ -21,11 +21,13 @@ A list with elements:
 \item{NA_data}{Matrix version of x with NAs at outlier positions.}
 \item{imp_data}{Imputed matrix after temporal interpolation.}
 \item{NA_locs}{Row-column indices of outliers (now NA).}
+\item{method}{The imputation method used (\code{"mean"} or \code{"interp"}).}
 \item{call}{The matched function call.}
 }
 }
 \description{
 Takes a high-kurtosis data matrix and a precomputed outlier mask,
-replaces the outliers with NA, and applies temporal interpolation using \code{imputeTS::na_interpolation}.
+replaces the outliers with NA, and fills them using either column means or
+temporal interpolation (\code{imputeTS::na_interpolation}).
 }
 \keyword{internal}

@@ -4,13 +4,15 @@
 \alias{plot_imputations}
 \title{Plot Multiple Imputation Results from RD Analysis}
 \usage{
-plot_imputations(x)
+plot_imputations(x, ...)
 }
 \arguments{
 \item{x}{An object of class "RD" from RD() or threshold_RD().}
+
+\item{...}{Additional arguments to method-specific functions.}
 }
 \value{
-Prints ggplot objects for each variable showing imputation results.
+Prints one ggplot object per variable and returns them invisibly as a list.
 }
 \description{
 Creates time series plots showing original data, temporal imputation,

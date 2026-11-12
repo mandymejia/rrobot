@@ -1,8 +1,7 @@
-#' @importFrom ggplot2 ggplot aes geom_histogram geom_line geom_vline geom_text geom_point
+#' @importFrom ggplot2 ggplot aes geom_histogram geom_line geom_vline geom_point
 #' @importFrom ggplot2 scale_fill_manual scale_color_manual scale_x_log10 theme_minimal theme
 #' @importFrom ggplot2 element_text element_blank after_stat ylab xlab labs geom_tile
 #' @importFrom stats density df
-#' @importFrom reshape2 melt
 #' @importFrom rlang .data
 NULL
 
@@ -20,17 +19,10 @@ NULL
 #
 # The variables listed below are:
 # - Column names from data frames used in ggplot2 aesthetics
-# - Variables created through data manipulation (e.g., reshape2::melt)
+# - Variables created through data manipulation
 # - Computed variables in ggplot2 (e.g., after_stat(density))
 #
-# This is a standard practice recommended by:
-# - Writing R Extensions manual
-# - ggplot2 documentation
-# - Most major R packages on CRAN
-#
-# References:
-# - https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Registering-S3-methods
-# - https://ggplot2.tidyverse.org/articles/ggplot2-in-packages.html
+# See https://ggplot2.tidyverse.org/articles/ggplot2-in-packages.html
 # ==========================================================================
 
 if(getRversion() >= "2.15.1") {
@@ -58,7 +50,7 @@ if(getRversion() >= "2.15.1") {
     "y",              # Generic y-axis values (densities, etc.)
 
     # Generic plotting variables
-    ".data"           # rlang pronoun (if using .data$ syntax)
+    ".data"           # rlang pronoun (also imported from rlang)
   ))
 }
 

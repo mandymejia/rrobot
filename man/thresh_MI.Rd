@@ -2,7 +2,7 @@
 % Please edit documentation in R/thresh_MI.R
 \name{thresh_MI}
 \alias{thresh_MI}
-\title{Outlier Detection via Multiple Imputation Voting (MI)}
+\title{Outlier Detection via Multiple Imputation (MI)}
 \usage{
 thresh_MI(
   RD_org_obj,
@@ -15,7 +15,7 @@ thresh_MI(
 \arguments{
 \item{RD_org_obj}{Output list from \code{\link{compute_RD}} on the original data. Must contain $RD, $S_star, and $ind_incld.}
 
-\item{imp_datasets}{A list of M numeric matrices (T × p); multiply imputed datasets.}
+\item{imp_datasets}{A list of M numeric matrices (T x p); multiply imputed datasets.}
 
 \item{alpha}{Significance level used to compute RD threshold (default = 0.01 for 99th percentile).}
 
@@ -24,17 +24,18 @@ thresh_MI(
 \item{verbose}{Logical; if TRUE, print progress messages.}
 }
 \value{
-A list with:
+A list of class \code{"MI_result"} with:
 \describe{
 \item{thresholds}{Numeric vector of length M; (1 - alpha) quantiles of RD per imputed dataset.}
 \item{threshold}{Lower bound of the confidence interval of thresholds.}
-\item{call}{The matched function call.}
 \item{flagged_outliers}{Integer vector of row indices from original data matrix that exceed the threshold.}
+\item{call}{The matched function call.}
 }
 }
 \description{
-Applies robust distance (RD) computation to multiply imputed datasets, derives thresholds,
-and flags outliers via majority voting. Also computes the lower bound of the 95\% confidence interval
-of the (1 - alpha) quantiles across imputations.
+Applies robust distance (RD) computation to multiply imputed datasets and
+derives a threshold from the lower bound of the confidence interval of the
+(1 - alpha) quantiles across imputations. Outliers are the observations whose
+original RD exceeds that threshold.
 }
 \keyword{internal}

@@ -8,8 +8,6 @@ plot_RD_histogram_multi(
   RD_result,
   RD_obj,
   methods = c("SI", "SI_boot", "MI", "MI_boot", "F"),
-  alpha = 0.01,
-  binwidth = 0.1,
   ...
 )
 }
@@ -19,11 +17,7 @@ multiple threshold results in a list.}
 
 \item{RD_obj}{Pre-computed RD_result object from \code{\link{compute_RD}}.}
 
-\item{methods}{Character vector of threshold methods to display (default: c("SI", "SI_boot", "MI", "MI_boot")).}
-
-\item{alpha}{Significance level used to compute RD threshold (default = 0.01 for 99th percentile).}
-
-\item{binwidth}{Histogram bin width (default = 0.1).}
+\item{methods}{Character vector of threshold methods to display (default: c("SI", "SI_boot", "MI", "MI_boot", "F")).}
 
 \item{...}{Additional arguments to method-specific functions.}
 }

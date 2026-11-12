@@ -36,29 +36,29 @@ params_doc(
 
 \item{alpha}{Significance level used to compute RD threshold (default = 0.01 for 99th percentile).}
 
-\item{B}{Integer; number of bootstrap samples per imputed dataset (default = 1000).}
+\item{B}{Integer; number of bootstrap samples (per imputed dataset for the MI methods; default = 1000).}
 
 \item{boot_quant}{Numeric; confidence level for bootstrap confidence intervals (default = 0.95, for 95\% CI).}
 
-\item{cov_mcd}{Optional covariance matrix (p × p); required in "manual" mode.}
+\item{cov_mcd}{Optional covariance matrix (p x p); required in "manual" mode.}
 
 \item{cutoff}{A numeric value indicating how many MADs away from the median to flag as outliers. The default value is set to be 4.}
 
 \item{dist}{Logical; if TRUE, compute squared robust Mahalanobis distances for all observations.}
 
-\item{imp_data}{A numeric matrix (T × p) of single-imputed data.}
+\item{imp_data}{A numeric matrix (T x p) of single-imputed data.}
 
-\item{imp_datasets}{A list of M numeric matrices (T × p); multiply imputed datasets.}
+\item{imp_datasets}{A list of M numeric matrices (T x p); multiply imputed datasets.}
 
 \item{impute_method}{Character string; imputation method for univariate outliers.}
 
 \item{ind_incld}{Optional vector of row indices used to compute the robust mean; required in "manual" mode.}
 
-\item{k}{Integer; number of perturbation cycles per imputation (default = 10).}
+\item{k}{Integer; number of chained-equation cycles per imputed dataset (default = 100 in threshold_RD()).}
 
 \item{quantile}{Numeric in (0,1) specifying the upper quantile for thresholding; the expected False Positive Rate for the chosen threshold.}
 
-\item{M}{Integer; number of multiply imputed datasets (default = 5).}
+\item{M}{Integer; number of multiply imputed datasets (default = 50 in threshold_RD()).}
 
 \item{mode}{Character string; either "auto" (default) to compute MCD internally or "manual" to use user-supplied values.}
 
@@ -72,9 +72,9 @@ params_doc(
 
 \item{verbose}{Logical; if TRUE, print progress messages.}
 
-\item{w}{A numeric matrix (n_time × L) of low-kurtosis ICA components used as predictors (required for MI).}
+\item{w}{A numeric matrix (n_time x L) of low-kurtosis ICA components used as predictors (required for MI).}
 
-\item{x}{A numeric matrix or data frame of dimensions T × p (observations × variables).}
+\item{x}{A numeric matrix or data frame of dimensions T x p (observations x variables).}
 
 \item{thresh_result}{A threshold result object from any threshold method containing threshold information.}
 

@@ -2,12 +2,12 @@
 % Please edit documentation in R/univOut.R
 \name{univOut}
 \alias{univOut}
-\title{Temporal univariate outlier detection using SHASH, robust Yeo-Johnson, or robust MAD.}
+\title{Temporal univariate outlier detection using SHASH or robust MAD.}
 \usage{
 univOut(x, cutoff = 4, method = c("SHASH", "robZ"))
 }
 \arguments{
-\item{x}{A numeric matrix or data frame of dimensions T × p (observations × variables).}
+\item{x}{A numeric matrix or data frame of dimensions T x p (observations x variables).}
 
 \item{cutoff}{A numeric value indicating how many MADs away from the median to flag as outliers. The default value is set to be 4.}
 
@@ -17,12 +17,13 @@ univOut(x, cutoff = 4, method = c("SHASH", "robZ"))
 A list with elements:
 \describe{
 \item{outliers}{Logical matrix of the same dimension as \code{x}, indicating detected outlier locations (TRUE = outlier).}
+\item{x_norm}{Numeric matrix of normality-transformed data when \code{method = "SHASH"}; a matrix of \code{NA} when \code{method = "robZ"}.}
 \item{method}{A character string indicating the transformation method used.}
 \item{call}{The matched function call.}
 }
 }
 \description{
-Detects univariate outliers across time for each variable (column) using one of three methods:
+Detects univariate outliers across time for each variable (column) using one of two methods:
 \itemize{
 \item \code{"SHASH"}: Applies SHASH transformation and detects outliers using isolation forest.
 \item \code{"robZ"}: Applies robust z-score outlier detection using median and MAD.

@@ -36,17 +36,21 @@ Depends: R (>= 3.6.0)
 Imports: 
     MASS,
     stats,
-    cellWise,
-    expm,
     robustbase,
     gamlss,
     imputeTS,
     isotree,
     ggplot2,
-    tidyr,
+    rlang,
+    tibble
+Suggests:
+    knitr,
+    rmarkdown,
+    cellWise,
+    expm,
     reshape2,
-    rlang
-Suggests: knitr, rmarkdown, testthat (>= 3.0.0)
+    tidyr,
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

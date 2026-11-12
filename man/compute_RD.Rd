@@ -13,25 +13,29 @@ compute_RD(
 )
 }
 \arguments{
-\item{x}{A numeric matrix or data frame of dimensions T × p (observations × variables).}
+\item{x}{A numeric matrix or data frame of dimensions T x p (observations x variables).}
 
 \item{mode}{Character string; either "auto" (default) to compute MCD internally or "manual" to use user-supplied values.}
 
-\item{cov_mcd}{Optional covariance matrix (p × p); required in "manual" mode.}
+\item{cov_mcd}{Optional covariance matrix (p x p); required in "manual" mode.}
 
 \item{ind_incld}{Optional vector of row indices used to compute the robust mean; required in "manual" mode.}
 
 \item{dist}{Logical; if TRUE, compute squared robust Mahalanobis distances for all observations.}
 }
 \value{
-A list with elements:
+A list of class \code{"RD_result"} with elements:
 \describe{
 \item{ind_incld}{Vector of row indices used to compute the robust mean and covariance.}
 \item{ind_excld}{Vector of excluded row indices.}
+\item{n}{Number of observations (rows of \code{x}).}
+\item{p}{Number of variables (columns of \code{x}).}
 \item{h}{Number of included observations.}
 \item{xbar_star}{Robust mean vector (length p).}
-\item{S_star}{Robust covariance matrix (p × p).}
+\item{S_star}{Robust covariance matrix (p x p).}
 \item{RD}{Squared robust distances for all observations (length T), or NULL if dist = FALSE.}
+\item{RD_incld}{Squared robust distances of the included observations, or NULL if dist = FALSE.}
+\item{RD_excld}{Squared robust distances of the excluded observations, or NULL if dist = FALSE.}
 \item{call}{The matched function call.}
 }
 }
@@ -42,4 +46,12 @@ using either:
 \item "auto" mode: automatically selects the best robust subset using covMcd
 \item "manual" mode: uses provided robust covariance matrix and subset indices
 }
+}
+\examples{
+set.seed(1)
+x <- matrix(rnorm(200), ncol = 2)
+x[1:3, ] <- x[1:3, ] + 6
+rd <- compute_RD(x)
+which(rd$RD > stats::qchisq(0.99, df = 2))
+
 }

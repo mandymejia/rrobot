@@ -19,10 +19,10 @@ MImpute(x, w, outlier_matrix, M = 50, k = 5, ridge_eps = 1e-08, tol = NA_real_)
 
 \item{ridge_eps}{tiny ridge added to X'X for stability (default 1e-8).}
 
-\item{tol}{optional early-stop tolerance on per-cycle max change (NA to disable).}
+\item{tol}{optional early-stop tolerance on the largest change in imputed values over a cycle (NA, the default, disables early stopping and always runs all k cycles).}
 }
 \value{
-list(imp_datasets, outlier_matrix)
+A list with \code{imp_datasets} (list of M imputed matrices) and \code{outlier_matrix} (the input mask).
 }
 \description{
 Multiple Imputation with Per-Cycle Updates (OLS + MICE-style)

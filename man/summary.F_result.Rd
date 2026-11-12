@@ -7,7 +7,7 @@
 \method{summary}{F_result}(object, ...)
 }
 \arguments{
-\item{object}{An object of class "F_result" or "HR_result"}
+\item{object}{An object of class "F_result"}
 
 \item{...}{Additional arguments to method-specific functions.}
 }

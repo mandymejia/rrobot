@@ -214,7 +214,7 @@ test_that("RD method gives consistent results", {
   })
   # Test structure - RD() doesn't return RD_obj anymore
   expect_type(result, "list")
-  expect_named(result, c("thresholds", "RD_obj", "outliers", "call"))
+  expect_named(result, c("thresholds", "RD_obj", "RD_obj_shash", "outliers", "call"))
   expect_s3_class(result, "RD")
 
   # Test that thresholds contains the RD_obj

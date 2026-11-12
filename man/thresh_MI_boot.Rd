@@ -16,9 +16,9 @@ thresh_MI_boot(
 \arguments{
 \item{RD_org_obj}{Output list from \code{\link{compute_RD}} on the original data. Must contain $RD, $S_star, and $ind_incld.}
 
-\item{imp_datasets}{A list of M numeric matrices (T × p); multiply imputed datasets.}
+\item{imp_datasets}{A list of M numeric matrices (T x p); multiply imputed datasets.}
 
-\item{B}{Integer; number of bootstrap samples per imputed dataset (default = 1000).}
+\item{B}{Integer; number of bootstrap samples (per imputed dataset for the MI methods; default = 1000).}
 
 \item{alpha}{Significance level used to compute RD threshold (default = 0.01 for 99th percentile).}
 
@@ -27,24 +27,26 @@ thresh_MI_boot(
 \item{verbose}{Logical; if TRUE, print progress messages.}
 }
 \value{
-A list with:
+A list of class \code{"MI_boot_result"} with:
 \describe{
-\item{thresholds}{Vector of M×B thresholds from each bootstrap sample.}
+\item{thresholds}{Vector of M x B thresholds from each bootstrap sample.}
 \item{threshold}{Lower bound of CI across thresholds.}
 \item{flagged_outliers}{Integer vector of row indices from original data matrix that exceed the threshold.}
+\item{n_obs}{Number of observations in the original data.}
 \item{call}{The matched function call.}
 }
 }
 \description{
 Extends single imputation bootstrapping by using multiple imputation. For each of the M imputed datasets:
 \itemize{
-\item Generate B bootstrap samples (with replacement) from the included (non-outlier) indices
+\item Generate B bootstrap samples; included and excluded indices (from the robust subset)
+are resampled separately, with replacement
 \item Compute robust distances (RD) for each sample
 \item Extract the (1 - alpha) quantile of RD for each sample
 }
 }
 \details{
-This yields M × B threshold candidates. The lower bound of their (1 - boot_quant) confidence interval
+This yields M x B threshold candidates. The lower bound of their confidence interval
 is used as the final threshold. This is applied to the RD of the original data.
 }
 \keyword{internal}

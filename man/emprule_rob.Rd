@@ -20,7 +20,7 @@ A logical vector the same length as \code{x}. \code{TRUE} indicates
 an outlier, \code{FALSE} indicates an inlier.
 }
 \description{
-Detects outliers using the median ± \code{thr} × MAD rule, where MAD is
+Detects outliers using the median +/- \code{thr} x MAD rule, where MAD is
 normalised by 1.4826 to be consistent with the standard deviation under
 normality.
 }

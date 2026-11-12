@@ -9,14 +9,14 @@ thresh_SI(RD_org_obj, imp_data, alpha = 0.01, verbose = FALSE)
 \arguments{
 \item{RD_org_obj}{Output list from \code{\link{compute_RD}} on the original data. Must contain $RD, $S_star, and $ind_incld.}
 
-\item{imp_data}{A numeric matrix (T × p) of single-imputed data.}
+\item{imp_data}{A numeric matrix (T x p) of single-imputed data.}
 
 \item{alpha}{Significance level used to compute RD threshold (default = 0.01 for 99th percentile).}
 
 \item{verbose}{Logical; if TRUE, print progress messages.}
 }
 \value{
-A list with:
+A list of class \code{"SI_result"} with:
 \describe{
 \item{SI_obj}{A list from \code{\link{compute_RD}} containing robust distances.}
 \item{threshold}{Numeric threshold based on the (1 - alpha) quantile of RD.}

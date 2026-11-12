@@ -4,14 +4,12 @@
 \alias{plot_univOut}
 \title{Plot Univariate Outliers from RD Analysis}
 \usage{
-plot_univOut(x, cutoff = NULL, method = NULL)
+plot_univOut(x, ...)
 }
 \arguments{
 \item{x}{An object of class "RD" from RD() or threshold_RD().}
 
-\item{cutoff}{A numeric value indicating how many MADs away from the median to flag as outliers. The default value is set to be 4.}
-
-\item{method}{Character string. One of \code{"SHASH"} or \code{"robZ"}.}
+\item{...}{Additional arguments to method-specific functions.}
 }
 \value{
 A ggplot object showing a heatmap of outlier locations.

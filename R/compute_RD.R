@@ -7,20 +7,29 @@
 #'
 #' @inheritParams params_doc
 #'
-#' @return A list with elements:
+#' @return A list of class \code{"RD_result"} with elements:
 #' \describe{
 #'   \item{ind_incld}{Vector of row indices used to compute the robust mean and covariance.}
 #'   \item{ind_excld}{Vector of excluded row indices.}
+#'   \item{n}{Number of observations (rows of \code{x}).}
+#'   \item{p}{Number of variables (columns of \code{x}).}
 #'   \item{h}{Number of included observations.}
 #'   \item{xbar_star}{Robust mean vector (length p).}
-#'   \item{S_star}{Robust covariance matrix (p × p).}
+#'   \item{S_star}{Robust covariance matrix (p x p).}
 #'   \item{RD}{Squared robust distances for all observations (length T), or NULL if dist = FALSE.}
+#'   \item{RD_incld}{Squared robust distances of the included observations, or NULL if dist = FALSE.}
+#'   \item{RD_excld}{Squared robust distances of the excluded observations, or NULL if dist = FALSE.}
 #'   \item{call}{The matched function call.}
 #' }
 #'
-#' @importFrom expm sqrtm
+#' @examples
+#' set.seed(1)
+#' x <- matrix(rnorm(200), ncol = 2)
+#' x[1:3, ] <- x[1:3, ] + 6
+#' rd <- compute_RD(x)
+#' which(rd$RD > stats::qchisq(0.99, df = 2))
+#'
 #' @importFrom robustbase covMcd
-#' @importFrom stats cov
 #' @export
 compute_RD <- function(x, mode = c("auto", "manual"),
                        cov_mcd = NULL, ind_incld = NULL, dist = TRUE) {
@@ -39,6 +48,8 @@ compute_RD <- function(x, mode = c("auto", "manual"),
     if (is.null(cov_mcd) || is.null(ind_incld))
       stop("In manual mode, both 'cov_mcd' and 'ind_incld' must be provided.")
     stopifnot(all(ind_incld %in% seq_len(n)))
+    stopifnot("'cov_mcd' must be a p x p matrix" =
+                is.matrix(cov_mcd) && all(dim(cov_mcd) == p))
     S_star    <- cov_mcd
     xbar_star <- colMeans(x[ind_incld, , drop = FALSE])
   }
