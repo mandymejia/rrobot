@@ -31,7 +31,6 @@ A list with elements:
 \item{h}{Number of included observations.}
 \item{xbar_star}{Robust mean vector (length p).}
 \item{S_star}{Robust covariance matrix (p × p).}
-\item{invcov_sqrt}{Matrix square root of the inverse covariance matrix (p × p).}
 \item{RD}{Squared robust distances for all observations (length T), or NULL if dist = FALSE.}
 \item{call}{The matched function call.}
 }
