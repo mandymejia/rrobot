@@ -46,10 +46,9 @@ univOut <- function(x, cutoff = 4, method = c("SHASH", "robZ")) {
   }
 
   list(
-    # Add function call (params -- include both of them with same argument name)
     outliers = outlier_matrix,
     x_norm = shash_matrix, # normality transformed data matrix when method =SHASH, if method = robZ this returns NA matrix
     method = method,
-    call <- call
+    call = call
   )
 }

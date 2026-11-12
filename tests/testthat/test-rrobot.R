@@ -56,6 +56,13 @@ test_that("compute_RD records the call", {
   expect_identical(result$call[[1]], quote(compute_RD))
 })
 
+test_that("univOut records the call", {
+  result <- rrobot:::univOut(matrix(rnorm(20), ncol = 1), method = "robZ")
+
+  expect_true(is.call(result$call))
+  expect_identical(result$call$method, "robZ")
+})
+
 test_that("histogram plots handle fewer than two excluded observations", {
   for (n_excluded in 0:1) {
     RD_obj <- list(
