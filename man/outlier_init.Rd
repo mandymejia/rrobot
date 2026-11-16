@@ -55,3 +55,4 @@ Initializes outlier candidate weights using one of three methods:
 isolation forest (isoplus), empirical rule, or the 50\% distance rule.
 Returns initial inlier weights and threshold cutoffs on the original scale.
 }
+\keyword{internal}
