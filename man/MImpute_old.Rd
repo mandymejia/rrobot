@@ -7,15 +7,15 @@
 MImpute_old(x, w, outlier_matrix, M = 50, k = 100)
 }
 \arguments{
-\item{x}{A numeric matrix (n_time x p) of high-kurtosis ICA components to be imputed.}
+\item{x}{A numeric matrix (n_time x p) of ICA components to be imputed.}
 
-\item{w}{A numeric matrix (n_time x L) of low-kurtosis ICA components used as predictors (required for MI).}
+\item{w}{A numeric matrix (n_time x L) of predictor variables.}
 
 \item{outlier_matrix}{A logical matrix (same dim as x) indicating univariate outliers to be imputed.}
 
-\item{M}{Integer; number of multiply imputed datasets (default = 50 in threshold_RD()).}
+\item{M}{Number of multiply-imputed datasets.}
 
-\item{k}{Integer; number of chained-equation cycles per imputed dataset (default = 100 in threshold_RD()).}
+\item{k}{Number of chained-equation cycles per imputed dataset.}
 }
 \value{
 A list with:

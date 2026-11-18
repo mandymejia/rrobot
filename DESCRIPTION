@@ -40,8 +40,6 @@ Imports:
     gamlss,
     imputeTS,
     isotree,
-    ggplot2,
-    rlang,
     tibble
 Suggests:
     knitr,

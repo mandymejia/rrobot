@@ -9,7 +9,7 @@ univOut(x, cutoff = 4, method = c("SHASH", "robZ"))
 \arguments{
 \item{x}{A numeric matrix or data frame of dimensions T x p (observations x variables).}
 
-\item{cutoff}{A numeric value indicating how many MADs away from the median to flag as outliers. The default value is set to be 4.}
+\item{cutoff}{A numeric value indicating how many MADs away from the median to flag as outliers.}
 
 \item{method}{Character string. One of \code{"SHASH"} or \code{"robZ"}.}
 }

@@ -4,7 +4,7 @@
 #' replaces the outliers with NA, and fills them using either column means or
 #' temporal interpolation (`imputeTS::na_interpolation`).
 #'
-#' @inheritParams params_doc
+#' @param x A numeric matrix of dimensions T x p.
 #' @param outlier_mask A logical matrix (same dimensions as x) with TRUE at outlier positions.
 #' @param method One of \code{"mean"} or \code{"interp"}; \code{"interp"} uses \code{imputeTS::na_interpolation},
 #'   \code{"mean"} fills NAs with column means.

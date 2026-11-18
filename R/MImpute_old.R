@@ -2,9 +2,11 @@
 #'
 #' Performs multiple imputation using perturbed robust regression models.
 #'
-#' @param x A numeric matrix (n_time x p) of high-kurtosis ICA components to be imputed.
+#' @param x A numeric matrix (n_time x p) of ICA components to be imputed.
+#' @param w A numeric matrix (n_time x L) of predictor variables.
 #' @param outlier_matrix A logical matrix (same dim as x) indicating univariate outliers to be imputed.
-#' @inheritParams params_doc
+#' @param M Number of multiply-imputed datasets.
+#' @param k Number of chained-equation cycles per imputed dataset.
 #'
 #' @return A list with:
 #' \describe{

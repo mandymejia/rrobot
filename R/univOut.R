@@ -6,7 +6,8 @@
 #'   \item \code{"robZ"}: Applies robust z-score outlier detection using median and MAD.
 #' }
 #'
-#' @inheritParams params_doc
+#' @param x A numeric matrix or data frame of dimensions T x p (observations x variables).
+#' @param cutoff A numeric value indicating how many MADs away from the median to flag as outliers.
 #' @inheritParams method_univOut_doc
 #'
 #' @return A list with elements:
