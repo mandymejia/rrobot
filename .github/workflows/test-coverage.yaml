@@ -15,7 +15,7 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
 
       - uses: r-lib/actions/setup-r@v2
         with:
@@ -27,12 +27,20 @@ jobs:
           needs: coverage
 
       - name: Test coverage
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
-          covr::codecov(
+          coverage_args <- list(
             quiet = FALSE,
             clean = FALSE,
             install_path = file.path(normalizePath(Sys.getenv("RUNNER_TEMP"), winslash = "/"), "package")
           )
+          if (nzchar(Sys.getenv("CODECOV_TOKEN"))) {
+            do.call(covr::codecov, c(coverage_args, list(token = Sys.getenv("CODECOV_TOKEN"))))
+          } else {
+            message("CODECOV_TOKEN is not set; running coverage without uploading to Codecov.")
+            do.call(covr::package_coverage, coverage_args)
+          }
         shell: Rscript {0}
 
       - name: Show testthat output
@@ -44,7 +52,7 @@ jobs:
 
       - name: Upload test results
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-test-failures
           path: ${{ runner.temp }}/package
