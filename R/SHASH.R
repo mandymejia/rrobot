@@ -535,7 +535,7 @@ SHASH_out <- function(x,
     weight_new               <- inlier_by_tail(x_norm_clean, thr1, tail)
     indx_iters_clean[, iter] <- as.integer(!weight_new)
 
-    if (all(weight_old == weight_new)) {
+    if (isTRUE(all.equal(weight_old, weight_new))) {
       success <- TRUE
       break
     }
